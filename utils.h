@@ -1,23 +1,38 @@
 #include "spmat.h"
 
 
-void read_input(char *path , spmat* A);
+/*input file -----> adjacency matrix*/
+errors read_input(FILE* input , spmat* A , int* degree ,int nof_vertex); /*TDOD: give a file. to support error in main*/
+/*degree is a pointer of size nof_vertex*sizeof(int). (to save K_i)*/
 
-double compute_C_prime (spmat* C , spmat* C_prime);
+/*computes C_prime and C_1norm*/
+errors compute_C_prime (spmat* C , spmat* C_prime, double* C_1norm);
 
-void compute_modularity_matrix(spmat* A , int* g , spmat* B_g);/*TODO: replace name*/
+/*adjacency matrix -----> modularity matrix of group g*/
+errors compute_modularity_matrix(spmat* A , int* g ,int* degree, int M, spmat* B_g);
+
 
 void power_iteration(spmat* C_prime, double* vector, double epsilon ,double c_1norm);/*vector will be the eigen vector*/
+/*TODO: 1.use IS_POSITIVE
+*       2.save the previous to the final eigen vector (b_k-1)*/
 
 double dot_product(double* row1, double* row2, int size);
 
-void eigen2s (double* eigen , int* s); /*TODO: replace name*/
+/*s[i]=1 if eigen[i]>0 else s[i]=-1*/
+void eigen2s (double* eigen , int* s ,int n);
 
-double get_eigen_value (spmat* A , double* eigen);
+/*computes eigen value*/
+double get_eigen_value (double* eigen , double* prev_eigen, int size);
 
-void compute_f_g(spmat* B_g , double* f_g);
+/*f_g is a vector of all f_i_g*/
+errors compute_f_g(spmat* B_g , double* f_g);
 
-void compute_B_hat (spmat* B_g , double* f_g , spmat* B_hat); /*delta is not needed*/
+/*B_g ------> B_hat_g*/
+errors compute_B_hat (spmat* B_g , double* f_g , spmat* B_hat); /*delta is not needed*/
+
 
 void modularity_maximization (spmat* B_g , int* g1 , int* g2);
-/*TODO: maybe add enum of errors*/
+
+
+
+typedef enum {NONE , ALLOCATION_FAILED ,READ_FAILED} errors;

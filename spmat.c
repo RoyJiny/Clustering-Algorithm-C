@@ -3,22 +3,6 @@
 #include <stdio.h>
 #define print 0
 
-typedef struct node {
-	double val;
-	int index;
-	struct node* next;
-}node;
-
-typedef struct arrays {
-	double* values;
-	int* cols;
-	int* rows;
-	int curr;
-}arrays;
-
-typedef struct list {
-	node** rows;
-}list;
 
 void print_list(node* head) {
 	if (head == NULL) {
@@ -95,31 +79,41 @@ void mult_arrays(const spmat* A, const double* v, double* result) {
 		result++;
 	}
 }
+/* return  1 if all the elements in row are 0, and 0 otherwise*/
+char is_row_empty_arrays(const spmat* A , int row){
+	arrays* helper = (arrays*)(A->handle);
+	int* rows = ((helper->rows)+row);
+	return *(rows+1) - *rows == 0 ? 1:0;
+}
+
+/*TODO: implement sum_rows_arrays*/
+
+/*TODO: implement sum_of_largest_colomn_arrays*/
 
 spmat* spmat_allocate_array(int n, int nnz) {
 	spmat* spm;
 	arrays* arrs;
 	spm = (spmat*)malloc(sizeof(spmat));
 	if (!spm) {
-		return NULL;
+		return 0;
 	}
 	arrs = (arrays*)malloc(sizeof(arrays));
 	if (!arrs) {
 		free(spm);
-		return NULL;
+		return 0;
 	}
 	(arrs->values) = (double*)malloc(nnz * sizeof(double));
 	if (!(arrs->values)) {
 		free(spm);
 		free(arrs);
-		return NULL;
+		return 0;
 	}
 	(arrs->cols) = (int*)malloc(nnz * sizeof(int));
 	if (!(arrs->cols)) {
 		free(spm);
 		free((arrs->values));
 		free(arrs);
-		return NULL;
+		return 0;
 	}
 	(arrs->rows) = (int*)malloc((n + 1) * sizeof(int));
 	if (!(arrs->rows)) {
@@ -127,7 +121,7 @@ spmat* spmat_allocate_array(int n, int nnz) {
 		free((arrs->values));
 		free((arrs->cols));
 		free(arrs);
-		return NULL;
+		return 0;
 	}
 	(arrs->curr) = 0;
 	(spm->handle) = arrs;
@@ -187,7 +181,7 @@ node* create_list(const double* row, int n) {
 	}
 	return head;
 }
-
+/*TODO: maybe its not neccessary*/
 void addRow_list(spmat* A, const double* row, int i) {
 	if (print) {
 		printf("addRow_list\n");
@@ -244,31 +238,95 @@ void mult_list(const spmat* A, const double* v, double* result) {
 		currElem = *currRow;
 	}
 }
+/* return  1 if all the elements in row are 0, and 0 otherwise*/
+char is_row_empty_list(const spmat* A , int row){
+	node** rows=((list*)(A->handle))->rows;
+	return *(rows+row) == NULL ? 1:0;
+}
 
+void sum_rows_list(const spmat* A ,int row , double* row2add , double* result){
+	node** rows=((list*)(A->handle))->rows;
+	node* req_row = *(rows+row);
+	int i, index;
+	int end = result + A->n;
+	if (req_row == NULL){ /*req_row is all zeroes*/
+		while(result < end){
+			*result = *row2add;
+			result++;
+		}
+	}
+	else{/*req_row is not all zeroes*/
+		for(i=0; i<A->n; i++){
+			if(i == req_row->index){
+				*result = req_row->val + *row2add;
+				req_row++;
+			}
+			else{
+				*result = *row2add;
+			}
+			result++;
+		}
+	}
+	return;
+}
+
+double sum_of_largest_column_list(const spmat* A, double* sum_col){
+	double curr_max;
+	int i,j;
+	double *temp_sum_cols;
+	node *curr_row ,*temp_row;
+	node** rows=((list*)(A->handle))->rows;
+	curr_row = *rows;
+	/*computes the sum of each colomn*/
+	for(i=0; i<A->n; i++){
+		if(curr_row != NULL){
+			temp_row = curr_row;
+			temp_sum_cols = sum_col;
+			j=0;
+			while(temp_row != NULL){
+				if(j==temp_row->index){
+					*temp_sum_cols = *temp_sum_cols + temp_row->val;
+					temp_row++;
+				}
+				j++;
+				temp_sum_cols++;
+			}
+		}
+		curr_row++;
+	}
+	/*computes the max sum*/
+	temp_sum_cols = sum_col;
+	for(i=0; i<A->n; i++){
+		curr_max = (*temp_sum_cols > curr_max) ? *temp_sum_cols:curr_max;
+	}
+	return curr_max;
+}
 
 spmat* spmat_allocate_list(int n) {
 	list* l;
 	spmat* spm;
 	l =(list*) malloc(sizeof(list));
 	if (!l) {
-		return NULL;
+		return 0;
 	}
 	l->rows=(node**) malloc(n*sizeof(node*));
 	if (!(l->rows)) {
 		free(l);
-		return NULL;
+		return 0;
 	}
 	spm = (spmat*)malloc(sizeof(spmat));
 	if (!spm) {
 		free(l->rows);
 		free(l);
-		return NULL;
+		return 0;
 	}
 	spm->n = n;
 	spm->handle = l;
 	spm->add_row = addRow_list;
 	spm->free = free_list;
 	spm->mult = mult_list;
+	spm->sum_rows = sum_rows_list;
+	spm->sum_of_largest_column = sum_of_largest_column_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
