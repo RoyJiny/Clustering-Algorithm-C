@@ -18,7 +18,7 @@ void compute_f_g(spmat *B_g, double *f_g);
 
 void compute_B_hat(spmat *B_g, double *f_g, spmat *B_hat);
 
-int compute_two_groups_modularity(spmat *B, int *s); /* 0.5*(s^T)*B*s */
+int compute_two_groups_modularity(spmat *B, int *g); /* 0.5*(s^T)*B*s */
 
 void modularity_maximization(spmat *B_g, int *g);
 /*TODO: maybe add enum of errors*/

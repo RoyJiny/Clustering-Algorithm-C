@@ -77,9 +77,9 @@ void modularity_maximization(spmat *B_g, int *g)
 				/*calculate the new modularity*/
 
 				/*if the new modularity is better than the highest so far:*/
-				/*save the new modularity value as the highest so far this iteration*/
-				/*save the new g1,g2 as the highest g1,g2*/
-				/*save the respective vertex as part of the best move*/
+					/*save the new modularity value as the highest so far this iteration*/
+					/*save the new g1,g2 as the highest g1,g2*/
+					/*save the respective vertex as part of the best move*/
 
 				/*compare with best state overall, and update if better*/
 
