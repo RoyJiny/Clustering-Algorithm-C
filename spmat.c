@@ -90,6 +90,36 @@ char is_row_empty_arrays(const spmat* A , int row){
 
 /*TODO: implement sum_of_largest_colomn_arrays*/
 
+char equal2_arrays(const spmat* A, const spmat* B){
+	int i;
+	double *val_A, *val_B;
+	int *col_A, *col_B, *row_A, *row_B;
+	arrays* helper_A = (arrays*)(A->handle);
+	arrays* helper_B = (arrays*)(B->handle);
+
+	if(A->n != B->n){
+		return 0;
+	}
+	val_A = helper_A->values;
+	val_B = helper_B->values;
+	col_A = helper_A->cols;
+	col_B = helper_B->cols;
+	row_A = helper_A->rows;
+	row_B = helper_B->rows;
+	for (i=0; i<A->n; i++){
+		if(*val_A != *val_B || *col_A != *col_B || *row_A != *row_B){
+			return 0;
+		}
+		val_A++;
+		val_B++;
+		col_A++;
+		col_B++;
+		row_A++;
+		row_B++;
+	}
+	return 1;
+}
+
 spmat* spmat_allocate_array(int n, int nnz) {
 	spmat* spm;
 	arrays* arrs;
@@ -129,6 +159,7 @@ spmat* spmat_allocate_array(int n, int nnz) {
 	(spm->add_row) = addRow_arrays;
 	(spm->free) = free_arrays;
 	(spm->mult) = mult_arrays;
+	(spm->equal2) = equal2_arrays;
 	return spm;
 }
 
@@ -302,6 +333,34 @@ double sum_of_largest_column_list(const spmat* A, double* sum_col){
 	return curr_max;
 }
 
+char equal2_list(const spmat* A, const spmat* B){
+	node *temp_A, *temp_B;
+	int i;
+	node** rows_A=((list*)(A->handle))->rows;
+	node** rows_B=((list*)(B->handle))->rows;
+
+	if(A->n != B->n){
+		return 0;
+	}
+	for(i=0; i<A->n; i++){
+		temp_A = *rows_A;
+		temp_B = *rows_B;
+		while(temp_A != NULL && temp_B != NULL){
+			if(temp_A->index != temp_B->index || temp_A->val != temp_B->val){
+				return 0;
+			}
+			temp_A++;
+			temp_B++;
+		}
+		if(temp_A != NULL || temp_B != NULL){
+			return 0;
+		}
+		rows_A++;
+		rows_B++;
+	}
+	return 1;
+}
+
 spmat* spmat_allocate_list(int n) {
 	list* l;
 	spmat* spm;
@@ -327,6 +386,7 @@ spmat* spmat_allocate_list(int n) {
 	spm->mult = mult_list;
 	spm->sum_rows = sum_rows_list;
 	spm->sum_of_largest_column = sum_of_largest_column_list;
+	spm->equal2 = equal2_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/

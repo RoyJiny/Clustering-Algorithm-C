@@ -24,6 +24,9 @@ typedef struct _spmat {
 	* sum_col is a vector of size A->n which assumed to be empty*/
 	double	(*sum_of_largest_column)(const spmat* A, double* sum_col);
 
+	/* return 1 if A==B and 0 otherwise.*/
+	char	(*equal2)(const spmat* A, const spmat* B);
+
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
 	void	*handle;
