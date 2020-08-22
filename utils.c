@@ -6,43 +6,75 @@
 
 #include "utils.h"
 
-
-double dot_product(double* row1, double* row2, int size)
+/*return 1 if there was an error and 0 otherwise*/
+char handle_errors(Error error, char *name)
 {
-	double sum = 0;
-	double* end = row1 + size;
-	for (; row1 < end;) {
-		sum += (*row1) * (*row2);
-		row1++;
-		row2++;
+	switch (error)
+	{
+	case ALLOCATION_FAILED:
+		printf("allocation failed in: %s", name);
+		return 1;
+	case READ_FAILED:
+		printf("read failed in: %s", name);
+		return 1;
+	case NONE:
+		return 0;
 	}
-
-	return sum;
 }
 
-void power_iteration(spmat* A, double* vector, double epsilon) {
-	int stop = 0;
-	double magnitude;
-	double* mul_result;
-	double* ptr_v, * ptr_r;  /*pointers to vector and mul_result*/
-	mul_result= (double*)malloc((A->n) * sizeof(double));
-	if (!mul_result) {
-		return;
-	}
-	while (stop == 0) {
-		
-		A->mult(A, vector, mul_result); /*result=A*vector*/
-		magnitude = sqrt(dot_product(mul_result, mul_result, A->n));
+Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
+{
+	double *curr_row;
+	double *start_row; /*save the start of the row to add_row function in spmat*/
+	int *temp;
+	int *start_temp; /*save the start of temp for reuse*/
+	int *curr_vertex;
+	int i, j;
 
-		stop = 1;
-		ptr_r = mul_result;
-		for (ptr_v = vector; ptr_v < vector + A->n; ptr_v++) {
-			if (fabs(*ptr_v - ((*(ptr_r)) / magnitude)) > epsilon) {
-				stop = 0;
-			}
-			*ptr_v = (*(ptr_r)) / magnitude;  /*updating vector to the next vector*/
-			ptr_r++;
-		}
+	curr_vertex = degree; /*fill degree*/
+	start_row = (double *)malloc(nof_vertex * sizeof(double));
+	if (!start_row)
+	{
+		return ALLOCATION_FAILED;
 	}
-	free(mul_result);
+	start_temp = (int *)malloc(nof_vertex * sizeof(int));
+	if (!start_temp)
+	{
+		return ALLOCATION_FAILED;
+	}
+
+	for (i = 0; i < nof_vertex; i++)
+	{
+		curr_row = start_row;
+		temp = start_temp;
+		/*try read k_i*/
+		if (fread(curr_vertex, sizeof(int), 1, input) != 1)
+		{
+			return READ_FAILED;
+		}
+		/*try read the k_i neighbors*/
+		if (fread(temp, sizeof(int), *curr_vertex, input) != *curr_vertex)
+		{
+			return READ_FAILED;
+		}
+		for (j = 0; j < nof_vertex; j++)
+		{
+			if (j == *temp)
+			{
+				*curr_row = 1;
+				/*TODO: maybe here count nnz for array imp*/
+				temp++;
+			}
+			else
+			{
+				*curr_row = 0;
+			}
+			curr_row++;
+		}
+		A->add_row(A, start_row, i);
+		curr_vertex++;
+	}
+	free(curr_row);
+	free(temp);
+	return NONE;
 }
