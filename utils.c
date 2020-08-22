@@ -123,8 +123,8 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g
 			B_g->add_row(B_g, start_row, index);
 			printf("end of func2\n");
 			index++;
-			expected_nof_edges_row = start_expected_nof_edges_row;
 		}
+		expected_nof_edges_row = start_expected_nof_edges_row;
 		temp_i++;
 	}
 
