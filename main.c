@@ -18,8 +18,7 @@ void print_vector(double *v, int n)
 
 void test_input_read(spmat *mat, FILE *compare)
 {
-	unsigned int n;
-	int i;
+	unsigned int n, i;
 	double *row;
 	spmat *A = spmat_allocate_list(n);
 	if (!A)
