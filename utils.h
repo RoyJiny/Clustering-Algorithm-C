@@ -8,4 +8,9 @@ typedef enum
 
 char handle_errors(Error error, char *name);
 
+/*input file -----> adjacency matrix
+ *save the degree of each vertex in degree (by increasing order)*/
 Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
+
+/*adjacency matrix -----> modularity matrix of group g*/
+Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g);

@@ -78,3 +78,51 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	free(start_temp);
 	return NONE;
 }
+
+Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g)
+{
+	int current_row; /*from group g*/
+	int i, j, index = 0;
+	double *row, *start_row;
+	double *expected_nof_edges_row, *start_expected_nof_edges_row; /*(k_i*k_j)/M*/
+	int *temp_i, *temp_j;
+
+	start_row = (double *)malloc((B_g->n) * sizeof(double));
+	if (!start_row)
+	{
+		return ALLOCATION_FAILED;
+	}
+	start_expected_nof_edges_row = (double *)malloc((B_g->n) * sizeof(double));
+	if (!start_expected_nof_edges_row)
+	{
+		return ALLOCATION_FAILED;
+	}
+
+	expected_nof_edges_row = start_expected_nof_edges_row;
+	temp_i = g;
+	temp_j = g;
+	for (i = 0; i < (A->n); i++)
+	{
+		if (*temp_i == 1)
+		{ /* i is in g*/
+			for (j = 0; j < (A->n); j++)
+			{
+				if (*temp_j == 1)
+				{ /* j is in g*/
+					*expected_nof_edges_row = -((degree[i] * degree[j]) / M);
+					expected_nof_edges_row++;
+				}
+				temp_j++;
+			}
+			temp_j = g; /*reset temp_j*/
+			A->sum_rows(A, i, start_expected_nof_edges_row, start_row);
+			B_g->add_row(B_g, start_row, index);
+			index++;
+		}
+		temp_i++;
+	}
+
+	free(start_row);
+	free(start_expected_nof_edges_row);
+	return NONE;
+}

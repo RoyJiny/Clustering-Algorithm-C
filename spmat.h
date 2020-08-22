@@ -19,6 +19,9 @@ typedef struct _spmat
 	/* return 1 if A==B and 0 otherwise.*/
 	char (*equal2)(const struct _spmat *A, const struct _spmat *B);
 
+	/* compute the sum between A[row] and row2add and puts it in result.*/
+	void (*sum_rows)(const struct _spmat *A, int row, double *row2add, double *result);
+
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
 	void *handle;

@@ -325,6 +325,39 @@ char equal2_list(const spmat *A, const spmat *B)
 	return 1;
 }
 
+void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
+{
+	node **rows = ((list *)(A->handle))->rows;
+	node *req_row = *(rows + row);
+	int i, index;
+	int end = result + A->n;
+	if (req_row == NULL)
+	{ /*req_row is all zeroes*/
+		while (result < end)
+		{
+			*result = *row2add;
+			result++;
+		}
+	}
+	else
+	{ /*req_row is not all zeroes*/
+		for (i = 0; i < A->n; i++)
+		{
+			if (i == req_row->index)
+			{
+				*result = req_row->val + *row2add;
+				req_row++;
+			}
+			else
+			{
+				*result = *row2add;
+			}
+			result++;
+		}
+	}
+	return;
+}
+
 spmat *spmat_allocate_list(int n)
 {
 	list *l;
@@ -353,6 +386,7 @@ spmat *spmat_allocate_list(int n)
 	spm->free = free_list;
 	spm->mult = mult_list;
 	spm->equal2 = equal2_list;
+	spm->sum_rows = sum_rows_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
