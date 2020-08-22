@@ -130,5 +130,10 @@ int main(int argc, char *argv[])
 	/*------------------test start (read input)---------------------*/
 	test_input_read(A, compare);
 	/*------------------test end (read input)---------------------*/
+
+	A->free(A);
+	free(degrees);
+	fclose(input);
+	fclose(compare);
 	return 0;
 }

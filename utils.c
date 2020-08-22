@@ -74,7 +74,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 		A->add_row(A, start_row, i);
 		curr_vertex++;
 	}
-	free(curr_row);
-	free(temp);
+	free(start_row);
+	free(start_temp);
 	return NONE;
 }
