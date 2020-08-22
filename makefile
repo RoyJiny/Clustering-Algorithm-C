@@ -2,7 +2,7 @@ FLAGS = -ansi -Wall -Wextra -Werror -pedantic-errors
 LIBS = -lm
 
 all: main.o utils.o spmat.o
-	gcc main.o utils.o spmat.o - cluster $(LIBS)
+	gcc main.o utils.o spmat.o -o cluster  $(LIBS)
 clean:
 	rm -rf *.o cluster
 

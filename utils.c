@@ -17,7 +17,7 @@ char handle_errors(Error error, char *name)
 	case READ_FAILED:
 		printf("read failed in: %s", name);
 		return 1;
-	case NONE:
+	default:
 		return 0;
 	}
 }
@@ -53,7 +53,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 			return READ_FAILED;
 		}
 		/*try read the k_i neighbors*/
-		if (fread(temp, sizeof(int), *curr_vertex, input) != *curr_vertex)
+		if ((signed int)fread(temp, sizeof(int), *curr_vertex, input) != *curr_vertex)
 		{
 			return READ_FAILED;
 		}
