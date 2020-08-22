@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 	{
 		M += *temp;
 	}
-	printf("M is:%d\n", M);
+	printf("M is: %d\n", M);
 
 	/*------------------test start (read input)---------------------*/
 	/*test_input_read(A, compare);*/
@@ -158,7 +158,9 @@ int main(int argc, char *argv[])
 	}
 
 	A->free(A);
+	B_g->free(B_g);
 	free(degrees);
+	free(g);
 	fclose(input);
 	fclose(compare);
 
