@@ -330,7 +330,7 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 	node **rows = ((list *)(A->handle))->rows;
 	node *req_row = *(rows + row);
 	int i;
-	int *end = result + A->n;
+	double *end = result + A->n;
 	if (req_row == NULL)
 	{ /*req_row is all zeroes*/
 		while (result < end)
