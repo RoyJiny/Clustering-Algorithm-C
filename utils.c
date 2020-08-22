@@ -81,9 +81,8 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 
 Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g)
 {
-	int current_row; /*from group g*/
 	int i, j, index = 0;
-	double *row, *start_row;
+	double *start_row;
 	double *expected_nof_edges_row, *start_expected_nof_edges_row; /*(k_i*k_j)/M*/
 	int *temp_i, *temp_j;
 
