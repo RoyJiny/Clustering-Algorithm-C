@@ -29,6 +29,7 @@ char handle_errors(errors error , char* name){
 }
 
 int main(int argc, char* argv[]) {
+	/*variables*/
 	FILE* input;
 	spmat *A , *B_g1, *B_g2;
 	int nof_vertex;
@@ -38,6 +39,7 @@ int main(int argc, char* argv[]) {
 	int *g1, *g2; /*the 2 groups after the partition*/
 	int sof_g1, sof_g2;
 	errors error;
+
 	/*try to open the input file*/
 	input = fopen(argv[1] ,"r");
 	if(!input){
