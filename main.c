@@ -12,7 +12,7 @@ void print_vector(double *v, int n)
 	double *ptr = v;
 	for (; ptr < v + n; ptr++)
 	{
-		printf("%f	", *ptr);
+		printf("%f	\n", *ptr);
 	}
 }
 
@@ -23,23 +23,23 @@ void test_input_read(spmat *mat, FILE *compare)
 	spmat *A = spmat_allocate_list(n);
 	if (!A)
 	{
-		printf("error allocating sparse matrix");
+		printf("error allocating sparse matrix\n");
 		return;
 	}
 	if (fread(&n, sizeof(int), 1, compare) != 1)
 	{
-		printf("reading error");
+		printf("reading error - 1\n");
 		return;
 	}
 	if (fread(&n, sizeof(int), 1, compare) != 1)
 	{
-		printf("reading error");
+		printf("reading error - 2\n");
 		return;
 	}
 	row = (double *)malloc(n * sizeof(double));
 	if (!row)
 	{
-		printf("error allocating row");
+		printf("error allocating row\n");
 		return;
 	}
 
@@ -47,7 +47,7 @@ void test_input_read(spmat *mat, FILE *compare)
 	{
 		if (fread(row, sizeof(int), n, compare) != n)
 		{ /* read row*/
-			printf("reading error");
+			printf("reading error - 3\n");
 			return;
 		}
 		A->add_row(A, row, i);
@@ -55,11 +55,11 @@ void test_input_read(spmat *mat, FILE *compare)
 
 	if (A->equal2(mat, A))
 	{
-		printf("success");
+		printf("success\n");
 	}
 	else
 	{
-		printf("failed");
+		printf("failed\n");
 	}
 }
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	compare = fopen(argv[2], "r");
 	if (!compare)
 	{
-		printf("compare file is invalid");
+		printf("compare file is invalid\n");
 		return 5;
 	}
 
@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 	input = fopen(argv[1], "r");
 	if (!input)
 	{
-		printf("input file is invalid");
+		printf("input file is invalid\n");
 		return 5;
 	}
 
 	/*try to read the number of vertexes*/
 	if (fread(&nof_vertex, sizeof(int), 1, input) != 1)
 	{
-		printf("read from input file failed");
+		printf("read from input file failed\n");
 		return 5;
 	}
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 	degrees = (int *)malloc(nof_vertex * sizeof(int));
 	if (!degrees)
 	{
-		printf("malloc failed on pointer degree");
+		printf("malloc failed on pointer degree\n");
 		return 5;
 	}
 
@@ -111,13 +111,13 @@ int main(int argc, char *argv[])
 	A = spmat_allocate_list(nof_vertex);
 	if (!A)
 	{
-		printf("sparse matrix allocation failed on A");
+		printf("sparse matrix allocation failed on A\n");
 		return 5;
 	}
 
 	error = read_input(input, A, degrees, nof_vertex);
 
-	if (handle_errors(error, "read_input"))
+	if (handle_errors(error, "read_input\n"))
 	{
 		return 5;
 	}
@@ -128,12 +128,15 @@ int main(int argc, char *argv[])
 	}
 
 	/*------------------test start (read input)---------------------*/
-	test_input_read(A, compare);
+	/*test_input_read(A, compare);*/
 	/*------------------test end (read input)---------------------*/
 
 	A->free(A);
 	free(degrees);
 	fclose(input);
 	fclose(compare);
+
+	printf("FINISHED\n");
+
 	return 0;
 }

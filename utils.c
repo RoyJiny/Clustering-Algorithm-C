@@ -12,10 +12,10 @@ char handle_errors(Error error, char *name)
 	switch (error)
 	{
 	case ALLOCATION_FAILED:
-		printf("allocation failed in: %s", name);
+		printf("allocation failed in: %s\n", name);
 		return 1;
 	case READ_FAILED:
-		printf("read failed in: %s", name);
+		printf("read failed in: %s\n", name);
 		return 1;
 	default:
 		return 0;
