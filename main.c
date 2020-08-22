@@ -18,7 +18,9 @@ void print_vector(double *v, int n)
 
 void test_input_read(spmat *mat, FILE *compare)
 {
-	int n, i, *row;
+	unsigned int n;
+	int i;
+	double *row;
 	spmat *A = spmat_allocate_list(n);
 	if (!A)
 	{
@@ -35,7 +37,7 @@ void test_input_read(spmat *mat, FILE *compare)
 		printf("reading error");
 		return;
 	}
-	row = (int *)malloc(n * sizeof(int));
+	row = (double *)malloc(n * sizeof(double));
 	if (!row)
 	{
 		printf("error allocating row");
@@ -80,6 +82,8 @@ int main(int argc, char *argv[])
 		printf("compare file is invalid");
 		return 5;
 	}
+
+	printf("argc: %d", argc);
 
 	/*try to open the input file*/
 	input = fopen(argv[1], "r");
