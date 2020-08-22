@@ -146,10 +146,12 @@ int main(int argc, char *argv[])
 		printf("malloc failed on pointer g\n");
 		return 5;
 	}
+	printf("malloced g\n");
 	for (temp = g; temp < g + nof_vertex; temp++)
 	{
 		*temp = 1;
 	}
+	printf("created g\n");
 
 	error = compute_modularity_matrix(A, g, degrees, M, B_g);
 	if (handle_errors(error, "compute_modularity_matrix\n"))

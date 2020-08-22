@@ -114,7 +114,9 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g
 				temp_j++;
 			}
 			temp_j = g; /*reset temp_j*/
+			printf("started func\n");
 			A->sum_rows(A, i, start_expected_nof_edges_row, start_row);
+			printf("finished func\n");
 			B_g->add_row(B_g, start_row, index);
 			index++;
 		}
