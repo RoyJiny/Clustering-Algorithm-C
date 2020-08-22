@@ -134,7 +134,6 @@ int main(int argc, char *argv[])
 	{
 		M += *temp;
 	}
-	printf("M is: %d\n", M);
 
 	/*------------------test start (read input)---------------------*/
 	/*test_input_read(A, compare);*/

@@ -97,6 +97,9 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g
 		return ALLOCATION_FAILED;
 	}
 
+	printf("size of A:%d ", A->n);
+	printf("size of B_g:%d ", B_g->n);
+
 	expected_nof_edges_row = start_expected_nof_edges_row;
 	temp_i = g;
 	temp_j = g;
@@ -114,9 +117,13 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g
 				temp_j++;
 			}
 			temp_j = g; /*reset temp_j*/
+			printf("start of func\n");
 			A->sum_rows(A, i, start_expected_nof_edges_row, start_row);
+			printf("end of func\n");
 			B_g->add_row(B_g, start_row, index);
+			printf("end of func2\n");
 			index++;
+			expected_nof_edges_row = start_expected_nof_edges_row;
 		}
 		temp_i++;
 	}
