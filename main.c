@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 		printf("sparse matrix allocation failed on A\n");
 		return 5;
 	}
-	B_g = spmat_allocate_list(nof_vertex);
+	B_g = spmat_allocate_list(nof_vertex); /*remember that B_g will have a different size for each iteration*/
 	if (!B_g)
 	{
 		printf("sparse matrix allocation failed on B_g\n");
@@ -146,12 +146,10 @@ int main(int argc, char *argv[])
 		printf("malloc failed on pointer g\n");
 		return 5;
 	}
-	printf("malloced g\n");
 	for (temp = g; temp < g + nof_vertex; temp++)
 	{
 		*temp = 1;
 	}
-	printf("created g\n");
 
 	error = compute_modularity_matrix(A, g, degrees, M, B_g);
 	if (handle_errors(error, "compute_modularity_matrix\n"))
