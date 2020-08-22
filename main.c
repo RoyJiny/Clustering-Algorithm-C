@@ -67,9 +67,11 @@ int main(int argc, char *argv[])
 {
 	FILE *input;
 	spmat *A;
+	spmat *B_g;
 	int nof_vertex;
 	int *degrees;
 	int *temp;
+	int *g;
 	int M = 0; /*sum of degrees*/
 	Error error;
 
@@ -114,6 +116,12 @@ int main(int argc, char *argv[])
 		printf("sparse matrix allocation failed on A\n");
 		return 5;
 	}
+	B_g = spmat_allocate_list(nof_vertex);
+	if (!B_g)
+	{
+		printf("sparse matrix allocation failed on B_g\n");
+		return 5;
+	}
 
 	error = read_input(input, A, degrees, nof_vertex);
 
@@ -131,6 +139,23 @@ int main(int argc, char *argv[])
 	/*------------------test start (read input)---------------------*/
 	/*test_input_read(A, compare);*/
 	/*------------------test end (read input)---------------------*/
+
+	g = (int *)malloc(nof_vertex * sizeof(int));
+	if (!g)
+	{
+		printf("malloc failed on pointer g\n");
+		return 5;
+	}
+	for (temp = g; temp < g + nof_vertex; temp++)
+	{
+		*temp = 1;
+	}
+
+	error = compute_modularity_matrix(A, g, degrees, M, B_g);
+	if (handle_errors(error, "compute_modularity_matrix\n"))
+	{
+		return 5;
+	}
 
 	A->free(A);
 	free(degrees);
