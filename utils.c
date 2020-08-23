@@ -6,7 +6,7 @@
 
 #include "utils.h"
 
-double dot_product_dd(double *row1, double *row2, int size)
+double dot_product(double *row1, double *row2, int size)
 {
 	double sum = 0;
 	double *end = row1 + size;
