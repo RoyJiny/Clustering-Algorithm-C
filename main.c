@@ -147,7 +147,8 @@ int main(int argc, char *argv[])
 		printf("malloc failed on pointer g\n");
 		return 5;
 	}
-	for (temp_d = g; temp_d < g + nof_vertex; temp_d++)
+	*g = 0;
+	for (temp_d = g + 1; temp_d < g + nof_vertex; temp_d++)
 	{
 		*temp_d = 1;
 	}
