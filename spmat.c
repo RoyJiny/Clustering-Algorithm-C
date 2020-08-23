@@ -31,7 +31,7 @@ void print_list(node *head)
 	}
 	else
 	{
-		printf("%f->", head->val);
+		printf(" (%d)%f->", head->index, head->val);
 		print_list(head->next);
 	}
 }
