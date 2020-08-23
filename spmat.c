@@ -360,7 +360,8 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 
 void print_matrix_list(const spmat *mat)
 {
-	for (int i = 0; i < mat->n; i++)
+	int i;
+	for (i = 0; i < mat->n; i++)
 	{
 		print_list(*(((list *)mat->handle)->rows + i));
 	}
