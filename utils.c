@@ -35,6 +35,7 @@ void power_iteration(spmat *mat, double *vector, double epsilon)
 	}
 	while (stop == 0)
 	{
+		printf("new iteration\n");
 		mat->mult(mat, vector, mul_result); /*result=A*vector*/
 		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
 
