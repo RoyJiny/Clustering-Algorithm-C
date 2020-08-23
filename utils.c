@@ -144,7 +144,7 @@ Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spma
 	return NONE;
 }
 
-double compute_modulary_value(spmat *B_g, double *g)
+double compute_modularity_value(spmat *B_g, double *g)
 {
 	/*s and g are the same - represent the group division*/
 	int size = B_g->n;
