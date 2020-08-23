@@ -20,6 +20,20 @@ double dot_product(double *row1, double *row2, int size)
 	return sum;
 }
 
+double dot_product(int *row1, double *row2, int size)
+{
+	double sum = 0;
+	double *end = row1 + size;
+	for (; row1 < end;)
+	{
+		sum += ((double)(*row1)) * (*row2);
+		row1++;
+		row2++;
+	}
+
+	return sum;
+}
+
 /*return 1 if there was an error and 0 otherwise*/
 char handle_errors(Error error, char *name)
 {
