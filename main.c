@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 		*temp = 1;
 	}
 
-	error = compute_modularity_matrix(A, g, degrees, M, B_g);
+	error = compute_modularity_matrix(A, g, degrees, (double)M, B_g);
 	if (handle_errors(error, "compute_modularity_matrix\n"))
 	{
 		return 5;
