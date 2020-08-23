@@ -358,6 +358,11 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 	return;
 }
 
+void *print_matrix_list(spmat *mat)
+{
+	print_list(mat->handle);
+}
+
 spmat *spmat_allocate_list(int n)
 {
 	list *l;
@@ -382,11 +387,13 @@ spmat *spmat_allocate_list(int n)
 	}
 	spm->n = n;
 	spm->handle = l;
+
 	spm->add_row = addRow_list;
 	spm->free = free_list;
 	spm->mult = mult_list;
 	spm->equal2 = equal2_list;
 	spm->sum_rows = sum_rows_list;
+	spm->print_matrix = print_matrix_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/

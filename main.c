@@ -84,8 +84,6 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	printf("argc: %d\n", argc);
-
 	/*try to open the input file*/
 	input = fopen(argv[1], "r");
 	if (!input)
@@ -155,6 +153,8 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
+
+	A->print_matrix(A);
 
 	A->free(A);
 	B_g->free(B_g);
