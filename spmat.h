@@ -22,6 +22,7 @@ typedef struct _spmat
 	/* compute the sum between A[row] and row2add and puts it in result.*/
 	void (*sum_rows)(const struct _spmat *A, int row, double *row2add, double *result);
 
+	/*print the matrix for testing*/
 	void (*print_matrix)(const struct _spmat *mat);
 
 	/* Private field for inner implementation.
