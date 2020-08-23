@@ -6,27 +6,13 @@
 
 #include "utils.h"
 
-double dot_product(double *row1, double *row2, int size)
+double dot_product_dd(double *row1, double *row2, int size)
 {
 	double sum = 0;
 	double *end = row1 + size;
 	for (; row1 < end;)
 	{
 		sum += (*row1) * (*row2);
-		row1++;
-		row2++;
-	}
-
-	return sum;
-}
-
-double dot_product(int *row1, double *row2, int size)
-{
-	double sum = 0;
-	double *end = row1 + size;
-	for (; row1 < end;)
-	{
-		sum += ((double)(*row1)) * (*row2);
 		row1++;
 		row2++;
 	}
@@ -107,12 +93,12 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	return NONE;
 }
 
-Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *B_g)
+Error compute_modularity_matrix(spmat *A, double *g, double *degree, double M, spmat *B_g)
 {
 	int i, j, index = 0;
 	double *start_row;
 	double *expected_nof_edges_row, *start_expected_nof_edges_row; /*(k_i*k_j)/M*/
-	int *temp_i, *temp_j;
+	double *temp_i, *temp_j;
 
 	start_row = (double *)malloc((B_g->n) * sizeof(double));
 	if (!start_row)
@@ -139,7 +125,7 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *
 			{
 				if (*temp_j == 1)
 				{ /* j is in g*/
-					*expected_nof_edges_row = -(((double)degree[i] * (double)degree[j]) / M);
+					*expected_nof_edges_row = -((degree[i] * degree[j]) / M);
 					expected_nof_edges_row++;
 				}
 				temp_j++;
@@ -158,7 +144,7 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *
 	return NONE;
 }
 
-double compute_modulary_value(spmat *B_g, int *g)
+double compute_modulary_value(spmat *B_g, double *g)
 {
 	/*s and g are the same - represent the group division*/
 	int size = B_g->n;

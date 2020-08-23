@@ -13,6 +13,6 @@ char handle_errors(Error error, char *name);
 Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
 
 /*adjacency matrix -----> modularity matrix of group g*/
-Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *B_g);
+Error compute_modularity_matrix(spmat *A, double *g, double *degree, double M, spmat *B_g);
 
 double compute_modularity_value(spmat *B_g, int *g);

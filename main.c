@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
 	spmat *A;
 	spmat *B_g;
 	int nof_vertex;
-	int *degrees;
-	int *temp;
-	int *g;
+	double *degrees;
+	double *temp;
+	double *g;
 	int M = 0; /*sum of degrees*/
 	Error error;
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 	}
 
 	/*allocate vector to save the degree of each vector (k_i)*/
-	degrees = (int *)malloc(nof_vertex * sizeof(int));
+	degrees = (double *)malloc(nof_vertex * sizeof(double));
 	if (!degrees)
 	{
 		printf("malloc failed on pointer degree\n");
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 	/*test_input_read(A, compare);*/
 	/*------------------test end (read input)---------------------*/
 
-	g = (int *)malloc(nof_vertex * sizeof(int));
+	g = (double *)malloc(nof_vertex * sizeof(double));
 	if (!g)
 	{
 		printf("malloc failed on pointer g\n");
