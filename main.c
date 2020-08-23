@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	Error error;
 
 	/*for tests:*/
-	int Q;
+	double Q;
 	FILE *compare;
 	compare = fopen(argv[2], "r");
 	if (!compare)
@@ -158,13 +158,13 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	printf("A:\n");
+	/*printf("A:\n");
 	A->print_matrix(A);
 	printf("B_g:\n");
-	B_g->print_matrix(B_g);
+	B_g->print_matrix(B_g);*/
 
 	Q = compute_modularity_value(B_g, g);
-	printf("Modularity value for B_g is: %d\n", Q);
+	printf("Modularity value for B_g is: %f\n", Q);
 
 	A->free(A);
 	B_g->free(B_g);
