@@ -69,8 +69,9 @@ int main(int argc, char *argv[])
 	spmat *A;
 	spmat *B_g;
 	int nof_vertex;
-	double *degrees;
-	double *temp;
+	int *degrees;
+	int *temp_i;
+	double *temp_d;
 	double *g;
 	int M = 0; /*sum of degrees*/
 	Error error;
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
 	}
 
 	/*allocate vector to save the degree of each vector (k_i)*/
-	degrees = (double *)malloc(nof_vertex * sizeof(double));
+	degrees = (int *)malloc(nof_vertex * sizeof(int));
 	if (!degrees)
 	{
 		printf("malloc failed on pointer degree\n");
@@ -131,9 +132,9 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	/*computing M*/
-	for (temp = degrees; temp < degrees + nof_vertex; temp++)
+	for (temp_i = degrees; temp_i < degrees + nof_vertex; temp_i++)
 	{
-		M += *temp;
+		M += *temp_i;
 	}
 
 	/*------------------test start (read input)---------------------*/
@@ -146,9 +147,9 @@ int main(int argc, char *argv[])
 		printf("malloc failed on pointer g\n");
 		return 5;
 	}
-	for (temp = g; temp < g + nof_vertex; temp++)
+	for (temp_d = g; temp_d < g + nof_vertex; temp_d++)
 	{
-		*temp = 1;
+		*temp_d = 1;
 	}
 
 	error = compute_modularity_matrix(A, g, degrees, (double)M, B_g);

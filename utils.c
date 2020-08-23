@@ -93,7 +93,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	return NONE;
 }
 
-Error compute_modularity_matrix(spmat *A, double *g, double *degree, double M, spmat *B_g)
+Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spmat *B_g)
 {
 	int i, j, index = 0;
 	double *start_row;
@@ -125,7 +125,7 @@ Error compute_modularity_matrix(spmat *A, double *g, double *degree, double M, s
 			{
 				if (*temp_j == 1)
 				{ /* j is in g*/
-					*expected_nof_edges_row = -((degree[i] * degree[j]) / M);
+					*expected_nof_edges_row = -(((double)degree[i] * (double)degree[j]) / M);
 					expected_nof_edges_row++;
 				}
 				temp_j++;
