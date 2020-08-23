@@ -65,7 +65,7 @@ void test_input_read(spmat *mat, FILE *compare)
 
 int main(int argc, char *argv[])
 {
-	FILE *input;
+	FILE *input_file;
 	spmat *A;
 	spmat *B_g;
 	int nof_vertex;
@@ -73,31 +73,32 @@ int main(int argc, char *argv[])
 	int *temp_i;
 	double *temp_d;
 	double *g;
+	double *eigen_vector;
 	int M = 0; /*sum of degrees*/
 	Error error;
 
 	/*for tests:*/
 	double Q;
-	FILE *compare;
-	compare = fopen(argv[2], "r");
-	if (!compare)
+	FILE *result_file;
+	result_file = fopen(argv[2], "r");
+	if (!result_file)
 	{
-		printf("compare file is invalid\n");
+		printf("result file is invalid\n");
 		return 5;
 	}
 
 	printf("argc: %d\n", argc);
 
 	/*try to open the input file*/
-	input = fopen(argv[1], "r");
-	if (!input)
+	input_file = fopen(argv[1], "r");
+	if (!input_file)
 	{
 		printf("input file is invalid\n");
 		return 5;
 	}
 
 	/*try to read the number of vertexes*/
-	if (fread(&nof_vertex, sizeof(int), 1, input) != 1)
+	if (fread(&nof_vertex, sizeof(int), 1, input_file) != 1)
 	{
 		printf("read from input file failed\n");
 		return 5;
@@ -125,7 +126,7 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	error = read_input(input, A, degrees, nof_vertex);
+	error = read_input(input_file, A, degrees, nof_vertex);
 
 	if (handle_errors(error, "read_input\n"))
 	{
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
 	}
 
 	/*------------------test start (read input)---------------------*/
-	/*test_input_read(A, compare);*/
+	/*test_input_read(A, result_file);*/
 	/*------------------test end (read input)---------------------*/
 
 	g = (double *)malloc(nof_vertex * sizeof(double));
@@ -147,8 +148,7 @@ int main(int argc, char *argv[])
 		printf("malloc failed on pointer g\n");
 		return 5;
 	}
-	*g = 0;
-	for (temp_d = g + 1; temp_d < g + nof_vertex; temp_d++)
+	for (temp_d = g; temp_d < g + nof_vertex; temp_d++)
 	{
 		*temp_d = 1;
 	}
@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
+	/*print matrices*/
 	/*printf("A:\n");
 	A->print_matrix(A);
 	printf("B_g:\n");
@@ -167,12 +168,32 @@ int main(int argc, char *argv[])
 	Q = compute_modularity_value(B_g, g);
 	printf("Modularity value for B_g is: %f\n", Q);
 
+	/*calculate the eigen vector with power iteration*/
+	eigen_vector = malloc(nof_vertex * sizeof(double));
+	if (!eigen_vector)
+	{
+		printf("malloc failed on pointer eigen_vector\n");
+		return 5;
+	}
+	for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
+	{
+		*temp_d = rand();
+	}
+	power_iteration(B_g, eigen_vector, 0.00001); /*TODO: change epsilon to a variable*/
+	/*print the eigen vector (for testing)*/
+	printf("dominant eigen vector: [");
+	for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
+	{
+		printf("%f,", *temp_d);
+	}
+	printf("]\n");
+
 	A->free(A);
 	B_g->free(B_g);
 	free(degrees);
 	free(g);
-	fclose(input);
-	fclose(compare);
+	fclose(input_file);
+	fclose(result_file);
 
 	printf("FINISHED\n");
 

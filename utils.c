@@ -20,6 +20,39 @@ double dot_product(double *row1, double *row2, int size)
 	return sum;
 }
 
+/*the result is stored in vector - at first it should be initialized with random numbers*/
+/*calculates the dominant eigen vector*/
+void power_iteration(spmat *mat, double *vector, double epsilon)
+{
+	int stop = 0;
+	double magnitude;
+	double *mul_result;
+	double *ptr_v, *ptr_r; /*pointers to vector and mul_result*/
+	mul_result = (double *)malloc((mat->n) * sizeof(double));
+	if (!mul_result)
+	{
+		return;
+	}
+	while (stop == 0)
+	{
+		mat->mult(mat, vector, mul_result); /*result=A*vector*/
+		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
+
+		stop = 1;
+		ptr_r = mul_result;
+		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
+		{
+			if (fabs(*ptr_v - ((*(ptr_r)) / magnitude)) > epsilon)
+			{
+				stop = 0;
+			}
+			*ptr_v = (*(ptr_r)) / magnitude; /*updating vector to the next vector*/
+			ptr_r++;
+		}
+	}
+	free(mul_result);
+}
+
 /*return 1 if there was an error and 0 otherwise*/
 char handle_errors(Error error, char *name)
 {
