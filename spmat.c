@@ -361,6 +361,7 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 void print_matrix_list(const spmat *mat)
 {
 	print_list(*(((list *)mat->handle)->rows));
+	print_list(*(((list *)mat->handle)->rows + 1));
 }
 
 spmat *spmat_allocate_list(int n)
