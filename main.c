@@ -65,6 +65,7 @@ void test_input_read(spmat *mat, FILE *compare)
 
 int main(int argc, char *argv[])
 {
+	int debug = 0;
 	FILE *input_file;
 	spmat *A;
 	spmat *B_g;
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
 	double *temp_d;
 	double *g;
 	double *eigen_vector;
+	double eigen_value;
 	int M = 0; /*sum of degrees*/
 	Error error;
 
@@ -160,10 +162,13 @@ int main(int argc, char *argv[])
 	}
 
 	/*print matrices*/
-	/*printf("A:\n");
-	A->print_matrix(A);
-	printf("B_g:\n");
-	B_g->print_matrix(B_g);*/
+	if (debug == 1)
+	{
+		printf("A:\n");
+		A->print_matrix(A);
+		printf("B_g:\n");
+		B_g->print_matrix(B_g);
+	}
 
 	Q = compute_modularity_value(B_g, g);
 	printf("Modularity value for B_g is: %f\n", Q);
@@ -180,13 +185,24 @@ int main(int argc, char *argv[])
 		*temp_d = rand();
 	}
 	power_iteration(B_g, eigen_vector, 0.00001); /*TODO: change epsilon to a variable*/
-	/*print the eigen vector (for testing)*/
-	printf("dominant eigen vector: [");
-	for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
+
+	if (debug == 1)
 	{
-		printf("%f,", *temp_d);
+		printf("dominant eigen vector: [");
+		for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
+		{
+			printf("%f,", *temp_d);
+		}
+		printf("]\n");
 	}
-	printf("]\n");
+
+	/*calculate the corresponding eigen value*/
+	eigen_value = calculate_eigen_value(B_g, eigen_vector);
+
+	if (debug == 1)
+	{
+		printf("and the corresponding eigen value is: %f\n", eigen_value);
+	}
 
 	A->free(A);
 	B_g->free(B_g);

@@ -37,7 +37,6 @@ void power_iteration(spmat *mat, double *vector, double epsilon)
 	{
 		mat->mult(mat, vector, mul_result); /*result=A*vector*/
 		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
-		printf("magn: %f", magnitude);
 		stop = 1;
 		ptr_r = mul_result;
 		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
@@ -51,6 +50,28 @@ void power_iteration(spmat *mat, double *vector, double epsilon)
 		}
 	}
 	free(mul_result);
+}
+
+/*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
+int calculate_eigen_value(spmat *mat, double *eigen_vector)
+{
+	int size = mat->n;
+	double *Ab;
+	double numerator;
+	double denominator;
+	Ab = malloc(size * sizeof(double));
+	if (!Ab)
+	{
+		printf("malloc failed on pointer Ab\n");
+		return 5;
+	}
+
+	mat->mult(mat, eigen_vector, Ab);
+	numerator = dot_product(eigen_vector, Ab, size);
+	denominator = dot_product(eigen_vector, eigen_vector, size);
+	return numerator / denominator;
+
+	free(Ab);
 }
 
 /*return 1 if there was an error and 0 otherwise*/

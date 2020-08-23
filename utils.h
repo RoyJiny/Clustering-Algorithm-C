@@ -18,3 +18,5 @@ Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spma
 double compute_modularity_value(spmat *B_g, double *g);
 
 void power_iteration(spmat *mat, double *vector, double epsilon);
+
+int calculate_eigen_value(spmat *mat, double *eigen_vector);
