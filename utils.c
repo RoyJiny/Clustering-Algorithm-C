@@ -97,8 +97,8 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, int M, spmat *B_g
 		return ALLOCATION_FAILED;
 	}
 
-	printf("size of A:%d ", A->n);
-	printf("size of B_g:%d ", B_g->n);
+	printf("size of A:%d \n", A->n);
+	printf("size of B_g:%d \n", B_g->n);
 
 	expected_nof_edges_row = start_expected_nof_edges_row;
 	temp_i = g;
