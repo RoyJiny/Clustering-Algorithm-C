@@ -65,7 +65,8 @@ void test_input_read(spmat *mat, FILE *compare)
 
 int main(int argc, char *argv[])
 {
-	int debug = 0;
+	int debug = 0;		/*for short debug prints*/
+	int deep_debug = 0; /*for the long debug prints*/
 	FILE *input_file;
 	spmat *A;
 	spmat *B_g;
@@ -161,8 +162,7 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	/*print matrices*/
-	if (debug == 1)
+	if (debug == 1 && deep_debug == 1)
 	{
 		printf("A:\n");
 		A->print_matrix(A);
@@ -171,7 +171,10 @@ int main(int argc, char *argv[])
 	}
 
 	Q = compute_modularity_value(B_g, g);
-	printf("Modularity value for B_g is: %f\n", Q);
+	if (debug == 1)
+	{
+		printf("Modularity value for B_g is: %f\n", Q);
+	}
 
 	/*calculate the eigen vector with power iteration*/
 	eigen_vector = malloc(nof_vertex * sizeof(double));

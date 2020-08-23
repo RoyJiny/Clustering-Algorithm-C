@@ -22,6 +22,7 @@ double dot_product(double *row1, double *row2, int size)
 
 /*the result is stored in vector - at first it should be initialized with random numbers*/
 /*calculates the dominant eigen vector*/
+/*PROBLEM: currently the loop doesnt stop*/
 void power_iteration(spmat *mat, double *vector, double epsilon)
 {
 	int stop = 0;
