@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
+	printf("argc: %d\n", argc);
+
 	/*try to open the input file*/
 	input = fopen(argv[1], "r");
 	if (!input)
