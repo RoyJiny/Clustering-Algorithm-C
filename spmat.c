@@ -363,6 +363,10 @@ void print_matrix_list(const spmat *mat)
 	int i;
 	for (i = 0; i < mat->n; i++)
 	{
+		if (i < 10)
+		{
+			printf(" ");
+		}
 		printf("%d| ", i);
 		print_list(*(((list *)mat->handle)->rows + i));
 	}

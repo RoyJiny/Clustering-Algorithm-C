@@ -156,7 +156,10 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
+	printf("A:\n");
 	A->print_matrix(A);
+	printf("B_g:\n");
+	B_g->print_matrix(B_g);
 
 	A->free(A);
 	B_g->free(B_g);
