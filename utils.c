@@ -6,6 +6,20 @@
 
 #include "utils.h"
 
+double dot_product(double *row1, double *row2, int size)
+{
+	double sum = 0;
+	double *end = row1 + size;
+	for (; row1 < end;)
+	{
+		sum += (*row1) * (*row2);
+		row1++;
+		row2++;
+	}
+
+	return sum;
+}
+
 /*return 1 if there was an error and 0 otherwise*/
 char handle_errors(Error error, char *name)
 {
@@ -128,4 +142,22 @@ Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *
 	free(start_row);
 	free(start_expected_nof_edges_row);
 	return NONE;
+}
+
+double compute_modulary_value(spmat *B_g, int *g)
+{
+	/*s and g are the same - represent the group division*/
+	int size = B_g->n;
+	double *Bs;
+
+	Bs = (double *)malloc(size * sizeof(double));
+	if (!Bs)
+	{
+		printf("malloc failed on pointer Bs\n");
+		return -1;
+	}
+
+	B_g->mult(B_g, g, Bs);
+
+	return 0.5 * dot_product(g, Bs, size);
 }
