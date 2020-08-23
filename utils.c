@@ -35,15 +35,14 @@ void power_iteration(spmat *mat, double *vector, double epsilon)
 	}
 	while (stop == 0)
 	{
-		printf("new iteration\n");
 		mat->mult(mat, vector, mul_result); /*result=A*vector*/
 		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
-
+		printf("magn: %f", magnitude);
 		stop = 1;
 		ptr_r = mul_result;
 		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
 		{
-			if (fabs(*ptr_v - ((*(ptr_r)) / magnitude)) > epsilon)
+			if (fabs(*ptr_v - ((*ptr_r) / magnitude)) > epsilon)
 			{
 				stop = 0;
 			}
