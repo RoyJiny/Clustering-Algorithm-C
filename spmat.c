@@ -1,5 +1,6 @@
 #include "spmat.h"
 #include <stdlib.h>
+#include <math.h>
 #include <stdio.h>
 #define print 0
 
@@ -21,6 +22,7 @@ typedef struct arrays
 typedef struct list
 {
 	node **rows;
+	double *cols_sum;
 } list;
 
 void print_list(node *head)
@@ -164,10 +166,11 @@ spmat *spmat_allocate_array(int n, int nnz)
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------LIST_IMP----------------------------------------------------------*/
-node *create_list(const double *row, int n)
+node *create_list(const double *row, int n ,double *sum_of_cols)
 {
 	node *head = NULL, *tail = NULL;
 	const double *p = row;
+	double* temp = sum_of_cols;
 	char first = 1;
 	int counter = 0;
 	if (print)
@@ -206,8 +209,10 @@ node *create_list(const double *row, int n)
 				tail->val = *p;
 				tail->index = counter;
 			}
+			*temp += fabs(tail->val);
 		}
 		counter++;
+		temp++;
 	}
 	if (tail != NULL)
 	{
@@ -224,11 +229,14 @@ node *create_list(const double *row, int n)
 
 void addRow_list(spmat *A, const double *row, int i)
 {
+	node **rows = ((list *)(A->handle))->rows;
+	double *sum_of_cols = ((list *)(A->handle))->cols_sum;
 	if (print)
 	{
 		printf("addRow_list\n");
 	}
-	*((((list *)(A->handle))->rows) + i) = create_list(row, A->n);
+
+	*(rows + i) = create_list(row, A->n , sum_of_cols);
 }
 /*TODO: maybe replace with iterative version*/
 void delete_list(node *l)
@@ -264,6 +272,7 @@ void free_list(spmat *A)
 		printf("pass delete\n");
 	}
 	free(((list *)(A->handle))->rows);
+	free(((list *)(A->handle))->cols_sum);
 	free(A->handle);
 	free(A);
 }
@@ -275,7 +284,7 @@ void mult_list(const spmat *A, const double *v, double *result)
 	node *currElem = *currRow;					  /* current element*/
 	double *currRes = result;					  /* current result element*/
 	int i;
-
+	printf("start mult_list\n");
 	for (i = 0; i < A->n; i++)
 	{
 		sum = 0;
@@ -289,6 +298,7 @@ void mult_list(const spmat *A, const double *v, double *result)
 		currRow++;
 		currElem = *currRow;
 	}
+	printf("end mult_list\n");
 }
 
 char equal2_list(const spmat *A, const spmat *B)
@@ -312,8 +322,8 @@ char equal2_list(const spmat *A, const spmat *B)
 			{
 				return 0;
 			}
-			temp_A++;
-			temp_B++;
+			temp_A = temp_A->next;
+			temp_B = temp_B->next;
 		}
 		if (temp_A != NULL || temp_B != NULL)
 		{
@@ -330,29 +340,38 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 	node **rows = ((list *)(A->handle))->rows;
 	node *req_row = *(rows + row);
 	int i;
-	double *end = result + A->n;
+	double *temp = result;
 	if (req_row == NULL)
 	{ /*req_row is all zeroes*/
-		while (result < end)
+		while (temp < result + A->n)
 		{
-			*result = *row2add;
-			result++;
+			*temp = *row2add;
+			temp++;
+			row2add++;
 		}
 	}
 	else
 	{ /*req_row is not all zeroes*/
 		for (i = 0; i < A->n; i++)
 		{
-			if (i == req_row->index)
-			{
-				*result = req_row->val + *row2add;
-				req_row++;
+			if(req_row != NULL){
+				if (i == req_row->index)
+				{
+					*result = req_row->val + *row2add;
+					req_row = req_row->next;
+				}
+				else
+				{
+					*result = *row2add;
+				}
+				result++;
+				row2add++;
 			}
-			else
-			{
+			else{
 				*result = *row2add;
+				result++;
+				row2add++;
 			}
-			result++;
 		}
 	}
 	return;
@@ -361,6 +380,7 @@ void sum_rows_list(const spmat *A, int row, double *row2add, double *result)
 void print_matrix_list(const spmat *mat)
 {
 	int i;
+	node** rows = ((list *)(mat->handle))->rows;
 	for (i = 0; i < mat->n; i++)
 	{
 		if (i < 10)
@@ -368,8 +388,80 @@ void print_matrix_list(const spmat *mat)
 			printf(" ");
 		}
 		printf("%d| ", i);
-		print_list(*(((list *)mat->handle)->rows + i));
+		print_list(*rows);
+		printf("\n");
+		rows++;
 	}
+}
+/*return 1 if insert succeed and 0 otherwise*/
+char insert2list(node* n1, double n ,int index){
+	node* next = n1->next;
+	node* new_node = (node*) malloc(sizeof(node));
+	if(!new_node){
+		return 0;
+	}
+	printf("in insert2list\n");
+	new_node->val = n;
+	new_node->index = index;
+
+	n1->next = new_node;
+	new_node->next = next;
+	return 1;
+}
+/*return 1 if insert succeed and 0 otherwise*/
+char add_by_index_list(const spmat *mat , int row, int index, double n)
+{
+	char res;
+	node** rows = ((list *)(mat->handle))->rows;
+	double* sum_of_cols = ((list *)(mat->handle))->cols_sum;
+	node *req_row = *(rows+row), *temp ,*prev;
+	temp = req_row;
+	prev = temp;
+
+	printf("\n");
+	printf("index recieved is: %d\n",index);
+	print_list(req_row);
+	printf("\n");
+	while(temp!=NULL){
+		if(temp->index >= index){
+			break;
+		}
+		prev = temp;
+		printf("%d->",prev->index);
+		temp = temp->next;
+	}
+	printf("\nprev index is: %d, prev val is: %f\n", prev->index, prev->val);
+	if(temp == NULL || (temp->index) > index){
+		res = insert2list(prev,n,index);
+	}
+	else{ /*temp->index == index*/
+		temp->val = (temp->val) + n;
+
+		if(temp->val == 0){
+			printf("zero");
+			prev->next = temp->next;
+			sum_of_cols[index] -= fabs(temp->val);
+			free(temp);
+			return 1;
+		}
+		res = 1;
+	}
+	sum_of_cols[index] += fabs(n);
+	return res;
+}
+
+double compute_1norm_list(const spmat *mat){
+	double* sum_of_cols = ((list *)(mat->handle))->cols_sum;
+	double max = *sum_of_cols;
+	int i;
+	sum_of_cols++;
+	for(i=1; i<mat->n; i++){
+		if(*sum_of_cols > max){
+			max = *sum_of_cols;
+		}
+		sum_of_cols++;
+	}
+	return max;
 }
 
 spmat *spmat_allocate_list(int n)
@@ -387,10 +479,18 @@ spmat *spmat_allocate_list(int n)
 		free(l);
 		return NULL;
 	}
+	l->cols_sum = (double*)calloc(n, sizeof(double));/*all set to 0*/
+	if(!(l->cols_sum))
+	{
+		free(l->rows);
+		free(l);
+		return NULL;
+	}
 	spm = (spmat *)malloc(sizeof(spmat));
 	if (!spm)
 	{
 		free(l->rows);
+		free(l->cols_sum);
 		free(l);
 		return NULL;
 	}
@@ -403,6 +503,8 @@ spmat *spmat_allocate_list(int n)
 	spm->equal2 = equal2_list;
 	spm->sum_rows = sum_rows_list;
 	spm->print_matrix = print_matrix_list;
+	spm->add_by_index = add_by_index_list;
+	spm->compute_1norm = compute_1norm_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/

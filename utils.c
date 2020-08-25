@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <math.h>
 #include <string.h>
-
 #include "utils.h"
+
 
 double dot_product(double *row1, double *row2, int size)
 {
@@ -20,37 +19,55 @@ double dot_product(double *row1, double *row2, int size)
 	return sum;
 }
 
+void print_vector(double* vector, int size){
+	int i;
+	printf("(");
+	for(i=0; i<size-1; i++){
+		printf("%f ,",*vector);
+		vector++;
+	}
+	printf("%f)\n\n\n",*vector);
+}
+
 /*the result is stored in vector - at first it should be initialized with random numbers*/
 /*calculates the dominant eigen vector*/
 /*PROBLEM: currently the loop doesnt stop*/
-void power_iteration(spmat *mat, double *vector, double epsilon)
+Error power_iteration(spmat *mat, double *vector)
 {
+	int nof_iterations = 0;
 	int stop = 0;
-	double magnitude;
+	double magnitude ;
 	double *mul_result;
 	double *ptr_v, *ptr_r; /*pointers to vector and mul_result*/
 	mul_result = (double *)malloc((mat->n) * sizeof(double));
 	if (!mul_result)
 	{
-		return;
+		return ALLOCATION_FAILED;
 	}
-	while (stop == 0)
+	while (stop == 0 && nof_iterations<=200)
 	{
 		mat->mult(mat, vector, mul_result); /*result=A*vector*/
 		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
+		printf("--------------magnitute is:%f, mul result is:----------------\n",magnitude);
+		print_vector(mul_result,mat->n);
 		stop = 1;
 		ptr_r = mul_result;
 		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
 		{
-			if (fabs(*ptr_v - ((*ptr_r) / magnitude)) > epsilon)
+			if ( IS_POSITIVE(fabs(*ptr_v - ((*ptr_r) / magnitude))) )
 			{
 				stop = 0;
 			}
 			*ptr_v = (*(ptr_r)) / magnitude; /*updating vector to the next vector*/
 			ptr_r++;
 		}
+		printf("-----------------------vector is:-----------------\n");
+		print_vector(vector , mat->n);
+		nof_iterations++;
 	}
+
 	free(mul_result);
+	return NONE;
 }
 
 /*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
@@ -147,13 +164,13 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	free(start_temp);
 	return NONE;
 }
-
-Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spmat *B_g)
+/*assuming g is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
+Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *B_g)
 {
 	int i, j, index = 0;
 	double *start_row;
 	double *expected_nof_edges_row, *start_expected_nof_edges_row; /*(k_i*k_j)/M*/
-	double *temp_i, *temp_j;
+	int *temp_i, *temp_j;
 
 	start_row = (double *)malloc((B_g->n) * sizeof(double));
 	if (!start_row)
@@ -180,13 +197,14 @@ Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spma
 			{
 				if (*temp_j == 1)
 				{ /* j is in g*/
-					*expected_nof_edges_row = -(((double)degree[i] * (double)degree[j]) / M);
+					*expected_nof_edges_row = -(((double)(degree[i]) * (double)(degree[j])) / M);
 					expected_nof_edges_row++;
 				}
 				temp_j++;
 			}
 			temp_j = g; /*reset temp_j*/
 			A->sum_rows(A, i, start_expected_nof_edges_row, start_row);
+			/*TODO maybe need to add row even if g[i] != 1 ,so the i'th row will be NULL*/
 			B_g->add_row(B_g, start_row, index);
 			index++;
 		}
@@ -199,7 +217,7 @@ Error compute_modularity_matrix(spmat *A, double *g, int *degree, double M, spma
 	return NONE;
 }
 
-double compute_modularity_value(spmat *B_g, double *g)
+double compute_modularity_value(spmat *B_g, double *s)
 {
 	/*s and g are the same - represent the group division*/
 	int size = B_g->n;
@@ -212,7 +230,111 @@ double compute_modularity_value(spmat *B_g, double *g)
 		return -1;
 	}
 
-	B_g->mult(B_g, g, Bs);
+	B_g->mult(B_g, s, Bs);
 
-	return 0.5 * dot_product(g, Bs, size);
+	return 0.5 * dot_product(s, Bs, size);
+}
+
+Error compute_f_g(spmat* B_g , double* f_g){
+	double *unit_vector , *temp;
+	unit_vector = (double*) malloc((B_g->n)*sizeof(double));
+	if(!unit_vector){
+		return ALLOCATION_FAILED;
+	}
+	temp = unit_vector;
+	while(temp<unit_vector+B_g->n){ /*setting every value of unit_vector to 1*/
+		*temp = 1;
+		temp++;
+	}
+	B_g->mult(B_g , unit_vector, f_g); 
+
+	free(unit_vector);
+	return NONE;
+}
+
+/*Error compute_B_hat (spmat* B_g , double* f_g , spmat* B_hat){
+	int i;
+	double *start_row;
+	double *temp_delta_f, *delta_f;*/ /*represent delta*f */
+	/*double *temp_f_g;
+	start_row = (double*) malloc((B_g->n)*sizeof(double));
+	if(!start_row){
+		return ALLOCATION_FAILED;
+	}
+	delta_f = (double*) malloc((B_g->n)*sizeof(double));
+	if(!delta_f){
+		return ALLOCATION_FAILED;
+	}
+	temp_delta_f = delta_f;
+	while(temp_delta_f<delta_f+B_g->n){
+		*temp_delta_f = 0;
+		temp_delta_f++;
+	}
+	temp_f_g  = f_g;
+	temp_delta_f = delta_f;
+	for(i=0; i<B_g->n; i++){
+		*temp_delta_f = *temp_f_g;
+		B_g->sum_rows(B_g, i, delta_f, start_row);
+		B_hat->add_row(B_hat, start_row, i);
+
+		*temp_delta_f = 0;
+		temp_delta_f++;
+		temp_f_g++;
+	}
+
+	free(start_row);
+	free(delta_f);
+	return NONE;
+}*/
+
+Error convert2_B_hat (spmat* B_g , double* f_g)
+{
+	int i;
+	for(i=0; i<B_g->n; i++){
+		if((B_g->add_by_index(B_g, i, i,*f_g))==0){
+			return ALLOCATION_FAILED;
+		}
+		f_g++;
+	}
+	return NONE;
+}
+
+Error matrix_shifting(spmat* B_hat, double C_1norm){
+	int i;
+	for(i=0; i<B_hat->n; i++){
+		if((B_hat->add_by_index(B_hat, i, i,C_1norm))==0){
+			return ALLOCATION_FAILED;
+		}
+	}
+	return NONE;
+}
+
+Error matrix_deshifting(spmat* B_hat, double C_1norm){
+	int i;
+	for(i=0; i<B_hat->n; i++){
+		if((B_hat->add_by_index(B_hat, i, i, -C_1norm))==0){
+			return ALLOCATION_FAILED;
+		}
+	}
+	return NONE;
+}
+
+void eigen2s(double *eigen, int *g1 ,int *g2 , double* s, int g_size){
+	int i;
+	for(i=0;i<g_size;i++){
+		if(IS_POSITIVE(*eigen)){
+			*g1 = 1;
+			*g2 = 0;
+			*s  = 1;
+		}
+		else{
+			*g1 = 0;
+			*g2 = 1;
+			*s  =-1;
+		}
+		eigen++;
+		g1++;
+		g2++;
+		s++;
+	}
 }

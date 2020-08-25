@@ -25,6 +25,11 @@ typedef struct _spmat
 	/*print the matrix for testing*/
 	void (*print_matrix)(const struct _spmat *mat);
 
+	/*add n to mat[row][index] , return 1 if successful and 0 otherwise*/
+	char (*add_by_index)(const struct _spmat *mat , int row, int index , double n);
+
+	double (*compute_1norm)(const struct _spmat *mat);
+
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
 	void *handle;
@@ -35,5 +40,14 @@ spmat *spmat_allocate_list(int n);
 
 /* Allocates a new arrays sparse matrix of size n with nnz non-zero elements */
 spmat *spmat_allocate_array(int n, int nnz);
+
+typedef enum
+{
+    NONE,
+    ALLOCATION_FAILED,
+    READ_FAILED
+} Error;
+
+#define IS_POSITIVE(x) ((x) > 0.00001)
 
 #endif

@@ -5,15 +5,16 @@
 #include <math.h>
 #include <string.h>
 
-#include "utils.h"
+#include "algo.h"
 
-void print_vector(double *v, int n)
-{
-	double *ptr = v;
-	for (; ptr < v + n; ptr++)
-	{
-		printf("%f	\n", *ptr);
+void print_vector_int(int* vector, int size){
+	int i;
+	printf("(");
+	for(i=0; i<size-1; i++){
+		printf("%d ,",*vector);
+		vector++;
 	}
+	printf("%d)\n\n\n",*vector);
 }
 
 void test_input_read(spmat *mat, FILE *compare)
@@ -65,34 +66,23 @@ void test_input_read(spmat *mat, FILE *compare)
 
 int main(int argc, char *argv[])
 {
-	int debug = 0;		/*for short debug prints*/
-	int deep_debug = 0; /*for the long debug prints*/
+	/*TODO: move it to algo_2*/
+	/*int debug = 1;*/		/*for short debug prints*/
+	/*int deep_debug = 1;*/ /*for the long debug prints*/
 	FILE *input_file;
 	spmat *A;
-	spmat *B_g;
 	int nof_vertex;
 	int *degrees;
-	int *temp_i;
-	double *temp_d;
-	double *g;
-	double *eigen_vector;
-	double eigen_value;
-	int M = 0; /*sum of degrees*/
+	int *g ,*temp_d;
+	double *eigen_vector ,*temp_e;
+	int g_size ,*g1, *g2; /*for algo_2. later it will be in algo_3*/
 	Error error;
 
-	/*for tests:*/
-	double Q;
-	FILE *result_file;
-	result_file = fopen(argv[2], "r");
-	if (!result_file)
-	{
-		printf("result file is invalid\n");
-		return 5;
-	}
 
+	srand(time(NULL));
 	printf("argc: %d\n", argc);
 
-	/*try to open the input file*/
+	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
 	if (!input_file)
 	{
@@ -100,14 +90,14 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	/*try to read the number of vertexes*/
+	/*-----------------try to read the number of vertexes-----------------*/
 	if (fread(&nof_vertex, sizeof(int), 1, input_file) != 1)
 	{
 		printf("read from input file failed\n");
 		return 5;
 	}
 
-	/*allocate vector to save the degree of each vector (k_i)*/
+	/*---------allocate vector to save the degree of each vector (k_i)-----*/
 	degrees = (int *)malloc(nof_vertex * sizeof(int));
 	if (!degrees)
 	{
@@ -115,37 +105,22 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	/*try allocate sparse matrix using list imp*/
+	/*---------------try allocate sparse matrix using list imp--------------*/
 	A = spmat_allocate_list(nof_vertex);
 	if (!A)
 	{
 		printf("sparse matrix allocation failed on A\n");
 		return 5;
 	}
-	B_g = spmat_allocate_list(nof_vertex); /*remember that B_g will have a different size for each iteration*/
-	if (!B_g)
-	{
-		printf("sparse matrix allocation failed on B_g\n");
-		return 5;
-	}
-
+	
+	/*------------------compute the adj matrix (as spars matrix)-------------*/
 	error = read_input(input_file, A, degrees, nof_vertex);
-
 	if (handle_errors(error, "read_input\n"))
 	{
 		return 5;
 	}
-	/*computing M*/
-	for (temp_i = degrees; temp_i < degrees + nof_vertex; temp_i++)
-	{
-		M += *temp_i;
-	}
-
-	/*------------------test start (read input)---------------------*/
-	/*test_input_read(A, result_file);*/
-	/*------------------test end (read input)---------------------*/
-
-	g = (double *)malloc(nof_vertex * sizeof(double));
+	/*this g is just for now*/
+	g = (int *)malloc(nof_vertex * sizeof(int));/*remember that g will have a different size for each iteration*/
 	if (!g)
 	{
 		printf("malloc failed on pointer g\n");
@@ -156,63 +131,44 @@ int main(int argc, char *argv[])
 		*temp_d = 1;
 	}
 
-	error = compute_modularity_matrix(A, g, degrees, (double)M, B_g);
-	if (handle_errors(error, "compute_modularity_matrix\n"))
-	{
-		return 5;
-	}
-
-	if (debug == 1 && deep_debug == 1)
-	{
-		printf("A:\n");
-		A->print_matrix(A);
-		printf("B_g:\n");
-		B_g->print_matrix(B_g);
-	}
-
-	Q = compute_modularity_value(B_g, g);
-	if (debug == 1)
-	{
-		printf("Modularity value for B_g is: %f\n", Q);
-	}
-
-	/*calculate the eigen vector with power iteration*/
+	
+	/*----calculate initial random vector to the power iteration algorithem----*/
 	eigen_vector = malloc(nof_vertex * sizeof(double));
 	if (!eigen_vector)
 	{
 		printf("malloc failed on pointer eigen_vector\n");
 		return 5;
 	}
-	for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
+	for (temp_e = eigen_vector; temp_e < eigen_vector + nof_vertex; temp_e++)
 	{
-		*temp_d = rand();
-	}
-	power_iteration(B_g, eigen_vector, 0.00001); /*TODO: change epsilon to a variable*/
-
-	if (debug == 1)
-	{
-		printf("dominant eigen vector: [");
-		for (temp_d = eigen_vector; temp_d < eigen_vector + nof_vertex; temp_d++)
-		{
-			printf("%f,", *temp_d);
-		}
-		printf("]\n");
+		*temp_e = rand();
 	}
 
-	/*calculate the corresponding eigen value*/
-	eigen_value = calculate_eigen_value(B_g, eigen_vector);
-
-	if (debug == 1)
-	{
-		printf("and the corresponding eigen value is: %f\n", eigen_value);
+	/*-----------allocate 2 groups to later hold the division into 2------------*/
+	g_size = nof_vertex;
+	g1 = (int*) malloc(g_size*sizeof(int));
+	if(!g1){
+		printf("malloc failed on pointer g1\n");
+		return 5;
+	}
+	g2 = (int*) malloc(g_size*sizeof(int));
+	if(!g1){
+		printf("malloc failed on pointer g2\n");
+		return 5;
 	}
 
+	error = algo_2(A, degrees, eigen_vector, g_size, g, g1, g2);
+	if(handle_errors(error,"algo_2")){
+		return 5;
+	}
+	
 	A->free(A);
-	B_g->free(B_g);
 	free(degrees);
 	free(g);
+	free(g1);
+	free(g2);
+	free(eigen_vector);
 	fclose(input_file);
-	fclose(result_file);
 
 	printf("FINISHED\n");
 
