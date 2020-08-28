@@ -2,24 +2,18 @@
 #include <stdlib.h>
 #include "algo.h"
 
-Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, group *g2)
+Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
 {
     int i, *temp_i, g_count;
     char stop = 0, *g_members;
     double *B_g_row, *runner1, *runner2, *mult_vector;
-    double M, C_1norm = 2147483648, modularity_value, eigen_value, *s, *eigen_vector = init_vector, magnitude;
+    double M, C_1norm = 2147483648, modularity_value, eigen_value, *s, magnitude;
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
 
     B_g_row = (double *)malloc((g->size) * sizeof(double));
     if (!B_g_row)
-    {
-        return ALLOCATION_FAILED;
-    }
-
-    eigen_vector = (double *)malloc((g->size) * sizeof(double));
-    if (!eigen_vector)
     {
         return ALLOCATION_FAILED;
     }
@@ -127,6 +121,5 @@ Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, g
     free(s);
     free(mult_vector);
     free(B_g_row);
-    free(eigen_vector);
     return NONE;
 }
