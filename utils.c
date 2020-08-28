@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #include "utils.h"
-
 
 double dot_product(double *row1, double *row2, int size)
 {
@@ -103,6 +101,9 @@ char handle_errors(Error error, char *name)
 	case READ_FAILED:
 		printf("read failed in: %s\n", name);
 		return 1;
+	case DIVISION_BY_ZERO:
+		printf("division by zero in: %s\n", name);
+		return 1;
 	default:
 		return 0;
 	}
@@ -164,56 +165,29 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	free(start_temp);
 	return NONE;
 }
-/*assuming g is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
-Error compute_modularity_matrix(spmat *A, int *g, int *degree, double M, spmat *B_g)
+/*calculate a specific row of the modularity matrix, for group g (B_hat)*/
+/*assuming g->members is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
+Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row)
 {
-	int i, j, index = 0;
-	double *start_row;
-	double *expected_nof_edges_row, *start_expected_nof_edges_row; /*(k_i*k_j)/M*/
-	int *temp_i, *temp_j;
+	int i;
+	double row_sum, *temp = B_g_row;
+	char* g_members = g->members;
+	int row_degree = degrees[row];
 
-	start_row = (double *)malloc((B_g->n) * sizeof(double));
-	if (!start_row)
-	{
-		return ALLOCATION_FAILED;
+	if(!M){
+		return DIVISION_BY_ZERO;
 	}
-	start_expected_nof_edges_row = (double *)malloc((B_g->n) * sizeof(double));
-	if (!start_expected_nof_edges_row)
-	{
-		return ALLOCATION_FAILED;
-	}
-
-	printf("size of A:%d \n", A->n);
-	printf("size of B_g:%d \n", B_g->n);
-
-	expected_nof_edges_row = start_expected_nof_edges_row;
-	temp_i = g;
-	temp_j = g;
-	for (i = 0; i < (A->n); i++)
-	{
-		if (*temp_i == 1)
-		{ /* i is in g*/
-			for (j = 0; j < (A->n); j++)
-			{
-				if (*temp_j == 1)
-				{ /* j is in g*/
-					*expected_nof_edges_row = -(((double)(degree[i]) * (double)(degree[j])) / M);
-					expected_nof_edges_row++;
-				}
-				temp_j++;
-			}
-			temp_j = g; /*reset temp_j*/
-			A->sum_rows(A, i, start_expected_nof_edges_row, start_row);
-			/*TODO maybe need to add row even if g[i] != 1 ,so the i'th row will be NULL*/
-			B_g->add_row(B_g, start_row, index);
-			index++;
+    
+	for(i=0; i<A->n; i++){
+		if(*g_members){ /*the current vertex in g*/
+			*temp = -(row_degree*(*degrees))/M;
 		}
-		expected_nof_edges_row = start_expected_nof_edges_row;
-		temp_i++;
+		degrees++;
+		g_members++;
+		temp++;
 	}
-
-	free(start_row);
-	free(start_expected_nof_edges_row);
+	row_sum = A->add_to_row(A, row, B_g_row, g);
+	B_g_row[row] -= row_sum; /*for B_hat*/
 	return NONE;
 }
 
@@ -235,106 +209,28 @@ double compute_modularity_value(spmat *B_g, double *s)
 	return 0.5 * dot_product(s, Bs, size);
 }
 
-Error compute_f_g(spmat* B_g , double* f_g){
-	double *unit_vector , *temp;
-	unit_vector = (double*) malloc((B_g->n)*sizeof(double));
-	if(!unit_vector){
-		return ALLOCATION_FAILED;
-	}
-	temp = unit_vector;
-	while(temp<unit_vector+B_g->n){ /*setting every value of unit_vector to 1*/
-		*temp = 1;
-		temp++;
-	}
-	B_g->mult(B_g , unit_vector, f_g); 
 
-	free(unit_vector);
-	return NONE;
-}
-
-/*Error compute_B_hat (spmat* B_g , double* f_g , spmat* B_hat){
+void eigen2s(double *eigen, group *g1 ,group *g2 , double* s, int size){
+	char *g1_members = g1->members, *g2_members = g2->members;
+	g1->size = 0;
+	g2->size = 0;
 	int i;
-	double *start_row;
-	double *temp_delta_f, *delta_f;*/ /*represent delta*f */
-	/*double *temp_f_g;
-	start_row = (double*) malloc((B_g->n)*sizeof(double));
-	if(!start_row){
-		return ALLOCATION_FAILED;
-	}
-	delta_f = (double*) malloc((B_g->n)*sizeof(double));
-	if(!delta_f){
-		return ALLOCATION_FAILED;
-	}
-	temp_delta_f = delta_f;
-	while(temp_delta_f<delta_f+B_g->n){
-		*temp_delta_f = 0;
-		temp_delta_f++;
-	}
-	temp_f_g  = f_g;
-	temp_delta_f = delta_f;
-	for(i=0; i<B_g->n; i++){
-		*temp_delta_f = *temp_f_g;
-		B_g->sum_rows(B_g, i, delta_f, start_row);
-		B_hat->add_row(B_hat, start_row, i);
-
-		*temp_delta_f = 0;
-		temp_delta_f++;
-		temp_f_g++;
-	}
-
-	free(start_row);
-	free(delta_f);
-	return NONE;
-}*/
-
-Error convert2_B_hat (spmat* B_g , double* f_g)
-{
-	int i;
-	for(i=0; i<B_g->n; i++){
-		if((B_g->add_by_index(B_g, i, i,*f_g))==0){
-			return ALLOCATION_FAILED;
-		}
-		f_g++;
-	}
-	return NONE;
-}
-
-Error matrix_shifting(spmat* B_hat, double C_1norm){
-	int i;
-	for(i=0; i<B_hat->n; i++){
-		if((B_hat->add_by_index(B_hat, i, i,C_1norm))==0){
-			return ALLOCATION_FAILED;
-		}
-	}
-	return NONE;
-}
-
-Error matrix_deshifting(spmat* B_hat, double C_1norm){
-	int i;
-	for(i=0; i<B_hat->n; i++){
-		if((B_hat->add_by_index(B_hat, i, i, -C_1norm))==0){
-			return ALLOCATION_FAILED;
-		}
-	}
-	return NONE;
-}
-
-void eigen2s(double *eigen, int *g1 ,int *g2 , double* s, int g_size){
-	int i;
-	for(i=0;i<g_size;i++){
+	for(i=0; i<size; i++){
 		if(IS_POSITIVE(*eigen)){
-			*g1 = 1;
-			*g2 = 0;
+			*g1_members = 1;
+			(g1->size)++;
+			*g2_members = 0;
 			*s  = 1;
 		}
 		else{
-			*g1 = 0;
-			*g2 = 1;
-			*s  =-1;
+			*g2_members = 1;
+			(g2->size)++;
+			*g1_members = 0;
+			*s  = -1;
 		}
 		eigen++;
-		g1++;
-		g2++;
+		g1_members++;
+		g2_members++;
 		s++;
 	}
 }

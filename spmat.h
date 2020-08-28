@@ -29,6 +29,8 @@ typedef struct _spmat
 	char (*add_by_index)(const struct _spmat *mat , int row, int index , double n);
 
 	double (*compute_1norm)(const struct _spmat *mat);
+/*add A[row] to row*/
+	double (*add_to_row)(const struct _spmat *A, int row_index, double* row, group *g);
 
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
@@ -45,8 +47,14 @@ typedef enum
 {
     NONE,
     ALLOCATION_FAILED,
-    READ_FAILED
+    READ_FAILED,
+	DIVISION_BY_ZERO
 } Error;
+
+typedef struct _group{
+	char *members; /*i in g iff members[i] == 1*, size is always nof_vertex*/
+	int size;
+}group;
 
 #define IS_POSITIVE(x) ((x) > 0.00001)
 

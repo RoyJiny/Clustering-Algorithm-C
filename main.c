@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
-#include <math.h>
 #include <string.h>
 
 #include "algo.h"
@@ -15,6 +14,17 @@ void print_vector_int(int* vector, int size){
 		vector++;
 	}
 	printf("%d)\n\n\n",*vector);
+}
+
+void print_group(group* g,int size){
+	int i;
+	char *g_mem = g->members;
+	printf("(");
+	for(i=0; i<size-1; i++){
+		printf("%d ,",*g_mem);
+		g_mem++;
+	}
+	printf("%d)\n\n\n",*g_mem);
 }
 
 void test_input_read(spmat *mat, FILE *compare)
@@ -73,9 +83,9 @@ int main(int argc, char *argv[])
 	spmat *A;
 	int nof_vertex;
 	int *degrees;
-	int *g ,*temp_d;
 	double *eigen_vector ,*temp_e;
-	int g_size ,*g1, *g2; /*for algo_2. later it will be in algo_3*/
+	group *g ,*g1 ,*g2;
+	char *temp_g;
 	Error error;
 
 
@@ -120,15 +130,22 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	/*this g is just for now*/
-	g = (int *)malloc(nof_vertex * sizeof(int));/*remember that g will have a different size for each iteration*/
+	g = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
 	if (!g)
 	{
-		printf("malloc failed on pointer g\n");
+		printf("malloc failed on struct g\n");
 		return 5;
 	}
-	for (temp_d = g; temp_d < g + nof_vertex; temp_d++)
+	g->members = (char*) malloc(nof_vertex*sizeof(char));
+	if (!(g->members))
 	{
-		*temp_d = 1;
+		printf("malloc failed on pointer g->members\n");
+		return 5;
+	}
+	g->size = nof_vertex;
+	for (temp_g = g->members; temp_g < g + nof_vertex; temp_g++)
+	{
+		*temp_g = 1;
 	}
 
 	
@@ -145,30 +162,54 @@ int main(int argc, char *argv[])
 	}
 
 	/*-----------allocate 2 groups to later hold the division into 2------------*/
-	g_size = nof_vertex;
-	g1 = (int*) malloc(g_size*sizeof(int));
-	if(!g1){
-		printf("malloc failed on pointer g1\n");
+	g1 = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
+	if (!g1)
+	{
+		printf("malloc failed on struct g\n");
 		return 5;
 	}
-	g2 = (int*) malloc(g_size*sizeof(int));
-	if(!g1){
-		printf("malloc failed on pointer g2\n");
+	g1->members = (char*) malloc(nof_vertex*sizeof(char));
+	if (!(g1->members))
+	{
+		printf("malloc failed on pointer g->members\n");
 		return 5;
 	}
 
-	error = algo_2(A, degrees, eigen_vector, g_size, g, g1, g2);
+	g2 = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
+	if (!g2)
+	{
+		printf("malloc failed on struct g\n");
+		return 5;
+	}
+	g2->members = (char*) malloc(nof_vertex*sizeof(char));
+	if (!(g2->members))
+	{
+		printf("malloc failed on pointer g->members\n");
+		return 5;
+	}
+
+	error = algo_2(A, degrees, eigen_vector,  g, g1, g2);
 	if(handle_errors(error,"algo_2")){
 		return 5;
 	}
+
+	printf("g1:\n");
+	print_group(g1,nof_vertex);
+	printf("g2:\n");
+	print_group(g2,nof_vertex);
+
 	
 	A->free(A);
 	free(degrees);
+	free(g->members);
 	free(g);
+	free(g1->members);
 	free(g1);
+	free(g2->members);
 	free(g2);
 	free(eigen_vector);
 	fclose(input_file);
+
 
 	printf("FINISHED\n");
 
