@@ -4,16 +4,29 @@
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
 {
-    int i, *temp_i, g_count;
+    int i, j, *temp_i, g_count;
     char stop = 0, *g_members;
-    double *B_g_row, *runner1, *runner2, *mult_vector;
-    double M, C_1norm = 5, modularity_value, eigen_value, *s, magnitude;
+    double B_1norm = 0, *B_row, *col_sums;
+    double *B_g_row, *runner1, *runner2, *mult_vector, ;
+    double M, modularity_value, eigen_value, *s, magnitude;
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
 
     B_g_row = (double *)malloc((g->size) * sizeof(double));
     if (!B_g_row)
+    {
+        return ALLOCATION_FAILED;
+    }
+
+    B_row = (double *)malloc((A->n) * sizeof(double));
+    if (!B_row)
+    {
+        return ALLOCATION_FAILED;
+    }
+
+    col_sums = (double *)malloc((A->n) * sizeof(double));
+    if (!col_sums)
     {
         return ALLOCATION_FAILED;
     }
@@ -36,6 +49,32 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         M += *temp_i;
     }
 
+    /*---------------compute the 1norm for initial B----------------*/
+    memset(col_sums, 0, A->n);
+    for (i = 0; i < A->n; i++)
+    {
+        error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row);
+        if (error != NONE)
+        {
+            printf("failed in compute_modularity_matrix_row - for B\n");
+            return error;
+        }
+        j = 0;
+        for (runner1 = col_sums; runner1 < col_sums + A->n; runner1++)
+        {
+            *runner1 += *(B_row + j);
+            j++;
+        }
+    }
+    for (i = 0; i < A->n; i++)
+    {
+        if (*(col_sums + i) > B_1norm)
+        {
+            B_1norm = *(col_sums + i);
+        }
+    }
+    printf("the 1norm for B is: %f", B_1norm);
+
     /*---------------------power iteration-------------------------*/
     while (!stop)
     {
@@ -52,7 +91,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
-                B_g_row[g_count] += C_1norm; /*TODO: compute the real norm*/
+                B_g_row[g_count] += B_1norm; /*TODO: compute the real norm*/
                 *runner1 = dot_product(B_g_row, eigen_vector, g->size);
                 runner1++;
                 g_count++;
@@ -78,7 +117,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, eigen_vector);
-    /*TODO: something in the nirmool (see forum), and need to sub C_1norm*/
+    /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
