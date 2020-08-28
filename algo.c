@@ -2,52 +2,59 @@
 #include <stdlib.h>
 #include "algo.h"
 
-Error algo_2(spmat *A, int* degrees, double* init_vector, group* g, group* g1, group* g2)
+Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, group *g2)
 {
-    int i, *temp_i ,g_count;
+    int i, *temp_i, g_count;
     char stop = 0, *g_members;
-    double M , C_1norm =5 ,modularity_value ,eigen_value ,*s ,*eigen_vector = init_vector , magnitude;
+    double *B_g_row, *runner1, *runner2, *mult_vector;
+    double M, C_1norm = 5, modularity_value, eigen_value, *s, *eigen_vector = init_vector, magnitude;
     Error error;
-    //spmat *B_g;
-    double *B_g_row, *runner1, *runner2 ,*mult_vector;
-    
+
     /*------------------------ALLOCATIONS------------------------*/
-    
-    B_g_row = (double*) malloc((g->size)*sizeof(double));
-    if(!B_g_row){
+
+    B_g_row = (double *)malloc((g->size) * sizeof(double));
+    if (!B_g_row)
+    {
         return ALLOCATION_FAILED;
     }
 
-    eigen_vector = (double*) malloc((g->size)*sizeof(double));
-    if(!eigen_vector){
+    eigen_vector = (double *)malloc((g->size) * sizeof(double));
+    if (!eigen_vector)
+    {
         return ALLOCATION_FAILED;
     }
 
-    mult_vector = (double*) malloc((g->size)*sizeof(double));
-    if(!mult_vector){
+    mult_vector = (double *)malloc((g->size) * sizeof(double));
+    if (!mult_vector)
+    {
         return ALLOCATION_FAILED;
     }
 
-    s = (double*) malloc((g->size)*sizeof(double));
-    if(!s){
+    s = (double *)malloc((g->size) * sizeof(double));
+    if (!s)
+    {
         return ALLOCATION_FAILED;
     }
 
     /*---------------------computing M----------------------------*/
-	for (temp_i = degrees; temp_i < degrees + A->n; temp_i++)
-	{
-		M += *temp_i;
-	}
+    for (temp_i = degrees; temp_i < degrees + A->n; temp_i++)
+    {
+        M += *temp_i;
+    }
 
     /*---------------------power iteration-------------------------*/
-    while(!stop){
+    while (!stop)
+    {
         runner1 = mult_vector;
         g_members = g->members;
         g_count = 0;
-        for(i=0; i<A->n; i++){
-            if(*g_members){ /*curr vertex in g*/
+        for (i = 0; i < A->n; i++)
+        {
+            if (*g_members)
+            { /*curr vertex in g*/
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
-                if(error != NONE){
+                if (error != NONE)
+                {
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
@@ -58,14 +65,16 @@ Error algo_2(spmat *A, int* degrees, double* init_vector, group* g, group* g1, g
             }
             g_members++;
         }
-        magnitude = sqrt(dot_product(mult_vector,mult_vector,g->size));
+        magnitude = sqrt(dot_product(mult_vector, mult_vector, g->size));
         stop = 1;
         runner2 = eigen_vector;
-        for(runner1=mult_vector; runner1<mult_vector+ g->size; runner1++){
-            if(IS_POSITIVE(fabs(*runner2 -(*runner1/magnitude)))){
+        for (runner1 = mult_vector; runner1 < mult_vector + g->size; runner1++)
+        {
+            if (IS_POSITIVE(fabs(*runner2 - (*runner1 / magnitude))))
+            {
                 stop = 0;
             }
-            *runner2 = *runner1/magnitude;
+            *runner2 = *runner1 / magnitude;
             runner2++;
         }
     }
@@ -75,20 +84,24 @@ Error algo_2(spmat *A, int* degrees, double* init_vector, group* g, group* g1, g
     /*TODO: something in the nirmool (see forum), and need to sub C_1norm*/
 
     /*--------------------decide the right partition-----------------*/
-    if (!IS_POSITIVE(eigen_value)){ /*g is indivisible*/
+    if (!IS_POSITIVE(eigen_value))
+    { /*g is indivisible*/
         printf("g is indivisible\n");
         /*TODO : update g1 & g2*/
         return NONE;
     }
-    
+
     eigen2s(eigen_vector, g1, g2, s, A->n);
-    /*computing the modularity value*/   
+    /*computing the modularity value*/
     g_members = g->members;
     runner1 = mult_vector;
-    for(i=0; i<A->n; i++){
-        if(*g_members){ /*curr vertex in g*/
+    for (i = 0; i < A->n; i++)
+    {
+        if (*g_members)
+        { /*curr vertex in g*/
             error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
-            if(error != NONE){
+            if (error != NONE)
+            {
                 printf("failed in compute_modularity_matrix_row\n");
                 return error;
             }
@@ -96,10 +109,10 @@ Error algo_2(spmat *A, int* degrees, double* init_vector, group* g, group* g1, g
             runner1++;
         }
         g_members++;
-        
     }
-    modularity_value = 0.5 * dot_product(mult_vector , s, g->size);
-    if(!IS_POSITIVE(modularity_value)){ /*g is indivisible*/
+    modularity_value = 0.5 * dot_product(mult_vector, s, g->size);
+    if (!IS_POSITIVE(modularity_value))
+    { /*g is indivisible*/
         printf("g is indivisible\n");
         /*TODO : update g1 & g2*/
         return NONE;
@@ -107,12 +120,9 @@ Error algo_2(spmat *A, int* degrees, double* init_vector, group* g, group* g1, g
 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
 
-
     free(s);
     free(mult_vector);
     free(B_g_row);
     free(eigen_vector);
     return NONE;
 }
-
-
