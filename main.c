@@ -6,25 +6,29 @@
 
 #include "algo.h"
 
-void print_vector_int(int* vector, int size){
+void print_vector_int(int *vector, int size)
+{
 	int i;
 	printf("(");
-	for(i=0; i<size-1; i++){
-		printf("%d ,",*vector);
+	for (i = 0; i < size - 1; i++)
+	{
+		printf("%d ,", *vector);
 		vector++;
 	}
-	printf("%d)\n\n\n",*vector);
+	printf("%d)\n\n\n", *vector);
 }
 
-void print_group(group* g,int size){
+void print_group(group *g, int size)
+{
 	int i;
 	char *g_mem = g->members;
 	printf("(");
-	for(i=0; i<size-1; i++){
-		printf("%d ,",*g_mem);
+	for (i = 0; i < size - 1; i++)
+	{
+		printf("%d ,", *g_mem);
 		g_mem++;
 	}
-	printf("%d)\n\n\n",*g_mem);
+	printf("%d)\n\n\n", *g_mem);
 }
 
 void test_input_read(spmat *mat, FILE *compare)
@@ -83,11 +87,10 @@ int main(int argc, char *argv[])
 	spmat *A;
 	int nof_vertex;
 	int *degrees;
-	double *eigen_vector ,*temp_e;
-	group *g ,*g1 ,*g2;
+	double *eigen_vector, *temp_e;
+	group *g, *g1, *g2;
 	char *temp_g;
 	Error error;
-
 
 	srand(time(NULL));
 	printf("argc: %d\n", argc);
@@ -122,7 +125,7 @@ int main(int argc, char *argv[])
 		printf("sparse matrix allocation failed on A\n");
 		return 5;
 	}
-	
+
 	/*------------------compute the adj matrix (as spars matrix)-------------*/
 	error = read_input(input_file, A, degrees, nof_vertex);
 	if (handle_errors(error, "read_input\n"))
@@ -130,25 +133,24 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	/*this g is just for now*/
-	g = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
+	g = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
 	if (!g)
 	{
 		printf("malloc failed on struct g\n");
 		return 5;
 	}
-	g->members = (char*) malloc(nof_vertex*sizeof(char));
+	g->members = (char *)malloc(nof_vertex * sizeof(char));
 	if (!(g->members))
 	{
 		printf("malloc failed on pointer g->members\n");
 		return 5;
 	}
 	g->size = nof_vertex;
-	for (temp_g = g->members; temp_g < g + nof_vertex; temp_g++)
+	for (temp_g = g->members; temp_g < g->members + nof_vertex; temp_g++)
 	{
 		*temp_g = 1;
 	}
 
-	
 	/*----calculate initial random vector to the power iteration algorithem----*/
 	eigen_vector = malloc(nof_vertex * sizeof(double));
 	if (!eigen_vector)
@@ -162,43 +164,43 @@ int main(int argc, char *argv[])
 	}
 
 	/*-----------allocate 2 groups to later hold the division into 2------------*/
-	g1 = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
+	g1 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
 	if (!g1)
 	{
 		printf("malloc failed on struct g\n");
 		return 5;
 	}
-	g1->members = (char*) malloc(nof_vertex*sizeof(char));
+	g1->members = (char *)malloc(nof_vertex * sizeof(char));
 	if (!(g1->members))
 	{
 		printf("malloc failed on pointer g->members\n");
 		return 5;
 	}
 
-	g2 = (group *)malloc(sizeof(group));/*remember that g will have a different size for each iteration*/
+	g2 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
 	if (!g2)
 	{
 		printf("malloc failed on struct g\n");
 		return 5;
 	}
-	g2->members = (char*) malloc(nof_vertex*sizeof(char));
+	g2->members = (char *)malloc(nof_vertex * sizeof(char));
 	if (!(g2->members))
 	{
 		printf("malloc failed on pointer g->members\n");
 		return 5;
 	}
 
-	error = algo_2(A, degrees, eigen_vector,  g, g1, g2);
-	if(handle_errors(error,"algo_2")){
+	error = algo_2(A, degrees, eigen_vector, g, g1, g2);
+	if (handle_errors(error, "algo_2"))
+	{
 		return 5;
 	}
 
 	printf("g1:\n");
-	print_group(g1,nof_vertex);
+	print_group(g1, nof_vertex);
 	printf("g2:\n");
-	print_group(g2,nof_vertex);
+	print_group(g2, nof_vertex);
 
-	
 	A->free(A);
 	free(degrees);
 	free(g->members);
@@ -209,7 +211,6 @@ int main(int argc, char *argv[])
 	free(g2);
 	free(eigen_vector);
 	fclose(input_file);
-
 
 	printf("FINISHED\n");
 
