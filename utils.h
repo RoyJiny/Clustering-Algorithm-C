@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-
 #include "spmat.h"
 #include <math.h>
 
@@ -18,11 +17,11 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 
 double compute_modularity_value(spmat *B_g, double *s);
 
-Error power_iteration(spmat *mat, double *vector );
+Error power_iteration(spmat *mat, double *vector);
 
-int calculate_eigen_value(spmat *mat, double *eigen_vector);/*TODO: substrat C_1norm*/
+int calculate_eigen_value(spmat *mat, double *eigen_vector); /*TODO: substrat C_1norm*/
 
 /*determine the partition into 2 groups, and calc the s vector*/
-void eigen2s(double *eigen, int *g1 ,int *g2 , double* s, int size);
+void eigen2s(double *eigen, group *g1, group *g2, double *s, int size);
 
 #endif
