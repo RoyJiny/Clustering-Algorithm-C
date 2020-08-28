@@ -7,7 +7,7 @@ Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, g
     int i, *temp_i, g_count;
     char stop = 0, *g_members;
     double *B_g_row, *runner1, *runner2, *mult_vector;
-    double M, C_1norm = 5, modularity_value, eigen_value, *s, *eigen_vector = init_vector, magnitude;
+    double M, C_1norm = 2147483648, modularity_value, eigen_value, *s, *eigen_vector = init_vector, magnitude;
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
@@ -78,6 +78,9 @@ Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, g
             runner2++;
         }
     }
+
+    printf("the eigen vector is:\n");
+    print_vector(eigen_vector, g->size);
 
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, eigen_vector);

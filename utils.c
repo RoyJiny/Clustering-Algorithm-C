@@ -17,18 +17,6 @@ double dot_product(double *row1, double *row2, int size)
 	return sum;
 }
 
-void print_vector(double *vector, int size)
-{
-	int i;
-	printf("(");
-	for (i = 0; i < size - 1; i++)
-	{
-		printf("%f ,", *vector);
-		vector++;
-	}
-	printf("%f)\n\n\n", *vector);
-}
-
 /*the result is stored in vector - at first it should be initialized with random numbers*/
 /*calculates the dominant eigen vector*/
 /*PROBLEM: currently the loop doesnt stop*/
