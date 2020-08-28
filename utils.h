@@ -4,17 +4,7 @@
 #include "spmat.h"
 #include <math.h>
 
-void print_vector(double *vector, int size)
-{
-    int i;
-    printf("(");
-    for (i = 0; i < size - 1; i++)
-    {
-        printf("%f ,", *vector);
-        vector++;
-    }
-    printf("%f)\n\n\n", *vector);
-}
+void print_vector(double *vector, int size);
 
 char handle_errors(Error error, char *name);
 
