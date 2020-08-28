@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory>
+#include <memory.h>
 #include "algo.h"
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
