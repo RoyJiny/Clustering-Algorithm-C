@@ -231,7 +231,7 @@ void addRow_list(spmat *A, const double *row, int i)
 		printf("addRow_list\n");
 	}
 
-	*(rows + i) = create_list(row, A->n );
+	*(rows + i) = create_list(row, A->n);
 }
 /*TODO: maybe replace with iterative version*/
 void delete_list(node *l)
@@ -295,14 +295,17 @@ void mult_list(const spmat *A, const double *v, double *result)
 	printf("end mult_list\n");
 }
 
-double add_to_row_list(const spmat *A, int row_index, double* row, group *g){
+double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
+{
 	double sum = 0;
 	char *g_members = g->members;
 	node **rows = ((list *)(A->handle))->rows;
-	node *curr_row = *(rows+row_index);
+	node *curr_row = *(rows + row_index);
 	int curr_index = 0;
-	while(curr_row != NULL){
-		if(curr_row->index == curr_index && *g_members){
+	while (curr_row != NULL)
+	{
+		if (curr_row->index == curr_index && *g_members)
+		{
 			*row += curr_row->val;
 		}
 		sum += *row; /*calc the row sum*/
@@ -311,6 +314,7 @@ double add_to_row_list(const spmat *A, int row_index, double* row, group *g){
 		curr_row = curr_row->next;
 		g_members++;
 	}
+	return sum;
 }
 
 char equal2_list(const spmat *A, const spmat *B)
@@ -347,11 +351,10 @@ char equal2_list(const spmat *A, const spmat *B)
 	return 1;
 }
 
-
 void print_matrix_list(const spmat *mat)
 {
 	int i;
-	node** rows = ((list *)(mat->handle))->rows;
+	node **rows = ((list *)(mat->handle))->rows;
 	for (i = 0; i < mat->n; i++)
 	{
 		if (i < 10)
@@ -364,7 +367,6 @@ void print_matrix_list(const spmat *mat)
 		rows++;
 	}
 }
-
 
 spmat *spmat_allocate_list(int n)
 {
