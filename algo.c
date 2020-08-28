@@ -85,8 +85,9 @@ Error algo_2(spmat *A, int *degrees, double *init_vector, group *g, group *g1, g
 
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
-    { /*g is indivisible*/
+    {
         printf("g is indivisible\n");
+        printf("eigen value is not visible, value: %f\n", eigen_value);
         /*TODO : update g1 & g2*/
         return NONE;
     }
