@@ -17,14 +17,16 @@ double dot_product(double *row1, double *row2, int size)
 	return sum;
 }
 
-void print_vector(double* vector, int size){
+void print_vector(double *vector, int size)
+{
 	int i;
 	printf("(");
-	for(i=0; i<size-1; i++){
-		printf("%f ,",*vector);
+	for (i = 0; i < size - 1; i++)
+	{
+		printf("%f ,", *vector);
 		vector++;
 	}
-	printf("%f)\n\n\n",*vector);
+	printf("%f)\n\n\n", *vector);
 }
 
 /*the result is stored in vector - at first it should be initialized with random numbers*/
@@ -34,7 +36,7 @@ Error power_iteration(spmat *mat, double *vector)
 {
 	int nof_iterations = 0;
 	int stop = 0;
-	double magnitude ;
+	double magnitude;
 	double *mul_result;
 	double *ptr_v, *ptr_r; /*pointers to vector and mul_result*/
 	mul_result = (double *)malloc((mat->n) * sizeof(double));
@@ -42,17 +44,17 @@ Error power_iteration(spmat *mat, double *vector)
 	{
 		return ALLOCATION_FAILED;
 	}
-	while (stop == 0 && nof_iterations<=200)
+	while (stop == 0 && nof_iterations <= 200)
 	{
 		mat->mult(mat, vector, mul_result); /*result=A*vector*/
 		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
-		printf("--------------magnitute is:%f, mul result is:----------------\n",magnitude);
-		print_vector(mul_result,mat->n);
+		printf("--------------magnitute is:%f, mul result is:----------------\n", magnitude);
+		print_vector(mul_result, mat->n);
 		stop = 1;
 		ptr_r = mul_result;
 		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
 		{
-			if ( IS_POSITIVE(fabs(*ptr_v - ((*ptr_r) / magnitude))) )
+			if (IS_POSITIVE(fabs(*ptr_v - ((*ptr_r) / magnitude))))
 			{
 				stop = 0;
 			}
@@ -60,7 +62,7 @@ Error power_iteration(spmat *mat, double *vector)
 			ptr_r++;
 		}
 		printf("-----------------------vector is:-----------------\n");
-		print_vector(vector , mat->n);
+		print_vector(vector, mat->n);
 		nof_iterations++;
 	}
 
@@ -171,16 +173,19 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 {
 	int i;
 	double row_sum, *temp = B_g_row;
-	char* g_members = g->members;
+	char *g_members = g->members;
 	int row_degree = degrees[row];
 
-	if(!M){
+	if (!M)
+	{
 		return DIVISION_BY_ZERO;
 	}
-    
-	for(i=0; i<A->n; i++){
-		if(*g_members){ /*the current vertex in g*/
-			*temp = -(row_degree*(*degrees))/M;
+
+	for (i = 0; i < A->n; i++)
+	{
+		if (*g_members)
+		{ /*the current vertex in g*/
+			*temp = -(row_degree * (*degrees)) / M;
 		}
 		degrees++;
 		g_members++;
@@ -194,8 +199,8 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 double compute_modularity_value(spmat *B_g, double *s)
 {
 	/*s and g are the same - represent the group division*/
-	int size = B_g->n;
 	double *Bs;
+	int size = B_g->n;
 
 	Bs = (double *)malloc(size * sizeof(double));
 	if (!Bs)
@@ -209,24 +214,27 @@ double compute_modularity_value(spmat *B_g, double *s)
 	return 0.5 * dot_product(s, Bs, size);
 }
 
-
-void eigen2s(double *eigen, group *g1 ,group *g2 , double* s, int size){
+void eigen2s(double *eigen, group *g1, group *g2, double *s, int size)
+{
+	int i;
 	char *g1_members = g1->members, *g2_members = g2->members;
 	g1->size = 0;
 	g2->size = 0;
-	int i;
-	for(i=0; i<size; i++){
-		if(IS_POSITIVE(*eigen)){
+	for (i = 0; i < size; i++)
+	{
+		if (IS_POSITIVE(*eigen))
+		{
 			*g1_members = 1;
 			(g1->size)++;
 			*g2_members = 0;
-			*s  = 1;
+			*s = 1;
 		}
-		else{
+		else
+		{
 			*g2_members = 1;
 			(g2->size)++;
 			*g1_members = 0;
-			*s  = -1;
+			*s = -1;
 		}
 		eigen++;
 		g1_members++;
