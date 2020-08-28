@@ -74,7 +74,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             B_1norm = *(col_sums + i);
         }
     }
-    printf("the 1norm for B is: %f", B_1norm);
+    printf("the 1norm for B is: %f\n", B_1norm);
     B_1norm = 5;
 
     /*---------------------power iteration-------------------------*/
