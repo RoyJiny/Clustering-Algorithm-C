@@ -7,7 +7,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     int i, *temp_i, g_count;
     char stop = 0, *g_members;
     double *B_g_row, *runner1, *runner2, *mult_vector;
-    double M, C_1norm = 2147483648, modularity_value, eigen_value, *s, magnitude;
+    double M, C_1norm = 5, modularity_value, eigen_value, *s, magnitude;
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
