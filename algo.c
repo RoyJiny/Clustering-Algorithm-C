@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
 #include "algo.h"
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
@@ -7,7 +8,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     int i, j, *temp_i, g_count;
     char stop = 0, *g_members;
     double B_1norm = 0, *B_row, *col_sums;
-    double *B_g_row, *runner1, *runner2, *mult_vector, ;
+    double *B_g_row, *runner1, *runner2, *mult_vector;
     double M, modularity_value, eigen_value, *s, magnitude;
     Error error;
 
