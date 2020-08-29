@@ -6,18 +6,6 @@
 
 #include "algo.h"
 
-void print_vector_int(int *vector, int size)
-{
-	int i;
-	printf("(");
-	for (i = 0; i < size - 1; i++)
-	{
-		printf("%d ,", *vector);
-		vector++;
-	}
-	printf("%d)\n\n\n", *vector);
-}
-
 void print_group(group *g, int size)
 {
 	int i;

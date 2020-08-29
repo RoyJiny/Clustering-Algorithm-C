@@ -29,6 +29,18 @@ void print_vector(double *vector, int size)
 	printf("%f)\n\n\n", *vector);
 }
 
+void print_vector_int(int *vector, int size)
+{
+	int i;
+	printf("(");
+	for (i = 0; i < size - 1; i++)
+	{
+		printf("%d ,", *vector);
+		vector++;
+	}
+	printf("%d)\n\n\n", *vector);
+}
+
 /*the result is stored in vector - at first it should be initialized with random numbers*/
 /*calculates the dominant eigen vector*/
 /*PROBLEM: currently the loop doesnt stop*/
@@ -104,7 +116,6 @@ double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *de
 	}
 	numerator = dot_product(eigen_vector, mult_vector, g->size);
 	denominator = dot_product(eigen_vector, eigen_vector, g->size);
-	printf("the denominator is: %f", denominator);
 	free(mult_vector);
 	return numerator / denominator;
 	/*

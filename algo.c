@@ -84,11 +84,17 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     printf("the 1norm for B is: %f\n", B_1norm);
 
     /*---------------------power iteration-------------------------*/
+    printf("\n A: \n");
+    A->print_matrix(A);
+    printf("\ndegrees\n");
+    print_vector_int(degrees, A->n);
+    printf("\n");
     while (!stop)
     {
         runner1 = mult_vector;
         g_members = g->members;
         g_count = 0;
+        printf("Bg:\n");
         for (i = 0; i < A->n; i++)
         {
             if (*g_members)
@@ -99,6 +105,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
+                print_vector(B_g_row, g->size);
                 B_g_row[g_count] += B_1norm;
                 *runner1 = dot_product(B_g_row, eigen_vector, g->size);
                 runner1++;
@@ -106,6 +113,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             }
             g_members++;
         }
+        printf("\n");
         magnitude = sqrt(dot_product(mult_vector, mult_vector, g->size));
         stop = 1;
         runner2 = eigen_vector;
@@ -128,6 +136,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
+    printf("the eigen value is: %f", eigen_value);
     /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/

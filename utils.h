@@ -4,6 +4,8 @@
 #include "spmat.h"
 #include <math.h>
 
+void print_vector_int(int *vector, int size);
+
 void print_vector(double *vector, int size);
 
 char handle_errors(Error error, char *name);
