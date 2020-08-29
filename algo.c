@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
 #include "algo.h"
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
 {
     int i, j, *temp_i, g_count;
     char stop = 0, *g_members;
-    double B_1norm = 0, *B_row, *col_sums;
+    double *B_row, B_1norm;
     double *B_g_row, *runner1, *runner2, *runner3, *mult_vector;
     double M, modularity_value, eigen_value, *s, magnitude;
     double *unnormalized_eigen_vector;
@@ -23,12 +22,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     B_row = (double *)malloc((A->n) * sizeof(double));
     if (!B_row)
-    {
-        return ALLOCATION_FAILED;
-    }
-
-    col_sums = (double *)malloc((A->n) * sizeof(double));
-    if (!col_sums)
     {
         return ALLOCATION_FAILED;
     }
@@ -58,30 +51,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
 
     /*---------------compute the 1norm for initial B----------------*/
-    memset(col_sums, 0, A->n);
-    for (i = 0; i < A->n; i++)
-    {
-        error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row);
-        if (error != NONE)
-        {
-            printf("failed in compute_modularity_matrix_row - for B\n");
-            return error;
-        }
-
-        j = 0;
-        for (runner1 = col_sums; runner1 < col_sums + A->n; runner1++)
-        {
-            *runner1 += fabs(*(B_row + j));
-            j++;
-        }
-    }
-    for (i = 0; i < A->n; i++)
-    {
-        if (*(col_sums + i) > B_1norm)
-        {
-            B_1norm = *(col_sums + i);
-        }
-    }
+    B_1norm = compute_1norm(A, degrees, M);
     printf("the 1norm for B is: %f\n", B_1norm);
 
     /*---------------------power iteration-------------------------*/
@@ -131,7 +101,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
-    printf("the eigen value is: %f", eigen_value);
+    printf("the eigen value is: %f\n", eigen_value);
     /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/

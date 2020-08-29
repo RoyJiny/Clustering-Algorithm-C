@@ -8,6 +8,10 @@ void print_vector_int(int *vector, int size);
 
 void print_vector(double *vector, int size);
 
+void print_group(group *g, int size);
+
+double compute_1norm(spmat *A, int *degrees, double M);
+
 char handle_errors(Error error, char *name);
 
 double dot_product(double *row1, double *row2, int size);

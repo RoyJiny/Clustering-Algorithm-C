@@ -6,19 +6,6 @@
 
 #include "algo.h"
 
-void print_group(group *g, int size)
-{
-	int i;
-	char *g_mem = g->members;
-	printf("(");
-	for (i = 0; i < size - 1; i++)
-	{
-		printf("%d ,", *g_mem);
-		g_mem++;
-	}
-	printf("%d)\n\n\n", *g_mem);
-}
-
 void test_input_read(spmat *mat, FILE *compare)
 {
 	unsigned int n, i;

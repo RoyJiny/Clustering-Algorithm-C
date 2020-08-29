@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <memory>
 #include "utils.h"
 
 double dot_product(double *row1, double *row2, int size)
@@ -41,45 +42,82 @@ void print_vector_int(int *vector, int size)
 	printf("%d)\n\n\n", *vector);
 }
 
-/*the result is stored in vector - at first it should be initialized with random numbers*/
-/*calculates the dominant eigen vector*/
-/*PROBLEM: currently the loop doesnt stop*/
-Error power_iteration(spmat *mat, double *vector)
+void print_group(group *g, int size)
 {
-	int nof_iterations = 0;
-	int stop = 0;
-	double magnitude;
-	double *mul_result;
-	double *ptr_v, *ptr_r; /*pointers to vector and mul_result*/
-	mul_result = (double *)malloc((mat->n) * sizeof(double));
-	if (!mul_result)
+	int i;
+	char *g_mem = g->members;
+	printf("(");
+	for (i = 0; i < size - 1; i++)
 	{
-		return ALLOCATION_FAILED;
+		printf("%d ,", *g_mem);
+		g_mem++;
 	}
-	while (stop == 0 && nof_iterations <= 200)
+	printf("%d)\n\n\n", *g_mem);
+}
+
+double compute_1norm(spmat *A, int *degrees, double M)
+{
+	int i, j;
+	Error error;
+	group *g;
+	double norm = 0, *col_sums, *runner, *B_row;
+
+	col_sums = (double *)malloc((A->n) * sizeof(double));
+	if (!col_sums)
 	{
-		mat->mult(mat, vector, mul_result); /*result=A*vector*/
-		magnitude = sqrt(dot_product(mul_result, mul_result, mat->n));
-		printf("--------------magnitute is:%f, mul result is:----------------\n", magnitude);
-		print_vector(mul_result, mat->n);
-		stop = 1;
-		ptr_r = mul_result;
-		for (ptr_v = vector; ptr_v < vector + mat->n; ptr_v++)
-		{
-			if (IS_POSITIVE(fabs(*ptr_v - ((*ptr_r) / magnitude))))
-			{
-				stop = 0;
-			}
-			*ptr_v = (*(ptr_r)) / magnitude; /*updating vector to the next vector*/
-			ptr_r++;
-		}
-		printf("-----------------------vector is:-----------------\n");
-		print_vector(vector, mat->n);
-		nof_iterations++;
+		printf("allocation failed");
 	}
 
-	free(mul_result);
-	return NONE;
+	B_row = (double *)malloc((A->n) * sizeof(double));
+	if (!B_row)
+	{
+		printf("allocation failed");
+	}
+
+	g = (group *)malloc(sizeof(group));
+	if (!g)
+	{
+		printf("allocation failed");
+	}
+	g->members = (char *)malloc((A->n) * sizeof(char));
+	if (!g->members)
+	{
+		printf("allocation failed");
+	}
+	g->size = A->n;
+	memset(g->members, 1, A->n);
+	print_group(g, A->n);
+	memset(col_sums, 0, A->n);
+	for (i = 0; i < A->n; i++)
+	{
+		error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row);
+		if (error != NONE)
+		{
+			printf("failed in compute_modularity_matrix_row - for B\n");
+			return error;
+		}
+
+		j = 0;
+		for (runner = col_sums; runner < col_sums + A->n; runner++)
+		{
+			*runner += fabs(*(B_row + j));
+			j++;
+		}
+	}
+	for (i = 0; i < A->n; i++)
+	{
+		if (*(col_sums + i) > norm)
+		{
+			norm = *(col_sums + i);
+		}
+	}
+
+	free(col_sums);
+	free(g->members);
+	free(g);
+	free(B_row);
+
+	return norm;
 }
 
 /*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
@@ -118,25 +156,6 @@ double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *de
 	denominator = dot_product(eigen_vector, eigen_vector, g->size);
 	free(mult_vector);
 	return numerator / denominator;
-	/*
-	int size = mat->n;
-	double *Ab;
-	double numerator;
-	double denominator;
-	Ab = malloc(size * sizeof(double));
-	if (!Ab)
-	{
-		printf("malloc failed on pointer Ab\n");
-		return 5;
-	}
-
-	mat->mult(mat, eigen_vector, Ab);
-	numerator = dot_product(eigen_vector, Ab, size);
-	denominator = dot_product(eigen_vector, eigen_vector, size);
-	return numerator / denominator;
-
-	free(Ab);
-	*/
 }
 
 /*return 1 if there was an error and 0 otherwise*/
