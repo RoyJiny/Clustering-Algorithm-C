@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <memory>
+#include <memory.h>
 #include "utils.h"
 
 double dot_product(double *row1, double *row2, int size)
