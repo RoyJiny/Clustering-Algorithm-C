@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
 	FILE *input_file;
 	spmat *A;
 	int nof_vertex;
-	int *degrees;
-	double *eigen_vector, *temp_e;
+	int *degrees, *temp_i;
+	double *eigen_vector, *temp_e, B_1norm, M;
 	group *g, *g1, *g2;
 	char *temp_g;
 	Error error;
@@ -165,7 +165,17 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	error = algo_2(A, degrees, eigen_vector, g, g1, g2);
+	/*---------------------computing M----------------------------*/
+	for (temp_i = degrees; temp_i < degrees + A->n; temp_i++)
+	{
+		M += *temp_i;
+	}
+
+	/*---------------compute the 1norm for initial B----------------*/
+	B_1norm = compute_1norm(A, degrees, M);
+	printf("the 1norm for B is: %f\n", B_1norm);
+
+	error = algo_2(A, degrees, eigen_vector, g, g1, g2, B_1norm, M);
 	if (handle_errors(error, "algo_2"))
 	{
 		return 5;

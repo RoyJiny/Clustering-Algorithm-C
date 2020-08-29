@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include "algo.h"
 
-Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
+Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
     int i, *temp_i, g_count;
     char stop = 0, *g_members;
     double *B_row, B_1norm;
     double *B_g_row, *runner1, *runner2, *runner3, *mult_vector;
-    double M, modularity_value, eigen_value, *s, magnitude;
+    double modularity_value, eigen_value, *s, magnitude;
     double *unnormalized_eigen_vector;
     Error error;
 
@@ -43,16 +43,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     {
         return ALLOCATION_FAILED;
     }
-
-    /*---------------------computing M----------------------------*/
-    for (temp_i = degrees; temp_i < degrees + A->n; temp_i++)
-    {
-        M += *temp_i;
-    }
-
-    /*---------------compute the 1norm for initial B----------------*/
-    B_1norm = compute_1norm(A, degrees, M);
-    printf("the 1norm for B is: %f\n", B_1norm);
 
     /*---------------------power iteration-------------------------*/
     while (!stop)
