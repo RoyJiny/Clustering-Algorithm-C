@@ -142,6 +142,8 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     free(s);
     free(mult_vector);
     free(B_g_row);
+    free(B_row);
+    free(unnormalized_eigen_vector);
     return NONE;
 }
 
