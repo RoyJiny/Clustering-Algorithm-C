@@ -55,6 +55,18 @@ void print_group(group *g, int size)
 	printf("%d)\n\n\n", *g_mem);
 }
 
+void print_stack(group_set *s, int size){
+	int counter = 0;
+	group_node *curr = s->top;
+	while(curr != NULL){
+		printf("group %d is\n:",counter);
+		print_group(curr->value, size);
+		printf("\n");
+		curr = curr->next;
+		counter++;
+	}
+}
+
 double compute_1norm(spmat *A, int *degrees, double M)
 {
 	int i, j;

@@ -59,15 +59,13 @@ int main(int argc, char *argv[])
 	/*int debug = 1;*/		/*for short debug prints*/
 	/*int deep_debug = 1;*/ /*for the long debug prints*/
 	FILE *input_file;
+	group_set *P, *O;
+	group *g;
 	spmat *A;
 	int nof_vertex;
-	int *degrees, *temp_i;
-	double *eigen_vector, *temp_e, B_1norm, M;
-	group *g, *g1, *g2;
-	char *temp_g;
+	int *degrees;
 	Error error;
 
-	srand(time(NULL));
 	printf("argc: %d\n", argc);
 
 	/*--------------------try to open the input file---------------------*/
@@ -107,95 +105,35 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
-	/*this g is just for now*/
-	g = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
-	if (!g)
-	{
-		printf("malloc failed on struct g\n");
+	/*---------------------------alocate group set P & O----------------------*/
+	g = (group*) malloc(sizeof(group));
+	if(!g){
+		printf("allocation failed on g");
 		return 5;
 	}
-	g->members = (char *)malloc(nof_vertex * sizeof(char));
-	if (!(g->members))
-	{
-		printf("malloc failed on pointer g->members\n");
+	g->members = (char*) malloc(nof_vertex*sizeof(char));
+	if(!(g->members)){
+		printf("allocation failed on g->members");
 		return 5;
 	}
-	g->size = nof_vertex;
-	for (temp_g = g->members; temp_g < g->members + nof_vertex; temp_g++)
-	{
-		*temp_g = 1;
-	}
+	memset(g->members, 1, nof_vertex); /*initial group of all the vertex*/
+	P = allocate_group_set();
+	O = allocate_group_set();
 
-	/*----calculate initial random vector to the power iteration algorithem----*/
-	eigen_vector = malloc(nof_vertex * sizeof(double));
-	if (!eigen_vector)
-	{
-		printf("malloc failed on pointer eigen_vector\n");
-		return 5;
-	}
-	for (temp_e = eigen_vector; temp_e < eigen_vector + nof_vertex; temp_e++)
-	{
-		*temp_e = rand();
-	}
-
-	/*-----------allocate 2 groups to later hold the division into 2------------*/
-	g1 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
-	if (!g1)
-	{
-		printf("malloc failed on struct g\n");
-		return 5;
-	}
-	g1->members = (char *)malloc(nof_vertex * sizeof(char));
-	if (!(g1->members))
-	{
-		printf("malloc failed on pointer g->members\n");
-		return 5;
-	}
-
-	g2 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
-	if (!g2)
-	{
-		printf("malloc failed on struct g\n");
-		return 5;
-	}
-	g2->members = (char *)malloc(nof_vertex * sizeof(char));
-	if (!(g2->members))
-	{
-		printf("malloc failed on pointer g->members\n");
-		return 5;
-	}
-
-	/*---------------------computing M----------------------------*/
-	for (temp_i = degrees; temp_i < degrees + A->n; temp_i++)
-	{
-		M += *temp_i;
-	}
-
-	/*---------------compute the 1norm for initial B----------------*/
-	B_1norm = compute_1norm(A, degrees, M);
-	printf("the 1norm for B is: %f\n", B_1norm);
-
-	error = algo_2(A, degrees, eigen_vector, g, g1, g2, B_1norm, M);
-	if (handle_errors(error, "algo_2"))
+	error = algo_3(A, degrees, P, O, nof_vertex);
+	if (handle_errors(error, "algo_3"))
 	{
 		return 5;
 	}
 
-	printf("g1:\n");
-	print_group(g1, nof_vertex);
-	printf("g2:\n");
-	print_group(g2, nof_vertex);
-
+	print_stack(O, nof_vertex);
 	A->free(A);
 	free(degrees);
+	fclose(input_file);
 	free(g->members);
 	free(g);
-	free(g1->members);
-	free(g1);
-	free(g2->members);
-	free(g2);
-	free(eigen_vector);
-	fclose(input_file);
+	P->free(P);
+	O->free(O);
 
 	printf("FINISHED\n");
 

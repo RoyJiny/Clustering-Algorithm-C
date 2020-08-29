@@ -2,6 +2,7 @@
 #define _SPMAT_H
 
 #define IS_POSITIVE(x) ((x) > 0.00001)
+#include "group.h"
 
 typedef enum
 {
@@ -11,11 +12,6 @@ typedef enum
 	DIVISION_BY_ZERO
 } Error;
 
-typedef struct _group
-{
-	char *members; /*i in g iff members[i] == 1*, size is always nof_vertex*/
-	int size;
-} group;
 
 typedef struct _spmat
 {

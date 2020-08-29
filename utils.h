@@ -10,6 +10,8 @@ void print_vector(double *vector, int size);
 
 void print_group(group *g, int size);
 
+void print_stack(group_set *s, int size);
+
 double compute_1norm(spmat *A, int *degrees, double M);
 
 char handle_errors(Error error, char *name);
