@@ -307,11 +307,11 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 		if (curr_row->index == curr_index && *g_members)
 		{
 			*row += curr_row->val;
+			row++;
+			curr_row = curr_row->next;
 		}
 		sum += *row; /*calc the row sum*/
 		curr_index++;
-		row++;
-		curr_row = curr_row->next;
 		g_members++;
 	}
 	return sum;
