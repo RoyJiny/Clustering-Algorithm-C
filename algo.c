@@ -105,7 +105,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
-                print_vector(B_g_row, g->size);
+                /*print_vector(B_g_row, g->size);*/
                 B_g_row[g_count] += B_1norm;
                 *runner1 = dot_product(B_g_row, eigen_vector, g->size);
                 runner1++;
