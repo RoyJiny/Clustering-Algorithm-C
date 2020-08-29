@@ -223,7 +223,7 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 	int i;
 	double row_sum, *temp = B_g_row;
 	char *g_members = g->members;
-	int row_degree = degrees[row];
+	double row_degree = (double)degrees[row];
 
 	if (!M)
 	{
@@ -234,7 +234,7 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 	{
 		if (*g_members)
 		{ /*the current vertex in g*/
-			*temp = -(row_degree * (*degrees)) / M;
+			*temp = -(row_degree * (double)(*degrees)) / M;
 		}
 		degrees++;
 		g_members++;
