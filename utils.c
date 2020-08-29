@@ -104,6 +104,7 @@ double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *de
 	}
 	numerator = dot_product(eigen_vector, mult_vector, g->size);
 	denominator = dot_product(eigen_vector, eigen_vector, g->size);
+	printf("the denominator is: %f", denominator);
 	free(mult_vector);
 	return numerator / denominator;
 	/*
