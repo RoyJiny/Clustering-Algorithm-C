@@ -4,7 +4,7 @@
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2)
 {
-    int i, j, *temp_i, g_count;
+    int i, *temp_i, g_count;
     char stop = 0, *g_members;
     double *B_row, B_1norm;
     double *B_g_row, *runner1, *runner2, *runner3, *mult_vector;
