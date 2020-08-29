@@ -225,10 +225,10 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         }
     }
 
-    free(g1->members);
+    /*free(g1->members);
     free(g1);
     free(g2->members);
-    free(g2);
+    free(g2);*/
     free(init_vector);
     return NONE;
 }
