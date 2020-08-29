@@ -130,7 +130,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
 
     eigen2s(eigen_vector, g1, g2, s, A->n);
+
     /*computing the modularity value*/
+    print_vector(mult_vector, g->size);
     g_members = g->members;
     runner1 = mult_vector;
     for (i = 0; i < A->n; i++)
@@ -148,8 +150,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         }
         g_members++;
     }
+    print_vector(mult_vector, g->size);
     modularity_value = 0.5 * dot_product(mult_vector, s, g->size);
-    printf("modularity value is: %f", modularity_value);
+    printf("modularity value is: %f\n", modularity_value);
     if (!IS_POSITIVE(modularity_value))
     { /*g is indivisible*/
         printf("g is indivisible\n");
