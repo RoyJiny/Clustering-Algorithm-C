@@ -165,7 +165,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	int *temp;
 	int *start_temp; /*save the start of temp for reuse*/
 	int *curr_vertex;
-	int i, j;
+	int i, j, counter;
 
 	curr_vertex = degree; /*fill degree*/
 	start_row = (double *)malloc(nof_vertex * sizeof(double));
@@ -193,13 +193,15 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 		{
 			return READ_FAILED;
 		}
+		counter = 0;
 		for (j = 0; j < nof_vertex; j++)
 		{
-			if (j == *temp)
+			if (counter < *curr_vertex && j == *temp)
 			{
 				*curr_row = 1;
 				/*TODO: maybe here count nnz for array imp*/
 				temp++;
+				counter++;
 			}
 			else
 			{
