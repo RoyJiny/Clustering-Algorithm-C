@@ -144,6 +144,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     free(B_g_row);
     return NONE;
 }
+
 /*P and O are the initial division*/
 Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
 {
@@ -151,28 +152,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     double B_1norm, *init_vector, M, *runner_d;
     int *runner_i;
     Error error;
-    /*-------------------------Allocations-------------------------*/
-    g1 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
-    if (!g1)
-    {
-        return ALLOCATION_FAILED;
-    }
-    g1->members = (char *)malloc(nof_vertex * sizeof(char));
-    if (!(g1->members))
-    {
-        return ALLOCATION_FAILED;
-    }
 
-    g2 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
-    if (!g2)
-    {
-        return ALLOCATION_FAILED;
-    }
-    g2->members = (char *)malloc(nof_vertex * sizeof(char));
-    if (!(g2->members))
-    {
-        return ALLOCATION_FAILED;
-    }
     /*init vector is set to the maximum size*/
     init_vector = malloc(nof_vertex * sizeof(double));
     if (!init_vector)
@@ -198,6 +178,29 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     /*-----------------------------run-------------------------------------*/
     while (!(P->is_empty(P)))
     {
+        /*-------------------------Allocations-------------------------*/
+        g1 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
+        if (!g1)
+        {
+            return ALLOCATION_FAILED;
+        }
+        g1->members = (char *)malloc(nof_vertex * sizeof(char));
+        if (!(g1->members))
+        {
+            return ALLOCATION_FAILED;
+        }
+
+        g2 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
+        if (!g2)
+        {
+            return ALLOCATION_FAILED;
+        }
+        g2->members = (char *)malloc(nof_vertex * sizeof(char));
+        if (!(g2->members))
+        {
+            return ALLOCATION_FAILED;
+        }
+
         g = P->pop(P);
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
         if (handle_errors(error, "algo_2"))
