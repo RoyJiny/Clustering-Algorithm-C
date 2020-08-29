@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
 	memset(g->members, 1, nof_vertex); /*initial group of all the vertex*/
 	P = allocate_group_set();
 	O = allocate_group_set();
+	P->push(P, g);
 
 	error = algo_3(A, degrees, P, O, nof_vertex);
 	if (handle_errors(error, "algo_3"))
