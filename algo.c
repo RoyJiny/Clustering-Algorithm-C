@@ -60,7 +60,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         {
             if (*g_members)
             { /*curr vertex in g*/
-                print_group(g, A->n);
+                printf("bg row:\n");
+                print_vector(B_g_row, g->size);
+                printf("degrees:\n");
+                print_vector_int(degrees, A->n);
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
                 if (error != NONE)
                 {
