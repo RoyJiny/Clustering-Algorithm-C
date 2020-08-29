@@ -106,13 +106,15 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	/*---------------------------alocate group set P & O----------------------*/
-	g = (group*) malloc(sizeof(group));
-	if(!g){
+	g = (group *)malloc(sizeof(group));
+	if (!g)
+	{
 		printf("allocation failed on g");
 		return 5;
 	}
-	g->members = (char*) malloc(nof_vertex*sizeof(char));
-	if(!(g->members)){
+	g->members = (char *)malloc(nof_vertex * sizeof(char));
+	if (!(g->members))
+	{
 		printf("allocation failed on g->members");
 		return 5;
 	}
@@ -132,8 +134,8 @@ int main(int argc, char *argv[])
 	fclose(input_file);
 	free(g->members);
 	free(g);
-	P->free(P);
-	O->free(O);
+	P->free_set(P);
+	O->free_set(O);
 
 	printf("FINISHED\n");
 
