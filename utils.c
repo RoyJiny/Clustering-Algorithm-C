@@ -243,6 +243,8 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 	printf("Bg row: \n");
 	print_vector(B_g_row, g->size);
 	row_sum = A->add_to_row(A, row, B_g_row, g);
+	printf("after: \n");
+	print_vector(B_g_row, g->size);
 	B_g_row[row] -= row_sum; /*for B_hat*/
 	return NONE;
 }
