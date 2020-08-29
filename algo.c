@@ -60,6 +60,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         {
             if (*g_members)
             { /*curr vertex in g*/
+                print_group(g, A->n);
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
                 if (error != NONE)
                 {
@@ -203,9 +204,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             return ALLOCATION_FAILED;
         }
 
-        print_stack(P, nof_vertex);
         g = P->pop(P);
-        print_stack(P, nof_vertex);
         printf("size of g: %d\n", g->size);
         print_group(g, nof_vertex);
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
