@@ -8,8 +8,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     int i, j, *temp_i, g_count;
     char stop = 0, *g_members;
     double B_1norm = 0, *B_row, *col_sums;
-    double *B_g_row, *runner1, *runner2, *mult_vector;
+    double *B_g_row, *runner1, *runner2, *runner3, *mult_vector;
     double M, modularity_value, eigen_value, *s, magnitude;
+    double *unnormalized_eigen_vector;
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
@@ -28,6 +29,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     col_sums = (double *)malloc((A->n) * sizeof(double));
     if (!col_sums)
+    {
+        return ALLOCATION_FAILED;
+    }
+
+    unnormalized_eigen_vector = (double *)malloc((g->size) * sizeof(double));
+    if (!unnormalized_eigen_vector)
     {
         return ALLOCATION_FAILED;
     }
@@ -102,6 +109,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         magnitude = sqrt(dot_product(mult_vector, mult_vector, g->size));
         stop = 1;
         runner2 = eigen_vector;
+        runner3 = unnormalized_eigen_vector;
         for (runner1 = mult_vector; runner1 < mult_vector + g->size; runner1++)
         {
             if (IS_POSITIVE(fabs(*runner2 - (*runner1 / magnitude))))
@@ -109,7 +117,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
                 stop = 0;
             }
             *runner2 = *runner1 / magnitude;
+            *runner3 = *runner1;
             runner2++;
+            runner3++;
         }
     }
 
@@ -117,7 +127,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     print_vector(eigen_vector, g->size);
 
     /*---------------------computing leading eigen value-------------*/
-    eigen_value = calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm);
+    eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
     /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/
