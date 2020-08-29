@@ -198,6 +198,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     /*-----------------------------run-------------------------------------*/
     while (!(P->is_empty(P)))
     {
+        printf("starting loop");
         g = P->pop(P);
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
         if (handle_errors(error, "algo_2"))
