@@ -75,7 +75,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         }
     }
     printf("the 1norm for B is: %f\n", B_1norm);
-    B_1norm = 5;
 
     /*---------------------power iteration-------------------------*/
     while (!stop)
@@ -118,7 +117,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     print_vector(eigen_vector, g->size);
 
     /*---------------------computing leading eigen value-------------*/
-    eigen_value = calculate_eigen_value(A, eigen_vector);
+    eigen_value = calculate_eigen_value(A, eigen_vector, g, degrees, M, B_row, B_1norm);
     /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/

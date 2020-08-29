@@ -71,8 +71,42 @@ Error power_iteration(spmat *mat, double *vector)
 }
 
 /*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
-double calculate_eigen_value(spmat *mat, double *eigen_vector)
+double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, double *degrees, double M, double *B_g_row, double B_1norm)
 {
+	Error error;
+	int i, g_count = 0;
+	double numerator, denominator;
+	char *g_members = g->members;
+	double *mult_vector, *runner;
+
+	mult_vector = (double *)malloc((g->size) * sizeof(double));
+	if (!mult_vector)
+	{
+		printf("allocation failed in calculate eigen value");
+	}
+	runner = mult_vector;
+	for (i = 0; i < mat->n; i++)
+	{
+		if (*g_members)
+		{ /*curr vertex in g*/
+			error = compute_modularity_matrix_row(mat, i, g, degrees, M, B_g_row);
+			if (error != NONE)
+			{
+				printf("failed in compute_modularity_matrix_row\n");
+				return error;
+			}
+			B_g_row[g_count] += B_1norm;
+			*runner = dot_product(B_g_row, eigen_vector, g->size);
+			runner++;
+			g_count++;
+		}
+		g_members++;
+	}
+	numerator = dot_product(eigen_vector, mult_vector, g->size);
+	denominator = dot_product(eigen_vector, eigen_vector, g->size);
+	free(mult_vector);
+	return numerator / denominator;
+	/*
 	int size = mat->n;
 	double *Ab;
 	double numerator;
@@ -90,6 +124,7 @@ double calculate_eigen_value(spmat *mat, double *eigen_vector)
 	return numerator / denominator;
 
 	free(Ab);
+	*/
 }
 
 /*return 1 if there was an error and 0 otherwise*/
