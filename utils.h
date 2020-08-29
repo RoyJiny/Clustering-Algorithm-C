@@ -21,7 +21,7 @@ double compute_modularity_value(spmat *B_g, double *s);
 
 Error power_iteration(spmat *mat, double *vector);
 
-int calculate_eigen_value(spmat *mat, double *eigen_vector); /*TODO: substrat C_1norm*/
+double calculate_eigen_value(spmat *mat, double *eigen_vector); /*TODO: substrat C_1norm*/
 
 /*determine the partition into 2 groups, and calc the s vector*/
 void eigen2s(double *eigen, group *g1, group *g2, double *s, int size);

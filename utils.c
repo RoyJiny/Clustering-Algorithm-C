@@ -71,7 +71,7 @@ Error power_iteration(spmat *mat, double *vector)
 }
 
 /*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
-int calculate_eigen_value(spmat *mat, double *eigen_vector)
+double calculate_eigen_value(spmat *mat, double *eigen_vector)
 {
 	int size = mat->n;
 	double *Ab;
