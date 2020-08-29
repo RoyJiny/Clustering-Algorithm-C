@@ -71,7 +71,7 @@ Error power_iteration(spmat *mat, double *vector)
 }
 
 /*calculate the eigen vector with the matrix and the vector from the last iteration of power iteration*/
-double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, double *degrees, double M, double *B_g_row, double B_1norm)
+double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm)
 {
 	Error error;
 	int i, g_count = 0;
