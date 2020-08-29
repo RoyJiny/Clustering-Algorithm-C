@@ -302,13 +302,9 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 	char *g_members;
 	node **rows;
 	node *curr_row;
-	printf("trying to set members\n");
 	g_members = g->members;
-	printf("set members\n");
 	rows = ((list *)(A->handle))->rows;
-	printf("defined rows\n");
 	curr_row = *(rows + row_index);
-	printf("defined curr row\n");
 	while (curr_row != NULL)
 	{
 		if (curr_row->index == curr_index && *g_members)
