@@ -66,4 +66,6 @@ group_set *allocate_group_set()
     s->is_empty = is_empty;
     s->pop = pop;
     s->push = push;
+
+    return s;
 }
