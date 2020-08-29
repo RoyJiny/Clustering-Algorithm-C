@@ -58,12 +58,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
 
     /*---------------compute the 1norm for initial B----------------*/
-    printf("\n A: \n");
-    A->print_matrix(A);
-    printf("\ndegrees\n");
-    print_vector_int(degrees, A->n);
-    printf("\n");
-    printf("Bg:\n");
     memset(col_sums, 0, A->n);
     for (i = 0; i < A->n; i++)
     {
@@ -73,7 +67,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             printf("failed in compute_modularity_matrix_row - for B\n");
             return error;
         }
-        print_vector(B_g_row, g->size);
+
         j = 0;
         for (runner1 = col_sums; runner1 < col_sums + A->n; runner1++)
         {
