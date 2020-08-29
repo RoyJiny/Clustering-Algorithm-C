@@ -28,12 +28,12 @@ group *pop(group_set *s)
     return g;
 }
 
-group *top(group_set *s)
+group *top(const group_set *s)
 {
     return s->first->value;
 }
 
-char is_empty(group_set *s)
+char is_empty(const group_set *s)
 {
     return (s->size) <= 0;
 }
