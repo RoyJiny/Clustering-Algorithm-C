@@ -86,7 +86,7 @@ double compute_1norm(spmat *A, int *degrees, double M)
 	}
 	g->size = A->n;
 	memset(g->members, 1, A->n);
-	print_group(g, A->n);
+
 	memset(col_sums, 0, A->n);
 	for (i = 0; i < A->n; i++)
 	{
