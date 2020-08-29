@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
 		printf("allocation failed on g->members");
 		return 5;
 	}
+	g->size = nof_vertex;
 	memset(g->members, 1, nof_vertex); /*initial group of all the vertex*/
 	P = allocate_group_set();
 	O = allocate_group_set();
