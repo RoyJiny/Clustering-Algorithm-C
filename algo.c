@@ -204,8 +204,8 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         }
 
         g = P->pop(P);
-        print_group(g, nof_vertex);
         printf("size of g: %d", g->size);
+        print_group(g, nof_vertex);
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
         printf("finished algo 2 run");
 
