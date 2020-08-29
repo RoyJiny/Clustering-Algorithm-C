@@ -63,7 +63,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         j = 0;
         for (runner1 = col_sums; runner1 < col_sums + A->n; runner1++)
         {
-            *runner1 += *(B_row + j);
+            *runner1 += fabs(*(B_row + j));
             j++;
         }
     }
@@ -75,7 +75,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         }
     }
     printf("the 1norm for B is: %f\n", B_1norm);
-    B_1norm = 5;
+
     /*---------------------power iteration-------------------------*/
     while (!stop)
     {
@@ -92,7 +92,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
-                B_g_row[g_count] += B_1norm; /*TODO: compute the real norm*/
+                B_g_row[g_count] += B_1norm;
                 *runner1 = dot_product(B_g_row, eigen_vector, g->size);
                 runner1++;
                 g_count++;
