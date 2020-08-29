@@ -307,6 +307,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 	curr_row = *(rows + row_index);
 	while (curr_row != NULL)
 	{
+		printf("started loop\n");
 		if (curr_row->index == curr_index && *g_members)
 		{
 			*row += curr_row->val;
@@ -316,6 +317,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 		sum += *row; /*calc the row sum*/
 		curr_index++;
 		g_members++;
+		printf("finished loop\n");
 	}
 	return sum;
 }
