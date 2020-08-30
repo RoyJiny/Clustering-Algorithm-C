@@ -141,12 +141,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
 
-    free(s);
+    free(mult_vector);
     if (run_num > 0)
     {
         printf("free 1\n");
     }
-    free(mult_vector);
+    free(s);
     if (run_num > 0)
     {
         printf("free 2\n");
@@ -203,7 +203,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     while (!(P->is_empty(P)))
     {
         printf("-------------------------------------------------------------------\n");
-        printf("starting a loop run of algorithm 3\n");
+        printf("starting a loop run of algorithm 3 (run %d)\n", run_num);
         /*-------------------------Allocations-------------------------*/
         /*we allocate g1,g2 the maximum possible size, although in future runs they won't*/
         /*acutally use the full allocated size*/
