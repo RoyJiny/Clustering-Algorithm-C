@@ -27,7 +27,7 @@ void print_vector(double *vector, int size)
 		printf("%f ,", *vector);
 		vector++;
 	}
-	printf("%f)\n\n\n", *vector);
+	printf("%f)\n", *vector);
 }
 
 void print_vector_int(int *vector, int size)
@@ -39,7 +39,7 @@ void print_vector_int(int *vector, int size)
 		printf("%d ,", *vector);
 		vector++;
 	}
-	printf("%d)\n\n\n", *vector);
+	printf("%d)\n", *vector);
 }
 
 void print_group(group *g, int size)
@@ -52,7 +52,7 @@ void print_group(group *g, int size)
 		printf("%d ,", *g_mem);
 		g_mem++;
 	}
-	printf("%d)\n\n\n", *g_mem);
+	printf("%d)\n", *g_mem);
 }
 
 void print_stack(group_set *s, int size)

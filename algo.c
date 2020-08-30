@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "algo.h"
 
+static int run_num = 0;
+
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
     int i, g_count;
@@ -51,6 +53,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*---------------------power iteration-------------------------*/
     while (!stop)
     {
+        if (run_num > 0)
+        {
+            printf("starting algo 2 PI loop\n");
+        }
         runner1 = mult_vector;
         g_members = g->members;
         g_count = 0;
@@ -88,6 +94,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             *runner3 = *runner1;
             runner2++;
             runner3++;
+        }
+        if (run_num > 0)
+        {
+            printf("finished algo 2 PI loop\n");
         }
     }
 
@@ -180,6 +190,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     /*-----------------------------run-------------------------------------*/
     while (!(P->is_empty(P)))
     {
+        printf("-------------------------------------------------------------------\n");
         printf("starting a loop run of algorithm 3\n");
         /*-------------------------Allocations-------------------------*/
         /*we allocate g1,g2 the maximum possible size, although in future runs they won't*/
@@ -239,6 +250,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             g2->size == 1 ? O->push(O, g2) : P->push(P, g2);
         }
         printf("finished loop run of alogirthm 3\n\n");
+        run_num++;
     }
 
     /*free(g1->members);
