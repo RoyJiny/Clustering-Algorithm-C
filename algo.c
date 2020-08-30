@@ -59,10 +59,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
         for (i = 0; i < A->n; i++)
         {
-            if (run_num > 0)
-            {
-                printf("in for loop run %d\n", i);
-            }
             /*do only if the vertex is in g*/
             if (*g_members)
             {
