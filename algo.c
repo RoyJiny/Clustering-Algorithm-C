@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "algo.h"
 
-static int run_num = 0;
-
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
     int i, g_count;
@@ -53,10 +51,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*---------------------power iteration-------------------------*/
     while (!stop)
     {
-        if (run_num > 0)
-        {
-            printf("starting algo 2 PI loop\n");
-        }
         runner1 = mult_vector;
         g_members = g->members;
         g_count = 0;
@@ -70,10 +64,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             /*do only if the vertex is in g*/
             if (*g_members)
             {
-                if (run_num > 0)
-                {
-                    printf("vertex is in g\n");
-                }
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
                 if (error != NONE)
                 {
@@ -102,10 +92,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             *runner3 = *runner1;
             runner2++;
             runner3++;
-        }
-        if (run_num > 0)
-        {
-            printf("finished algo 2 PI loop\n");
         }
     }
 
