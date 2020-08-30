@@ -317,15 +317,19 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 		if (run_num > 0)
 		{
 			printf("started loop run\n");
+			printf("index is: \n");
 			sleep(1);
 		}
-		if (curr_row->index == curr_index && *g_members)
+		if (curr_row->index == curr_index)
 		{
 			if (run_num > 0)
 			{
 				printf("setting values\n");
 			}
-			*row += curr_row->val;
+			if (*g_members)
+			{
+				*row += curr_row->val;
+			}
 			row++;
 			curr_row = curr_row->next;
 		}
