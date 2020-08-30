@@ -4,7 +4,7 @@
 #define IS_POSITIVE(x) ((x) > 0.00001)
 #include "group.h"
 
-static int run_num = 0;
+int run_num = 0;
 
 typedef enum
 {
