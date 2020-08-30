@@ -4,6 +4,8 @@
 #include <stdio.h>
 #define print 0
 
+extern int run_num;
+
 typedef struct node
 {
 	double val;

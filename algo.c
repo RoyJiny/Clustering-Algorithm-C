@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "algo.h"
 
+extern int run_num;
+
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
     int i, g_count;
