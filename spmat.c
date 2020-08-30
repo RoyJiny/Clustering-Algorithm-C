@@ -312,10 +312,6 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 	{
 		if (curr_row->index == curr_index)
 		{
-			if (run_num > 0)
-			{
-				printf("setting values\n");
-			}
 			if (*g_members)
 			{
 				*row += curr_row->val;
