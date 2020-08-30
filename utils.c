@@ -7,13 +7,12 @@
 double dot_product(double *row1, double *row2, int size)
 {
 	double sum = 0;
-	double *row1_runner = row1, *row2_runner = row2;
 	double *end = row1 + size;
-	for (; row1_runner < end;)
+	for (; row1 < end;)
 	{
-		sum += (*row1_runner) * (*row2_runner);
-		row1_runner++;
-		row2_runner++;
+		sum += (*row1) * (*row2);
+		row1++;
+		row2++;
 	}
 
 	return sum;
