@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <unistd.h>
 #define print 0
 
 extern int run_num;
@@ -316,6 +317,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 		if (run_num > 0)
 		{
 			printf("started loop run\n");
+			sleep(1);
 		}
 		if (curr_row->index == curr_index && *g_members)
 		{

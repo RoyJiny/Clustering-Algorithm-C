@@ -249,6 +249,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	free(start_temp);
 	return NONE;
 }
+
 /*calculate a specific row of the modularity matrix, for group g (B_hat)*/
 /*assuming g->members is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
 Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row)
