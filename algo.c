@@ -13,39 +13,38 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     Error error;
 
     /*------------------------ALLOCATIONS------------------------*/
-
     B_g_row = (double *)malloc((g->size) * sizeof(double));
     if (!B_g_row)
     {
-        printf("failed in gb row");
+        printf("alocation failed in gb row");
         return ALLOCATION_FAILED;
     }
 
     B_row = (double *)malloc((A->n) * sizeof(double));
     if (!B_row)
     {
-        printf("failed in b row");
+        printf("alocation failed in b row");
         return ALLOCATION_FAILED;
     }
 
     unnormalized_eigen_vector = (double *)malloc((g->size) * sizeof(double));
     if (!unnormalized_eigen_vector)
     {
-        printf("failed in unmrlzd ev");
+        printf("alocation failed in unmrlzd ev");
         return ALLOCATION_FAILED;
     }
 
     mult_vector = (double *)malloc((g->size) * sizeof(double));
     if (!mult_vector)
     {
-        printf("failed in mult");
+        printf("alocation failed in mult");
         return ALLOCATION_FAILED;
     }
 
     s = (double *)malloc((g->size) * sizeof(double));
     if (!s)
     {
-        printf("failed in s");
+        printf("alocation failed in s");
         return ALLOCATION_FAILED;
     }
 
@@ -58,8 +57,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
         for (i = 0; i < A->n; i++)
         {
+            /*do only if the vertex is in g*/
             if (*g_members)
-            { /*curr vertex in g*/
+            {
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
                 if (error != NONE)
                 {
@@ -97,13 +97,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
     printf("the eigen value is: %f\n", eigen_value);
-    /*TODO: something in the nirmool (see forum), and need to sub B_1norm*/
 
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
         printf("g is indivisible\n");
-        printf("eigen value is not visible, value: %f\n", eigen_value);
+        printf("eigen value is not non-positive, value: %f\n", eigen_value);
         /*TODO : update g1 & g2*/
         return NONE;
     }
@@ -115,8 +114,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     runner1 = mult_vector;
     for (i = 0; i < A->n; i++)
     {
+        /*do only if the vertex is in g*/
         if (*g_members)
-        { /*curr vertex in g*/
+        {
             error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
             if (error != NONE)
             {
@@ -131,7 +131,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     modularity_value = 0.5 * dot_product(mult_vector, s, g->size);
     printf("modularity value is: %f\n", modularity_value);
     if (!IS_POSITIVE(modularity_value))
-    { /*g is indivisible*/
+    {
         printf("g is indivisible\n");
         /*TODO : update g1 & g2*/
         return NONE;
@@ -206,19 +206,22 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         }
 
         g = P->pop(P);
-        printf("size of g: %d\n", g->size);
+        printf("size of g: %d, the value is:\n", g->size);
         print_group(g, nof_vertex);
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
-        printf("finished algo 2 run\n");
+        printf("finished algo 2 run\n\n");
 
         if (handle_errors(error, "algo_2"))
         {
             return error;
         }
-        /*max goes here*/
+
+        /*modularity maximization*/
+
         if (g1->size == 0 || g2->size == 0)
         {
             O->push(O, g);
+            printf("one group is empty, pushing g to O, freeing g1,g2\n");
             /*g1,g2 won't be used anymore*/
             free(g1->members);
             free(g2->members);
@@ -227,6 +230,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         }
         else
         {
+            printf("groups are not empty, pushing to P and O\n");
             g1->size == 1 ? O->push(O, g1) : P->push(P, g1);
             g2->size == 1 ? O->push(O, g2) : P->push(P, g2);
         }
