@@ -150,11 +150,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     {
         printf("free 1\n");
     }
-    free(B_g_row);
-    if (run_num > 0)
-    {
-        printf("free 3\n");
-    }
     free(B_row);
     if (run_num > 0)
     {
@@ -164,6 +159,11 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     if (run_num > 0)
     {
         printf("free 5\n");
+    }
+    free(B_g_row);
+    if (run_num > 0)
+    {
+        printf("free 3\n");
     }
     free(s);
     if (run_num > 0)
