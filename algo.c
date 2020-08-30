@@ -142,10 +142,30 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
 
     free(s);
+    if (run_num > 0)
+    {
+        printf("free 1\n");
+    }
     free(mult_vector);
+    if (run_num > 0)
+    {
+        printf("free 2\n");
+    }
     free(B_g_row);
+    if (run_num > 0)
+    {
+        printf("free 3\n");
+    }
     free(B_row);
+    if (run_num > 0)
+    {
+        printf("free 4\n");
+    }
     free(unnormalized_eigen_vector);
+    if (run_num > 0)
+    {
+        printf("free 5\n");
+    }
     return NONE;
 }
 
