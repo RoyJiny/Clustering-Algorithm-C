@@ -63,9 +63,17 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
         for (i = 0; i < A->n; i++)
         {
+            if (run_num > 0)
+            {
+                printf("in for loop run %d", i);
+            }
             /*do only if the vertex is in g*/
             if (*g_members)
             {
+                if (run_num > 0)
+                {
+                    printf("vertex is in g\n");
+                }
                 error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
                 if (error != NONE)
                 {
