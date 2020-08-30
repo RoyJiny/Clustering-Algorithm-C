@@ -175,11 +175,12 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
 
     /*-------------------compute the 1norm for initial B------------------*/
     B_1norm = compute_1norm(A, degrees, M);
-    printf("the 1norm for B is: %f\n", B_1norm);
+    printf("the 1norm for B is: %f\n\n", B_1norm);
 
     /*-----------------------------run-------------------------------------*/
     while (!(P->is_empty(P)))
     {
+        printf("starting a loop run of algorithm 3\n");
         /*-------------------------Allocations-------------------------*/
         /*we allocate g1,g2 the maximum possible size, although in future runs they won't*/
         /*acutally use the full allocated size*/
@@ -204,12 +205,15 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         {
             return ALLOCATION_FAILED;
         }
+        printf("finished allocations for alogrithm 3\n");
 
         g = P->pop(P);
-        printf("size of g: %d, the value is:\n", g->size);
+        printf("popped g. size of g: %d, the value is:\n", g->size);
         print_group(g, nof_vertex);
+
+        printf("calling algorithm 2\n");
         error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
-        printf("finished algo 2 run\n\n");
+        printf("finished algorithm 2 run\n\n");
 
         if (handle_errors(error, "algo_2"))
         {
@@ -234,6 +238,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             g1->size == 1 ? O->push(O, g1) : P->push(P, g1);
             g2->size == 1 ? O->push(O, g2) : P->push(P, g2);
         }
+        printf("finished loop run of alogirthm 3\n\n");
     }
 
     /*free(g1->members);

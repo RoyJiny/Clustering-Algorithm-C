@@ -118,8 +118,10 @@ int main(int argc, char *argv[])
 		printf("allocation failed on g->members");
 		return 5;
 	}
+
+	/*-------------------------------initial calculations----------------------------*/
 	g->size = nof_vertex;
-	memset(g->members, 1, nof_vertex); /*initialize a trivial division*/
+	memset(g->members, 1, nof_vertex); /*trivial division*/
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);
