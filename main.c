@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	g->size = nof_vertex;
-	memset(g->members, 1, nof_vertex); /*initial group of all the vertex*/
+	memset(g->members, 1, nof_vertex); /*initialize a trivial division*/
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);

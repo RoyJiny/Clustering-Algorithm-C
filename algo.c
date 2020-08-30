@@ -181,7 +181,9 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     while (!(P->is_empty(P)))
     {
         /*-------------------------Allocations-------------------------*/
-        g1 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
+        /*we allocate g1,g2 the maximum possible size, although in future runs they won't*/
+        /*acutally use the full allocated size*/
+        g1 = (group *)malloc(sizeof(group));
         if (!g1)
         {
             return ALLOCATION_FAILED;
@@ -192,7 +194,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             return ALLOCATION_FAILED;
         }
 
-        g2 = (group *)malloc(sizeof(group)); /*remember that g will have a different size for each iteration*/
+        g2 = (group *)malloc(sizeof(group));
         if (!g2)
         {
             return ALLOCATION_FAILED;
@@ -217,6 +219,11 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         if (g1->size == 0 || g2->size == 0)
         {
             O->push(O, g);
+            /*g1,g2 won't be used anymore*/
+            free(g1->members);
+            free(g2->members);
+            free(g1);
+            free(g2);
         }
         else
         {
