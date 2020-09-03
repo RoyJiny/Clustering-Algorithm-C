@@ -50,6 +50,14 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return ALLOCATION_FAILED;
     }
 
+    /*if(run_num>0){
+        printf("\n");
+        A->print_matrix(A);
+        printf("\n");
+        print_vector_int(degrees,A->n);
+        printf("\n");
+    }*/
+
     /*---------------------power iteration-------------------------*/
     while (!stop)
     {
@@ -62,13 +70,13 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             /*do only if the vertex is in g*/
             if (*g_members)
             {
-                error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
+                /*g_count is the relative row number for the sub matrix of g*/
+                error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row, g_count);
                 if (error != NONE)
                 {
                     printf("failed in compute_modularity_matrix_row\n");
                     return error;
                 }
-
                 B_g_row[g_count] += B_1norm;
                 *runner1 = dot_product(B_g_row, eigen_vector, g->size);
                 runner1++;
@@ -76,6 +84,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             }
             g_members++;
         }
+        
         magnitude = sqrt(dot_product(mult_vector, mult_vector, g->size));
         stop = 1;
         runner2 = eigen_vector;
@@ -91,35 +100,45 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             runner2++;
             runner3++;
         }
+        
     }
 
     printf("the eigen vector is:\n");
     print_vector(eigen_vector, g->size);
-
+    printf("the unnormilezed eigen vector is:\n");
+    print_vector(unnormalized_eigen_vector,g->size);
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
     printf("the eigen value is: %f\n", eigen_value);
 
+    printf("the unnormilezed eigen vector is:\n");
+    print_vector(unnormalized_eigen_vector,g->size);
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
         printf("g is indivisible\n");
         printf("eigen value is not non-positive, value: %f\n", eigen_value);
         /*TODO : update g1 & g2*/
-        return NONE;
+        free(mult_vector);
+        free(B_row);
+        free(unnormalized_eigen_vector);
+        free(B_g_row);
+        free(s);
+        return INDIVISIBLE;
     }
 
-    eigen2s(eigen_vector, g1, g2, s, A->n);
+    eigen2s(eigen_vector, g ,g1, g2, s, A->n);
 
     /*computing the modularity value*/
     g_members = g->members;
     runner1 = mult_vector;
+    g_count = 0;
     for (i = 0; i < A->n; i++)
     {
         /*do only if the vertex is in g*/
         if (*g_members)
         {
-            error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row);
+            error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row,g_count);
             if (error != NONE)
             {
                 printf("failed in compute_modularity_matrix_row\n");
@@ -127,6 +146,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             }
             *runner1 = dot_product(B_g_row, s, g->size);
             runner1++;
+            g_count++;
         }
         g_members++;
     }
@@ -136,11 +156,39 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     {
         printf("g is indivisible\n");
         /*TODO : update g1 & g2*/
-        return NONE;
+        if (run_num > 0)
+        {
+            printf("in run 1\n");
+        }
+        free(mult_vector);
+        if (run_num > 0)
+        {
+            printf("free 1\n");
+        }
+        free(B_row);
+        if (run_num > 0)
+        {
+            printf("free 4\n");
+        }
+        free(unnormalized_eigen_vector);
+        if (run_num > 0)
+        {
+            printf("free 5\n");
+        }
+        free(B_g_row);
+        if (run_num > 0)
+        {
+            printf("free 3\n");
+        }
+        free(s);
+        if (run_num > 0)
+        {
+            printf("free 2\n");
+        }
+        return INDIVISIBLE;
     }
 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
-
     if (run_num > 0)
     {
         printf("in run 1\n");
@@ -246,10 +294,10 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         {
             return error;
         }
-
+        
         /*modularity maximization*/
 
-        if (g1->size == 0 || g2->size == 0)
+        if (g1->size == 0 || g2->size == 0 || error == INDIVISIBLE)
         {
             O->push(O, g);
             printf("one group is empty, pushing g to O, freeing g1,g2\n");
@@ -261,9 +309,14 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         }
         else
         {
+            printf("after algo_2\ng1 is:\n");
+            print_group(g1, nof_vertex);
+            printf("\ng2 is:\n");
+            print_group(g2, nof_vertex);
             printf("groups are not empty, pushing to P and O\n");
-            g1->size == 1 ? O->push(O, g1) : P->push(P, g1);
             g2->size == 1 ? O->push(O, g2) : P->push(P, g2);
+            g1->size == 1 ? O->push(O, g1) : P->push(P, g1);
+            
         }
         printf("finished loop run of alogirthm 3\n\n");
         run_num++;

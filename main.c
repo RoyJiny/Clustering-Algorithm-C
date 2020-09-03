@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	/*TODO: move it to algo_2*/
 	/*int debug = 1;*/		/*for short debug prints*/
 	/*int deep_debug = 1;*/ /*for the long debug prints*/
-	FILE *input_file;
+	FILE *input_file, *output_file ,*result;
 	group_set *P, *O;
 	group *g;
 	spmat *A;
@@ -133,15 +133,54 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
-
+	printf("stack_is :\n");
 	print_stack(O, nof_vertex);
+	/*----------------------------write the division in the output_file--------------*/
+	output_file = fopen(argv[2], "w");
+	if (!output_file)
+	{
+		printf("output file is invalid\n");
+		return 5;
+	}
+	error = write2_output_file(output_file, O, nof_vertex);
+	if(handle_errors(error,"write2_output_file"))
+	{
+		return 5;
+	}
+	fclose(output_file);
+	/*-----------printing the output file-----------------*/
+
+
+	output_file = fopen(argv[2], "r");
+	if (!output_file)
+	{
+		printf("output file is invalid2\n");
+		return 5;
+	}
+	printf("actual: \n");
+	print_output(output_file,nof_vertex);
+
+	result = fopen(argv[3], "r");
+	if (!result)
+	{
+		printf("output file is invalid2\n");
+		return 5;
+	}
+	printf("expected: \n");
+	print_output(result,nof_vertex);
+	fclose(result);
+
 	A->free(A);
 	free(degrees);
 	fclose(input_file);
+	fclose(output_file);
 	free(g->members);
 	free(g);
+	/*maybe its not neccessary because the stack getting empty in write2_output file*/
 	P->free_set(P);
 	O->free_set(O);
+	free(P);
+	free(O);
 
 	printf("FINISHED\n");
 

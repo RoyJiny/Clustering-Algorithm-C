@@ -9,7 +9,9 @@ typedef enum
 	NONE,
 	ALLOCATION_FAILED,
 	READ_FAILED,
-	DIVISION_BY_ZERO
+	WRITE_FAILED,
+	DIVISION_BY_ZERO,
+	INDIVISIBLE
 } Error;
 
 typedef struct _spmat

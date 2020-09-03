@@ -104,7 +104,7 @@ double compute_1norm(spmat *A, int *degrees, double M)
 	memset(col_sums, 0, A->n);
 	for (i = 0; i < A->n; i++)
 	{
-		error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row);
+		error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row,i);
 		if (error != NONE)
 		{
 			printf("failed in compute_modularity_matrix_row - for B\n");
@@ -153,7 +153,7 @@ double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *de
 	{
 		if (*g_members)
 		{ /*curr vertex in g*/
-			error = compute_modularity_matrix_row(mat, i, g, degrees, M, B_g_row);
+			error = compute_modularity_matrix_row(mat, i, g, degrees, M, B_g_row, g_count);
 			if (error != NONE)
 			{
 				printf("failed in compute_modularity_matrix_row\n");
@@ -185,6 +185,9 @@ char handle_errors(Error error, char *name)
 		return 1;
 	case DIVISION_BY_ZERO:
 		printf("division by zero in: %s\n", name);
+		return 1;
+	case WRITE_FAILED:
+		printf("write failed in: %s\n" ,name);
 		return 1;
 	default:
 		return 0;
@@ -252,7 +255,7 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 
 /*calculate a specific row of the modularity matrix, for group g (B_hat)*/
 /*assuming g->members is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
-Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row)
+Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count)
 {
 	int i;
 	double row_sum, *temp = B_g_row;
@@ -269,13 +272,13 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 		if (*g_members)
 		{ /*the current vertex in g*/
 			*temp = -(row_degree * (double)(*degrees)) / M;
+			temp++;
 		}
 		degrees++;
 		g_members++;
-		temp++;
 	}
 	row_sum = A->add_to_row(A, row, B_g_row, g);
-	B_g_row[row] -= row_sum; /*for B_hat*/
+	B_g_row[g_count] -= row_sum; /*for B_hat*/
 	return NONE;
 }
 
@@ -297,31 +300,111 @@ double compute_modularity_value(spmat *B_g, double *s)
 	return 0.5 * dot_product(s, Bs, size);
 }
 
-void eigen2s(double *eigen, group *g1, group *g2, double *s, int size)
+void eigen2s(double *eigen, group *g, group *g1, group *g2, double *s, int size)
 {
 	int i;
-	char *g1_members = g1->members, *g2_members = g2->members;
+	char *g_members = g->members, *g1_members = g1->members, *g2_members = g2->members;
 	g1->size = 0;
 	g2->size = 0;
 	for (i = 0; i < size; i++)
 	{
-		if (IS_POSITIVE(*eigen))
+		if(*g_members)
 		{
-			*g1_members = 1;
-			(g1->size)++;
-			*g2_members = 0;
-			*s = 1;
+			if (IS_POSITIVE(*eigen))
+			{
+				*g1_members = 1;
+				(g1->size)++;
+				*g2_members = 0;
+				*s = 1;
+			}
+			else
+			{
+				*g2_members = 1;
+				(g2->size)++;
+				*g1_members = 0;
+				*s = -1;
+			}
+			eigen++;
+			s++;
 		}
-		else
-		{
-			*g2_members = 1;
-			(g2->size)++;
+		else{ /*the current vertex is not in g*/
 			*g1_members = 0;
-			*s = -1;
+			*g2_members = 0;
 		}
-		eigen++;
+		g_members++;
 		g1_members++;
 		g2_members++;
-		s++;
 	}
+}
+
+
+Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
+{
+	group *g;
+	int i, nof_vertex_in_group, nof_groups = O->size;
+	int *curr, *runner;
+	char *g_members;
+	/*----------------allocations----------------*/
+	curr = (int *) malloc(nof_vertex * sizeof(int));
+	if(!curr){
+		return ALLOCATION_FAILED;
+	}
+	/*-------------------------------------------*/
+	/*first number = number of groups*/
+	if(fwrite(&nof_groups, sizeof(int),1,output) != 1){
+		return WRITE_FAILED;
+	}
+	while(!(O->is_empty(O))){
+		g = O->pop(O);
+		g_members = g->members;
+		nof_vertex_in_group = g->size;
+		/*number of vertex in the current group*/
+		if(fwrite(&nof_vertex_in_group, sizeof(int),1,output) != 1){
+			return WRITE_FAILED;
+		}
+		runner = curr;
+		for(i=0; i<nof_vertex; i++){
+			if(*g_members){
+				*runner = i;
+				runner++;
+			}
+			g_members++;
+		}
+		/*the actual vertex in the curr group*/
+		if((signed int)fwrite(curr, sizeof(int),nof_vertex_in_group,output) != nof_vertex_in_group){
+			return WRITE_FAILED;
+		}
+		free(g);
+	}
+	free(curr);
+	return NONE;
+}
+
+Error print_output(FILE *output, int nof_vertex){
+	int i, nof_groups, nof_vertex_in_group, *curr;
+
+	/*----------------allocations----------------*/
+	curr = (int *) malloc(nof_vertex * sizeof(int));
+	if(!curr){
+		return ALLOCATION_FAILED;
+	}
+
+	if(fread(&nof_groups,sizeof(int),1,output) !=1){
+		return READ_FAILED;
+	}
+	printf("result:\ndivision into %d groups\n",nof_groups);
+	for(i=0; i<nof_groups; i++){
+		if(fread(&nof_vertex_in_group,sizeof(int),1,output) !=1){
+			return READ_FAILED;
+		}
+		if((signed int)fread(curr,sizeof(int),nof_vertex_in_group,output) !=nof_vertex_in_group){
+			return READ_FAILED;
+		}
+		printf("group number %d is:\n",i);
+		print_vector_int(curr,nof_vertex_in_group);
+		printf("\n");
+	}
+
+	free(curr);
+	return NONE;
 }

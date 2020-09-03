@@ -297,7 +297,7 @@ void mult_list(const spmat *A, const double *v, double *result)
 	}
 	printf("end mult_list\n");
 }
-
+/*problem!!!!!!!!*/
 double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
@@ -315,11 +315,19 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 			if (*g_members)
 			{
 				*row += curr_row->val;
+				sum += *row; /*calc the row sum*/
+				row++;
 			}
-			row++;
 			curr_row = curr_row->next;
 		}
-		sum += *row; /*calc the row sum*/
+		/*------------------*/
+		else{
+			if(*g_members){
+				sum += *row; /*calc the row sum*/
+				row++;
+			}
+		}
+		/*-------------------*/
 		curr_index++;
 		g_members++;
 	}
