@@ -45,10 +45,12 @@ void free_set(group_set *s)
     {
         node = s->first;
         s->first = s->first->next;
+        free(node->value->members);
         free(node->value);
         free(node);
         s->size--;
     }
+    free(s);
 }
 
 group_set *allocate_group_set()

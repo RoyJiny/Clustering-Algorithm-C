@@ -374,6 +374,7 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 		if((signed int)fwrite(curr, sizeof(int),nof_vertex_in_group,output) != nof_vertex_in_group){
 			return WRITE_FAILED;
 		}
+		free(g->members);
 		free(g);
 	}
 	free(curr);

@@ -105,14 +105,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     printf("the eigen vector is:\n");
     print_vector(eigen_vector, g->size);
-    printf("the unnormilezed eigen vector is:\n");
-    print_vector(unnormalized_eigen_vector,g->size);
     /*---------------------computing leading eigen value-------------*/
     eigen_value = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm);
     printf("the eigen value is: %f\n", eigen_value);
 
-    printf("the unnormilezed eigen vector is:\n");
-    print_vector(unnormalized_eigen_vector,g->size);
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
@@ -316,7 +312,8 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             printf("groups are not empty, pushing to P and O\n");
             g2->size == 1 ? O->push(O, g2) : P->push(P, g2);
             g1->size == 1 ? O->push(O, g1) : P->push(P, g1);
-            
+            free(g->members);
+            free(g);
         }
         printf("finished loop run of alogirthm 3\n\n");
         run_num++;

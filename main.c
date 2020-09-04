@@ -8,6 +8,7 @@
 
 int run_num = 0;
 
+
 void test_input_read(spmat *mat, FILE *compare)
 {
 	unsigned int n, i;
@@ -55,6 +56,159 @@ void test_input_read(spmat *mat, FILE *compare)
 	}
 }
 
+int compare( const void* a, const void* b)
+{
+     int int_a = * ( (int*) a );
+     int int_b = * ( (int*) b );
+
+     if ( int_a == int_b ) return 0;
+     else if ( int_a < int_b ) return -1;
+     else return 1;
+}
+
+Error create_graph(FILE *file ,int numOfVertex, char empty, char full){
+	int i, *vector, *runner, j;
+	int random, temp;
+	char **mat, **runner3, *runner2;
+	/*--------------------allocations---------------------------*/
+	vector = (int *) malloc(numOfVertex*sizeof(int));
+	if(!vector){
+		return ALLOCATION_FAILED;
+	}
+	
+	if(fwrite(&numOfVertex, sizeof(int),1,file) != 1){
+		return WRITE_FAILED;
+	}
+	if(empty){ /*creates a graph with isolated vertexes*/
+		printf("generating empty graph of size %d\n",numOfVertex);
+		for(runner=vector; runner< vector+ numOfVertex; runner++){
+			*runner = 0;
+		}
+		if((signed int)fwrite(vector, sizeof(int),numOfVertex,file) != numOfVertex){
+			return WRITE_FAILED;
+		}	
+	}
+	else if(full){/*creates a clique*/
+		printf("generating full graph of size %d\n",numOfVertex);
+		numOfVertex--;
+		for(i=0; i<numOfVertex+1; i++){
+			runner = vector;
+			for(j=0; j<numOfVertex+1; j++){
+				if(j != i){
+					*runner = j;
+					runner++;
+				}
+			}
+			if(fwrite(&numOfVertex, sizeof(int),1,file) != 1){
+				return WRITE_FAILED;
+			}
+			if((signed int)fwrite(vector, sizeof(int),numOfVertex,file) != numOfVertex){
+				return WRITE_FAILED;
+			}
+		}
+	}
+	else{/*random connections*/
+		printf("generating random graph of size %d\n",numOfVertex);
+		mat = (char**) malloc(numOfVertex*sizeof(char*));
+		if(!mat){
+			return ALLOCATION_FAILED;
+		}
+		runner3 = mat;
+		for(i=0; i<numOfVertex; i++){
+			*runner3 = (char*) malloc(numOfVertex*sizeof(char));
+			if(!(*runner3)){
+				return ALLOCATION_FAILED;
+			}
+			runner3++;
+		}
+		for(i=0;i<numOfVertex; i++){
+			for(j=0; j<i; j++){
+				random = rand() % 4;
+				if(random == 0){
+					mat[i][j] = 1;
+					mat[j][i] = 1;
+				}
+				else{
+					mat[i][j] = 0;
+					mat[j][i] = 0;
+				}
+			}
+		}
+		runner3 = mat;
+		for(i=0; i<numOfVertex;i++){
+			runner2 = *runner3;
+			runner = vector;
+			temp =0;
+			for(j=0; j<numOfVertex; j++){
+				if(*runner2){
+					temp++;
+					*runner = j;
+					runner++;
+				}
+				runner2++;
+			}
+			if(fwrite(&temp, sizeof(int),1,file) != 1){
+				return WRITE_FAILED;
+			}
+			if((signed int)fwrite(vector, sizeof(int),temp,file) != temp){
+				return WRITE_FAILED;
+			}
+			runner3++;
+		}
+		
+	}
+	for(runner3 = mat; runner3<mat + numOfVertex;runner3++){
+		free(*runner3);
+	}
+	free(mat);
+	free(vector);
+	return NONE;
+}
+
+Error test_create_graph(char *name, int numOfVertex ,char empty, char full){
+	FILE *file;
+	Error error;
+	spmat *A;
+	int *degrees, i;
+	A = spmat_allocate_list(numOfVertex);
+	if (!A)
+	{
+		printf("sparse matrix allocation failed on A\n");
+		return ALLOCATION_FAILED;
+	}
+	degrees = (int *)malloc(numOfVertex * sizeof(int));
+	if (!degrees)
+	{
+		printf("malloc failed on pointer degree\n");
+		return ALLOCATION_FAILED;
+	}
+
+	file = fopen(name, "w");
+	if(!file){
+		printf("file is invalid\n");
+		return WRITE_FAILED;
+	}
+	create_graph(file ,numOfVertex ,empty, full);
+	fclose(file);
+	file = fopen(name, "r");
+	if(!file){
+		printf("file is invalid2\n");
+		return WRITE_FAILED;
+	}
+	if(fread(&i, sizeof(int),1,file) != 1){
+		return READ_FAILED;
+	}
+	error = read_input(file, A, degrees, numOfVertex);
+	if(handle_errors(error,"read_input")){
+		return error;
+	}
+	A->print_matrix(A);
+	fclose(file);
+	A->free(A);
+	free(degrees);
+	return NONE;
+}
+
 int main(int argc, char *argv[])
 {
 	/*TODO: move it to algo_2*/
@@ -69,7 +223,8 @@ int main(int argc, char *argv[])
 	Error error;
 
 	printf("argc: %d\n", argc);
-
+	srand(time(0));
+	test_create_graph(argv[1], 10, 0,0);
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
 	if (!input_file)
@@ -174,13 +329,11 @@ int main(int argc, char *argv[])
 	free(degrees);
 	fclose(input_file);
 	fclose(output_file);
-	free(g->members);
-	free(g);
+	/*free(g->members);*/ /*freed in algo_3 or in O->free_set*/
+	/*free(g);*/
 	/*maybe its not neccessary because the stack getting empty in write2_output file*/
 	P->free_set(P);
 	O->free_set(O);
-	free(P);
-	free(O);
 
 	printf("FINISHED\n");
 
