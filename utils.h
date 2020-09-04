@@ -32,7 +32,9 @@ Error power_iteration(spmat *mat, double *vector);
 double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm);
 
 /*determine the partition into 2 groups, and calc the s vector*/
-void eigen2s(double *eigen, group *g, group *g1, group *g2, double *s, int size);
+void eigen2s(double *eigen, group *g, double *s, int size);
+
+void construct_g1g2(int size, double *s, group *g1, group *g2);
 
 Error write2_output_file(FILE *output, group_set *O, int nof_vertex);
 

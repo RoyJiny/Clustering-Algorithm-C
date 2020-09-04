@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "algo.h"
+#include "list.h"
 
 extern int run_num;
 
@@ -122,7 +123,11 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return INDIVISIBLE;
     }
 
-    eigen2s(eigen_vector, g, g1, g2, s, A->n);
+    eigen2s(eigen_vector, g, s, A->n);
+
+    modularity_maximization(A, degrees, s, M, g);
+
+    construct_g1g2(g->size, s, g1, g2);
 
     /*computing the modularity value*/
     modularity_value = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector);
@@ -271,8 +276,6 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             return error;
         }
 
-        /*modularity maximization*/
-
         if (g1->size == 0 || g2->size == 0 || error == INDIVISIBLE)
         {
             O->push(O, g);
@@ -307,7 +310,116 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     return NONE;
 }
 
-Error modularity_maximization()
+Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g)
 {
+    dynamic_list *unmoved;
+    dynamic_node *node_runner;
+    double max_score, Q0, new_score, max_improve, delta_Q;
+    double *mult_vector, *B_g_row;
+    int i, j, max_score_index, max_improve_index;
+    double *improve, *improve_runner;
+    int *indices, *indices_runner;
+    char stop = 0;
+
+    /*----------------------Alocations--------------------*/
+    unmoved = allocate_dynamic_list(g->size);
+    B_g_row = (double *)malloc(g->size * sizeof(double));
+    if (!B_g_row)
+    {
+        return ALLOCATION_FAILED;
+    }
+    mult_vector = (double *)malloc(g->size * sizeof(double));
+    if (!mult_vector)
+    {
+        return ALLOCATION_FAILED;
+    }
+    improve = (double *)malloc(g->size * sizeof(double));
+    if (!improve)
+    {
+        return ALLOCATION_FAILED;
+    }
+    indices = (int *)malloc(g->size * sizeof(int));
+    if (!indices)
+    {
+        return ALLOCATION_FAILED;
+    }
+    /*------------------------------------------------------*/
+
+    while (!stop)
+    {
+        indices_runner = indices;
+        improve_runner = improve;
+
+        for (i = 0; i < g->size; i++)
+        {
+            Q0 = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector);
+            node_runner = unmoved->head;
+
+            /*first run*/
+            *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+            max_score = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector) - Q0;
+            max_score_index = node_runner->vertex;
+            *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+            node_runner = node_runner->next;
+
+            while (node_runner != NULL)
+            {
+                *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+                new_score = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector) - Q0;
+                if (new_score > max_score)
+                {
+                    max_score = new_score;
+                    max_score_index = node_runner->vertex;
+                }
+                *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+                node_runner = node_runner->next;
+            }
+
+            *(s + max_score_index) = -*(s + max_score_index);
+            *indices_runner = max_score_index;
+            if (i == 0)
+            {
+                *improve_runner = max_score;
+                max_improve_index = 0;
+                max_improve = max_score;
+            }
+            else
+            {
+                *improve_runner = *(improve_runner - 1) + max_score;
+                if (*improve_runner > max_improve)
+                {
+                    max_improve = *improve_runner;
+                    max_improve_index = i;
+                }
+            }
+
+            delete_node_by_index(unmoved, max_score_index);
+            indices_runner++;
+            improve_runner++;
+        }
+
+        indices_runner = indices + (g->size - 1);
+        for (i = g->size - 1; i > max_improve_index; i--)
+        {
+            j = indices_runner;
+            *(s + j) = -*(s + j);
+            indices_runner--;
+        }
+
+        if (max_improve_index == g->size - 1)
+        {
+            delta_Q = 0;
+        }
+        else
+        {
+            delta_Q = max_improve;
+        }
+
+        if (!IS_POSITIVE(delta_Q))
+        {
+            stop = 1;
+        }
+    }
+
     return NONE;
 }

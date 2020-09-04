@@ -311,41 +311,52 @@ double compute_modularity_value(spmat *A, group *g, int *degrees, double *s, dou
 	return 0.5 * dot_product(mult_vector, s, g->size);
 }
 
-void eigen2s(double *eigen, group *g, group *g1, group *g2, double *s, int size)
+void eigen2s(double *eigen, group *g, double *s, int size)
 {
 	int i;
-	char *g_members = g->members, *g1_members = g1->members, *g2_members = g2->members;
-	g1->size = 0;
-	g2->size = 0;
+	char *g_members = g->members;
 	for (i = 0; i < size; i++)
 	{
 		if (*g_members)
 		{
 			if (IS_POSITIVE(*eigen))
 			{
-				*g1_members = 1;
-				(g1->size)++;
-				*g2_members = 0;
 				*s = 1;
 			}
 			else
 			{
-				*g2_members = 1;
-				(g2->size)++;
-				*g1_members = 0;
 				*s = -1;
 			}
 			eigen++;
 			s++;
 		}
-		else
-		{ /*the current vertex is not in g*/
-			*g1_members = 0;
-			*g2_members = 0;
-		}
 		g_members++;
+	}
+}
+
+void construct_g1g2(int size, double *s, group *g1, group *g2)
+{
+	int i;
+	char *g1_members = g1->members, *g2_members = g2->members;
+	g1->size = 0;
+	g2->size = 0;
+	for (i = 0; i < size; i++)
+	{
+		if (*s)
+		{
+			g1_members = 1;
+			g2_members = 0;
+			g1->size++;
+		}
+		else
+		{
+			g2_members = 1;
+			g1_members = 0;
+			g2->size++;
+		}
 		g1_members++;
 		g2_members++;
+		s++;
 	}
 }
 
