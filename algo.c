@@ -308,3 +308,6 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
 }
 
 Error modularity_maximization()
+{
+    return NONE;
+}
