@@ -344,14 +344,14 @@ void construct_g1g2(int size, double *s, group *g1, group *g2)
 	{
 		if (*s)
 		{
-			g1_members = 1;
-			g2_members = 0;
+			*g1_members = 1;
+			*g2_members = 0;
 			g1->size++;
 		}
 		else
 		{
-			g2_members = 1;
-			g1_members = 0;
+			*g2_members = 1;
+			*g1_members = 0;
 			g2->size++;
 		}
 		g1_members++;
