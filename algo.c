@@ -84,7 +84,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             }
             g_members++;
         }
-        
+
         magnitude = sqrt(dot_product(mult_vector, mult_vector, g->size));
         stop = 1;
         runner2 = eigen_vector;
@@ -100,7 +100,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             runner2++;
             runner3++;
         }
-        
     }
 
     printf("the eigen vector is:\n");
@@ -123,31 +122,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return INDIVISIBLE;
     }
 
-    eigen2s(eigen_vector, g ,g1, g2, s, A->n);
+    eigen2s(eigen_vector, g, g1, g2, s, A->n);
 
     /*computing the modularity value*/
-    g_members = g->members;
-    runner1 = mult_vector;
-    g_count = 0;
-    for (i = 0; i < A->n; i++)
-    {
-        /*do only if the vertex is in g*/
-        if (*g_members)
-        {
-            error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row,g_count);
-            if (error != NONE)
-            {
-                printf("failed in compute_modularity_matrix_row\n");
-                return error;
-            }
-            *runner1 = dot_product(B_g_row, s, g->size);
-            runner1++;
-            g_count++;
-        }
-        g_members++;
-    }
-    modularity_value = 0.5 * dot_product(mult_vector, s, g->size);
+    modularity_value = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector);
     printf("modularity value is: %f\n", modularity_value);
+
     if (!IS_POSITIVE(modularity_value))
     {
         printf("g is indivisible\n");
@@ -290,7 +270,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
         {
             return error;
         }
-        
+
         /*modularity maximization*/
 
         if (g1->size == 0 || g2->size == 0 || error == INDIVISIBLE)
@@ -326,3 +306,5 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     free(init_vector);
     return NONE;
 }
+
+Error modularity_maximization()

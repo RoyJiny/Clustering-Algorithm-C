@@ -25,14 +25,14 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
 /**/
 Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
 
-double compute_modularity_value(spmat *B_g, double *s);
+double compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector);
 
 Error power_iteration(spmat *mat, double *vector);
 
 double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm);
 
 /*determine the partition into 2 groups, and calc the s vector*/
-void eigen2s(double *eigen, group *g ,group *g1, group *g2, double *s, int size);
+void eigen2s(double *eigen, group *g, group *g1, group *g2, double *s, int size);
 
 Error write2_output_file(FILE *output, group_set *O, int nof_vertex);
 
