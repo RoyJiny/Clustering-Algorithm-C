@@ -43,7 +43,7 @@ dynamic_list *allocate_dynamic_list(int size)
     tail = head;
     for (; i < size; i++)
     {
-        tail->next = (dynamic_list *)malloc(sizeof(dynamic_list));
+        tail->next = (dynamic_node *)malloc(sizeof(dynamic_node));
         tail = tail->next;
         if (!tail)
         {
