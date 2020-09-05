@@ -17,7 +17,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
     char stop = 0;
 
     /*----------------------Alocations--------------------*/
-    
+
     B_g_row = (double *)malloc(g->size * sizeof(double));
     if (!B_g_row)
     {
@@ -38,20 +38,25 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
     {
         return ALLOCATION_FAILED;
     }
+    unmoved = (dynamic_list *)malloc(sizeof(dynamic_list));
+    if (!unmoved)
+    {
+        return ALLOCATION_FAILED;
+    }
     /*------------------------------------------------------*/
 
     while (!stop)
     {
         indices_runner = indices;
         improve_runner = improve;
-        unmoved = allocate_dynamic_list(g->size);
+        create_dynamic_list(unmoved, g->size);
         for (i = 0; i < g->size; i++)
         {
             Q0 = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector);
             node_runner = unmoved->head;
 
             /*first run*/
-            
+
             *(s + node_runner->vertex) = -*(s + node_runner->vertex);
             max_score = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector) - Q0;
             max_score_index = node_runner->vertex;
@@ -92,7 +97,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             indices_runner++;
             improve_runner++;
         }
-        
+
         indices_runner = indices + (g->size - 1);
         for (i = g->size - 1; i > max_improve_index; i--)
         {
@@ -113,11 +118,11 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         {
             stop = 1;
         }
-        free(unmoved);
     }
     free(mult_vector);
     free(improve);
     free(indices);
+    free(unmoved);
 
     return NONE;
 }
@@ -221,7 +226,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
-       /* printf("g is indivisible\n");
+        /* printf("g is indivisible\n");
         printf("eigen value is not non-positive, value: %f\n", eigen_value);*/
         /*TODO : update g1 & g2*/
         free(mult_vector);

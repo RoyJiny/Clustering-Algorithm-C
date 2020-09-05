@@ -17,19 +17,12 @@ typedef struct _dynamic_list
     int size;
 } dynamic_list;
 
-dynamic_list *allocate_dynamic_list(int size)
+void create_dynamic_list(dynamic_list *list, int size)
 {
-    dynamic_list *list;
     dynamic_node *head = NULL, *tail = NULL;
     int i = 1;
     if (size == 0)
     {
-        return NULL;
-    }
-    list = (dynamic_list *)malloc(sizeof(dynamic_list));
-    if (!list)
-    {
-        printf("alocation failed in gb row");
         return NULL;
     }
     head = (dynamic_node *)malloc(sizeof(dynamic_node));
