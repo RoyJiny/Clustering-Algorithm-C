@@ -189,13 +189,14 @@ Error create_graph(FILE *file, int numOfVertex, char empty, char full)
 	}
 	free(mat);
 	free(vector);
+	printf("done generating random graph of size %d\n", numOfVertex);
 	return NONE;
 }
 
 Error test_create_graph(char *name, int numOfVertex, char empty, char full)
 {
 	FILE *file;
-	Error error;
+	/*Error error;
 	spmat *A;
 	int *degrees, i;
 	A = spmat_allocate_list(numOfVertex);
@@ -209,7 +210,7 @@ Error test_create_graph(char *name, int numOfVertex, char empty, char full)
 	{
 		printf("malloc failed on pointer degree\n");
 		return ALLOCATION_FAILED;
-	}
+	}*/
 
 	file = fopen(name, "w");
 	if (!file)
@@ -219,7 +220,7 @@ Error test_create_graph(char *name, int numOfVertex, char empty, char full)
 	}
 	create_graph(file, numOfVertex, empty, full);
 	fclose(file);
-	file = fopen(name, "r");
+	/*file = fopen(name, "r");
 	if (!file)
 	{
 		printf("file is invalid2\n");
@@ -237,7 +238,7 @@ Error test_create_graph(char *name, int numOfVertex, char empty, char full)
 	A->print_matrix(A);
 	fclose(file);
 	A->free(A);
-	free(degrees);
+	free(degrees);*/
 	return NONE;
 }
 
@@ -246,17 +247,20 @@ int main(int argc, char *argv[])
 	/*TODO: move it to algo_2*/
 	/*int debug = 1;*/		/*for short debug prints*/
 	/*int deep_debug = 1;*/ /*for the long debug prints*/
-	FILE *input_file, *output_file, *result;
+	FILE *input_file, *output_file;
 	group_set *P, *O;
 	group *g;
 	spmat *A;
-	int nof_vertex;
+	int nof_vertex ;
 	int *degrees;
 	Error error;
+	clock_t start;
 
 	printf("argc: %d\n", argc);
 	srand(time(0));
-	/*test_create_graph(argv[1], 10, 0,0);*/
+
+	test_create_graph(argv[1], atoi(argv[3]), 0,0);
+	start = clock();
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
 	if (!input_file)
@@ -320,8 +324,8 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
-	printf("stack_is :\n");
-	print_stack(O, nof_vertex);
+	/*printf("stack_is :\n");
+	print_stack(O, nof_vertex);*/
 	/*----------------------------write the division in the output_file--------------*/
 	output_file = fopen(argv[2], "w");
 	if (!output_file)
@@ -346,7 +350,7 @@ int main(int argc, char *argv[])
 	printf("actual: \n");
 	print_output(output_file, nof_vertex);
 
-	result = fopen(argv[3], "r");
+	/*result = fopen(argv[3], "r");
 	if (!result)
 	{
 		printf("output file is invalid2\n");
@@ -354,7 +358,7 @@ int main(int argc, char *argv[])
 	}
 	printf("expected: \n");
 	print_output(result, nof_vertex);
-	fclose(result);
+	fclose(result);*/
 
 	A->free(A);
 	free(degrees);
@@ -366,7 +370,7 @@ int main(int argc, char *argv[])
 	P->free_set(P);
 	O->free_set(O);
 
-	printf("FINISHED\n");
+	printf("FINISHED- %ld\n",(clock()-start)/CLOCKS_PER_SEC);
 
 	return 0;
 }
