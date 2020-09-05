@@ -143,7 +143,7 @@ Error create_graph(FILE *file, int numOfVertex, char empty, char full)
 		{
 			for (j = 0; j < i; j++)
 			{
-				random = rand() % 4;
+				random = rand() % 20;
 				if (random == 0)
 				{
 					mat[i][j] = 1;
