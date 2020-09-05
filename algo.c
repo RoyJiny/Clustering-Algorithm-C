@@ -15,6 +15,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
     double *improve, *improve_runner;
     int *indices, *indices_runner;
     char stop = 0;
+    int current_vertex_index;
 
     /*----------------------Alocations--------------------*/
 
@@ -59,23 +60,24 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             node_runner = unmoved->head;
 
             /*first run*/
-
-            *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+            current_vertex_index = node_runner->vertex;
+            *(s + current_vertex_index) = -*(s + current_vertex_index);
             max_score = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector) - Q0;
-            max_score_index = node_runner->vertex;
-            *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+            max_score_index = current_vertex_index;
+            *(s + current_vertex_index) = -*(s + current_vertex_index);
             node_runner = node_runner->next;
 
             while (node_runner != NULL)
             {
-                *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+                current_vertex_index = node_runner->vertex;
+                *(s + current_vertex_index) = -*(s + current_vertex_index);
                 new_score = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector) - Q0;
                 if (new_score > max_score)
                 {
                     max_score = new_score;
-                    max_score_index = node_runner->vertex;
+                    max_score_index = current_vertex_index;
                 }
-                *(s + node_runner->vertex) = -*(s + node_runner->vertex);
+                *(s + current_vertex_index) = -*(s + current_vertex_index);
                 node_runner = node_runner->next;
             }
 
