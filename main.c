@@ -11,7 +11,7 @@ int run_num = 0;
 void test_input_read(spmat *mat, FILE *compare)
 {
 	unsigned int n, i;
-	double *row;
+	char *row;
 	spmat *A = spmat_allocate_list(n);
 	if (!A)
 	{
@@ -28,7 +28,7 @@ void test_input_read(spmat *mat, FILE *compare)
 		printf("reading error - 2\n");
 		return;
 	}
-	row = (double *)malloc(n * sizeof(double));
+	row = (char *)malloc(n * sizeof(char));
 	if (!row)
 	{
 		printf("error allocating row\n");
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
 	group_set *P, *O;
 	group *g;
 	spmat *A;
-	int nof_vertex ;
+	int nof_vertex;
 	int *degrees;
 	Error error;
 	clock_t start;
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
 	printf("argc: %d\n", argc);
 	srand(time(0));
 
-	test_create_graph(argv[1], atoi(argv[3]), 0,0);
+	test_create_graph(argv[1], atoi(argv[3]), 0, 0);
 	start = clock();
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
 	P->free_set(P);
 	O->free_set(O);
 
-	printf("FINISHED- %ld\n",(clock()-start)/CLOCKS_PER_SEC);
+	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
 
 	return 0;
 }
