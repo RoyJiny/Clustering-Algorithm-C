@@ -334,29 +334,36 @@ void eigen2s(double *eigen, group *g, double *s, int size)
 	}
 }
 
-void construct_g1g2(int size, double *s, group *g1, group *g2)
+void construct_g1g2(group *g, double *s, group *g1, group *g2, int size)
 {
 	int i;
-	char *g1_members = g1->members, *g2_members = g2->members;
+	char *g1_members = g1->members, *g2_members = g2->members, *g_members = g->members;
 	g1->size = 0;
 	g2->size = 0;
 	for (i = 0; i < size; i++)
 	{
-		if (*s)
-		{
-			*g1_members = 1;
-			*g2_members = 0;
-			g1->size++;
+		if(*g_members){
+			if (*s == 1)
+			{
+				*g1_members = 1;
+				*g2_members = 0;
+				g1->size++;
+			}
+			else
+			{
+				*g2_members = 1;
+				*g1_members = 0;
+				g2->size++;
+			}
+			s++;
 		}
-		else
-		{
-			*g2_members = 1;
+		else{
 			*g1_members = 0;
-			g2->size++;
+			*g2_members = 0;
 		}
 		g1_members++;
 		g2_members++;
-		s++;
+		g_members++;
 	}
 }
 

@@ -65,7 +65,8 @@ void delete_node_by_index(dynamic_list *list, int index)
     {
         next = runner->next;
         free(runner);
-        runner = next;
+        /*runner = next;*/
+        list->head = next;
         list->size--;
         return;
     }
