@@ -9,7 +9,7 @@ extern int run_num;
 
 typedef struct node
 {
-	double val;
+	char val;
 	int index;
 	struct node *next;
 } node;
@@ -35,7 +35,7 @@ void print_list(node *head)
 	}
 	else
 	{
-		printf(" (%d)%f->", head->index, head->val);
+		printf(" (%d)%d->", head->index, head->val);
 		print_list(head->next);
 	}
 }
@@ -168,10 +168,10 @@ spmat *spmat_allocate_array(int n, int nnz)
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------LIST_IMP----------------------------------------------------------*/
-node *create_list(const double *row, int n)
+node *create_list(const char *row, int n)
 {
 	node *head = NULL, *tail = NULL;
-	const double *p = row;
+	const char *p = row;
 	char first = 1;
 	int counter = 0;
 	if (print)
@@ -226,7 +226,7 @@ node *create_list(const double *row, int n)
 	return head;
 }
 
-void addRow_list(spmat *A, const double *row, int i)
+void addRow_list(spmat *A, const char *row, int i)
 {
 	node **rows = ((list *)(A->handle))->rows;
 	if (print)
@@ -243,7 +243,7 @@ void delete_list(node *l)
 	{
 		if (print)
 		{
-			printf("delete node %f\n", l->val);
+			printf("delete node %d\n", l->val);
 		}
 		delete_list(l->next);
 		free(l);
@@ -297,7 +297,7 @@ void mult_list(const spmat *A, const double *v, double *result)
 	}
 	printf("end mult_list\n");
 }
-/*problem!!!!!!!!*/
+
 double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
@@ -321,8 +321,10 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 			curr_row = curr_row->next;
 		}
 		/*------------------*/
-		else{
-			if(*g_members){
+		else
+		{
+			if (*g_members)
+			{
 				sum += *row; /*calc the row sum*/
 				row++;
 			}

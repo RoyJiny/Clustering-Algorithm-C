@@ -196,15 +196,15 @@ char handle_errors(Error error, char *name)
 
 Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 {
-	double *curr_row;
-	double *start_row; /*save the start of the row to add_row function in spmat*/
+	char *curr_row;
+	char *start_row; /*save the start of the row to add_row function in spmat*/
 	int *temp;
 	int *start_temp; /*save the start of temp for reuse*/
 	int *curr_vertex;
 	int i, j, counter;
 
 	curr_vertex = degree; /*fill degree*/
-	start_row = (double *)malloc(nof_vertex * sizeof(double));
+	start_row = (char *)malloc(nof_vertex * sizeof(char));
 	if (!start_row)
 	{
 		return ALLOCATION_FAILED;
@@ -342,7 +342,8 @@ void construct_g1g2(group *g, double *s, group *g1, group *g2, int size)
 	g2->size = 0;
 	for (i = 0; i < size; i++)
 	{
-		if(*g_members){
+		if (*g_members)
+		{
 			if (*s == 1)
 			{
 				*g1_members = 1;
@@ -357,7 +358,8 @@ void construct_g1g2(group *g, double *s, group *g1, group *g2, int size)
 			}
 			s++;
 		}
-		else{
+		else
+		{
 			*g1_members = 0;
 			*g2_members = 0;
 		}
