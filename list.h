@@ -17,19 +17,19 @@ typedef struct _dynamic_list
     int size;
 } dynamic_list;
 
-void create_dynamic_list(dynamic_list *list, int size)
+char create_dynamic_list(dynamic_list *list, int size)
 {
     dynamic_node *head = NULL, *tail = NULL;
     int i = 1;
     if (size == 0)
     {
-        return NULL;
+        return 0;
     }
     head = (dynamic_node *)malloc(sizeof(dynamic_node));
     if (!head)
     {
         printf("alocation failed in gb row");
-        return NULL;
+        return 0;
     }
     head->vertex = 0;
     head->next = NULL;
@@ -41,14 +41,14 @@ void create_dynamic_list(dynamic_list *list, int size)
         if (!tail)
         {
             printf("alocation failed in gb row");
-            return NULL;
+            return 0;
         }
         tail->vertex = i;
         tail->next = NULL;
     }
     list->head = head;
     list->size = size;
-    return list;
+    return 1;
 }
 
 void delete_node_by_index(dynamic_list *list, int index)

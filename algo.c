@@ -49,7 +49,10 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
     {
         indices_runner = indices;
         improve_runner = improve;
-        create_dynamic_list(unmoved, g->size);
+        if (!create_dynamic_list(unmoved, g->size))
+        {
+            return ALLOCATION_FAILED;
+        }
         for (i = 0; i < g->size; i++)
         {
             Q0 = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector);
