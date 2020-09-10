@@ -1,0 +1,24 @@
+Performence improvments:
+
+DONE - 1) convert spmat to use char
+
+2) change group implementation to use linked lists / arrays / signle array
+
+DONE - 3) change unmoved to just add nodes and not re allocate the list
+
+4) add threshhold to avoid infinite loops
+
+
+
+Issues to check:
+
+1) check what is start temp in read input
+
+
+
+If there is time:
+
+1) try with array implementation
+
+
+# remember to remove -g flag from makefile #
