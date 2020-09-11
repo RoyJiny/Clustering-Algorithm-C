@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
 	printf("argc: %d\n", argc);
 	srand(time(0));
 
-	test_create_graph(argv[1], atoi(argv[3]), 0, 0);
+	/*test_create_graph(argv[1], atoi(argv[3]), 0, 0);*/
 	start = clock();
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
