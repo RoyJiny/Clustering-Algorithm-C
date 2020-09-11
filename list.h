@@ -23,6 +23,7 @@ void print_dynamic_list(dynamic_list *list)
     while (runner)
     {
         printf("%d->", runner->vertex);
+        runner = runner->next;
     }
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 }
