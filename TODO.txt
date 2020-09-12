@@ -2,7 +2,7 @@ Performence improvments:
 
 DONE - 1) convert spmat to use char
 
-2) change group implementation to use linked lists / arrays / signle array
+DONE - 2) change group implementation to use linked lists / arrays / signle array
 
 DONE - 3) change unmoved to just add nodes and not re allocate the list
 
@@ -10,18 +10,12 @@ DONE - 3) change unmoved to just add nodes and not re allocate the list
 
 DONE - 5) check if unnorm.. eigen vector is really needed
 
-DONE  -  7) reuse g in calculate 1norm
+DONE - 7) reuse g in calculate 1norm
 
 
 Issues to check:
 
 DONE - 1) check what is start temp in read input -> it used for storing the data from fread(...)
-
-
-
-If there is time:
-
-1) try with array implementation
 
 
 # remember to remove -g flag from makefile #

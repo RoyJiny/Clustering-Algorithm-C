@@ -301,7 +301,7 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 	return NONE;
 }
 
-Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score)
+Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row)
 {
 	int i;
 	double row_sum, *temp;
@@ -309,12 +309,6 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	int *g_members = g->members;
 	double row_degree = (double)degrees[A_index];
 	int deg = *(degrees + A_index);
-	double *B_g_row = (double *)malloc((g->size) * sizeof(double));
-	if (!B_g_row)
-	{
-		print_errors(ALLOCATION_FAILED, "B_g_row", "compute_for_improved_score");
-		return ALLOCATION_FAILED;
-	}
 	temp = B_g_row;
 
 	if (!M)
