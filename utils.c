@@ -142,7 +142,7 @@ Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
 {
 	Error error;
-	int i, g_count = 0;
+	int i;
 	double numerator;
 	int *g_members = g->members;
 	double *mult_vector, *runner;
@@ -154,22 +154,19 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 		return ALLOCATION_FAILED;
 	}
 	runner = mult_vector;
-	for (i = 0; i < mat->n; i++)
+	for (i = 0; i < g->size; i++)
 	{
-		if (*g_members)
-		{ /*curr vertex in g*/
-			error = compute_modularity_matrix_row(mat, i, g, degrees, M, B_g_row, g_count);
-			if (error != NONE)
-			{
-				return error;
-			}
-			B_g_row[g_count] += B_1norm;
-			*runner = dot_product(B_g_row, eigen_vector, g->size);
-			runner++;
-			g_count++;
+		error = compute_modularity_matrix_row(mat, *g_members, g, degrees, M, B_g_row, i);
+		if (error != NONE)
+		{
+			return error;
 		}
+		B_g_row[i] += B_1norm;
+		*runner = dot_product(B_g_row, eigen_vector, g->size);
+		runner++;
 		g_members++;
 	}
+
 	numerator = dot_product(eigen_vector, mult_vector, g->size);
 	/*denominator = dot_product(eigen_vector, eigen_vector, g->size);*/
 	*res = numerator;
@@ -269,6 +266,7 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 {
 	int i;
 	double row_sum, *temp = B_g_row;
+	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
 	double row_degree = (double)degrees[row];
 
@@ -278,16 +276,15 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 		return DIVISION_BY_ZERO;
 	}
 
-	for (i = 0; i < A->n; i++)
+	for (i = 0; i < g->size; i++)
 	{
-		if (*g_members)
-		{ /*the current vertex in g*/
-			*temp = -(row_degree * (double)(*degrees)) / M;
-			temp++;
-		}
-		degrees++;
+		g_vertex = *g_members;
+		degrees = degrees + (g_vertex - g_prev_vertex);
+		*temp = -(row_degree * (double)(*degrees)) / M;
+		temp++;
 		g_members++;
 	}
+
 	row_sum = A->add_to_row(A, row, B_g_row, g);
 	B_g_row[g_count] -= row_sum; /*for B_hat*/
 	return NONE;
@@ -298,88 +295,81 @@ Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, doub
 	double *runner;
 	int *g_members;
 	Error error;
-	int i, g_count;
+	int i;
 	g_members = g->members;
 	runner = mult_vector;
-	g_count = 0;
-	for (i = 0; i < A->n; i++)
+
+	for (i = 0; i < g->size; i++)
 	{
-		/*do only if the vertex is in g*/
-		if (*g_members)
+		error = compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
+		if (error != NONE)
 		{
-			error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row, g_count);
-			if (error != NONE)
-			{
-				return error;
-			}
-			*runner = dot_product(B_g_row, s, g->size);
-			runner++;
-			g_count++;
+			return error;
 		}
+		*runner = dot_product(B_g_row, s, g->size);
+		runner++;
 		g_members++;
 	}
+
 	*res = 0.5 * dot_product(mult_vector, s, g->size);
 	return NONE;
 }
 
 /*returns how much verticies are in the first group*/
-int eigen2s(double *eigen, group *g, double *s, int size)
+int eigen2s(double *eigen, group *g, double *s)
 {
 	int i, g1_counter = 0;
-	int *g_members = g->members;
-	for (i = 0; i < size; i++)
+	for (i = 0; i < g->size; i++)
 	{
-		printf("g members value is %d\n", *g_members);
-		if (*g_members)
+		if (IS_POSITIVE(*eigen))
 		{
-			if (IS_POSITIVE(*eigen))
-			{
-				*s = 1;
-				g1_counter++;
-			}
-			else
-			{
-				*s = -1;
-			}
-			eigen++;
-			s++;
+			*s = 1;
+			g1_counter++;
 		}
-		g_members++;
+		else
+		{
+			*s = -1;
+		}
+		eigen++;
+		s++;
 	}
 	return g1_counter;
 }
 
-void construct_g1g2(group *g, double *s, group *g1, group *g2, int size)
+void construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 {
 	int i;
-	int *g1_members = g1->members, *g2_members = g2->members, *g_members = g->members;
-	g1->size = 0;
-	g2->size = 0;
-	for (i = 0; i < size; i++)
+	int *g1_members, *g2_members, *g_members = g->members;
+	g1->members = (int *)malloc(g1_count * sizeof(int));
+	if (!(g1->members))
 	{
-		if (*g_members)
+		print_errors(ALLOCATION_FAILED, "g1->members", "algo_3");
+		return ALLOCATION_FAILED;
+	}
+	g2->members = (int *)malloc((g->size - g1_count) * sizeof(int));
+	if (!(g2->members))
+	{
+		print_errors(ALLOCATION_FAILED, "g1->members", "algo_3");
+		return ALLOCATION_FAILED;
+	}
+	g1_members = g1->members;
+	g2_members = g2->members;
+
+	g1->size = g1_count;
+	g2->size = g->size - g1_count;
+	for (i = 0; i < g->size; i++)
+	{
+		if (*s == 1)
 		{
-			if (*s == 1)
-			{
-				*g1_members = 1;
-				*g2_members = 0;
-				g1->size++;
-			}
-			else
-			{
-				*g2_members = 1;
-				*g1_members = 0;
-				g2->size++;
-			}
-			s++;
+			*g1_members = *g_members;
+			g1_members++;
 		}
 		else
 		{
-			*g1_members = 0;
-			*g2_members = 0;
+			*g2_members = *g_members;
+			g2_members++;
 		}
-		g1_members++;
-		g2_members++;
+		s++;
 		g_members++;
 	}
 }
@@ -388,15 +378,15 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 {
 	group *g;
 	int i, nof_vertex_in_group, nof_groups = O->size;
-	int *curr, *runner;
+	/*int *curr, *runner;*/
 	int *g_members;
 	/*----------------allocations----------------*/
-	curr = (int *)malloc(nof_vertex * sizeof(int));
+	/*curr = (int *)malloc(nof_vertex * sizeof(int));
 	if (!curr)
 	{
 		print_errors(ALLOCATION_FAILED, "curr", "write2_output_file");
 		return ALLOCATION_FAILED;
-	}
+	}*/
 	/*-------------------------------------------*/
 	/*first number = number of groups*/
 	if (fwrite(&nof_groups, sizeof(int), 1, output) != 1)
@@ -415,7 +405,7 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 			print_errors(WRITE_FAILED, "output_file", "write2_output_file");
 			return WRITE_FAILED;
 		}
-		runner = curr;
+		/*runner = curr;
 		for (i = 0; i < nof_vertex; i++)
 		{
 			if (*g_members)
@@ -424,9 +414,9 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 				runner++;
 			}
 			g_members++;
-		}
+		}*/
 		/*the actual vertex in the curr group*/
-		if ((signed int)fwrite(curr, sizeof(int), nof_vertex_in_group, output) != nof_vertex_in_group)
+		if ((signed int)fwrite(g_members, sizeof(int), nof_vertex_in_group, output) != nof_vertex_in_group)
 		{
 			print_errors(WRITE_FAILED, "output_file", "write2_output_file");
 			return WRITE_FAILED;
@@ -434,7 +424,7 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 		free(g->members);
 		free(g);
 	}
-	free(curr);
+	/*free(curr);*/
 	return NONE;
 }
 

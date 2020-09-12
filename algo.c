@@ -290,10 +290,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         /*free(unnormalized_eigen_vector);*/
         free(B_g_row);
         free(s);
+        free(g1);
+        free(g2);
         return INDIVISIBLE;
     }
 
-    g1_count = eigen2s(eigen_vector, g, s, A->n);
+    g1_count = eigen2s(eigen_vector, g, s);
 
     /*printf("s before the max:\n");
     print_vector(s,g->size);*/
@@ -304,12 +306,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
     /*printf("s after the max:\n");
     print_vector(s,g->size);*/
-
-    printf("g1 count is %d, s is:\n", g1_count);
-    print_vector(s, g->size);
-
-    construct_g1g2(g, s, g1, g2, A->n);
-
     /*computing the modularity value*/
     error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
     if (error != NONE)
@@ -326,8 +322,12 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         /*free(unnormalized_eigen_vector);*/
         free(B_g_row);
         free(s);
+        free(g1);
+        free(g2);
         return INDIVISIBLE;
     }
+
+    construct_g1g2(g, s, g1, g2, g1_count);
 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
 
@@ -387,12 +387,12 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             print_errors(ALLOCATION_FAILED, "g1", "algo_3");
             return ALLOCATION_FAILED;
         }
-        g1->members = (int *)malloc(nof_vertex * sizeof(int));
+        /*g1->members = (int *)malloc(nof_vertex * sizeof(int));
         if (!(g1->members))
         {
             print_errors(ALLOCATION_FAILED, "g1->members", "algo_3");
             return ALLOCATION_FAILED;
-        }
+        }*/
 
         g2 = (group *)malloc(sizeof(group));
         if (!g2)
@@ -400,12 +400,12 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             print_errors(ALLOCATION_FAILED, "g1", "algo_3");
             return ALLOCATION_FAILED;
         }
-        g2->members = (int *)malloc(nof_vertex * sizeof(int));
+        /*g2->members = (int *)malloc(nof_vertex * sizeof(int));
         if (!(g2->members))
         {
             print_errors(ALLOCATION_FAILED, "g2->members", "algo_3");
             return ALLOCATION_FAILED;
-        }
+        }*/
 
         g = P->pop(P);
         /*printf("popped g. size of g: %d, the value is:\n", g->size);
@@ -421,10 +421,10 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             O->push(O, g);
             /*printf("one group is empty, pushing g to O, freeing g1,g2\n");*/
             /*g1,g2 won't be used anymore*/
-            free(g1->members);
+            /*free(g1->members);
             free(g2->members);
             free(g1);
-            free(g2);
+            free(g2);*/
         }
         else
         {

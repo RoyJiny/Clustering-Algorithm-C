@@ -174,36 +174,35 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
 	int curr_index = 0;
-	int *g_members;
+	int *g_members, counter = 0;
 	node **rows;
 	node *curr_row;
 	g_members = g->members;
 	rows = ((list *)(A->handle))->rows;
 	curr_row = *(rows + row_index);
-	while (curr_row != NULL)
+	while (curr_row != NULL && counter < g->size)
 	{
-		if (curr_row->index == curr_index)
+		if (curr_row->index == *g_members)
 		{
-			if (*g_members)
-			{
-				*row += curr_row->val;
-				sum += *row; /*calc the row sum*/
-				row++;
-			}
+			*row += curr_row->val;
+			sum += *row; /*calc the row sum*/
+			row++;
+
+			g_members++;
+			counter++;
 			curr_row = curr_row->next;
 		}
-		/*------------------*/
+		else if (curr_row->index < *g_members)
+		{
+			curr_row = curr_row->next;
+		}
 		else
 		{
-			if (*g_members)
-			{
-				sum += *row; /*calc the row sum*/
-				row++;
-			}
+			g_members++;
+			counter++;
+			sum += *row; /*calc the row sum*/
+			row++;
 		}
-		/*-------------------*/
-		curr_index++;
-		g_members++;
 	}
 	return sum;
 }

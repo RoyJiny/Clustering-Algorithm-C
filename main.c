@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
 	group_set *P, *O;
 	group *g;
 	spmat *A;
-	int nof_vertex;
+	int nof_vertex, i = 0;
 	int *degrees, *g_members;
 	Error error;
 	clock_t start;
@@ -307,9 +307,11 @@ int main(int argc, char *argv[])
 	/*-------------------------------initial calculations----------------------------*/
 	/*trivial division*/
 	g->size = nof_vertex;
-	for (g_members = g->members; g_members < (g->members) + g->size; g_members++)
+	g_members = g->members;
+	for (; i < g->size; i++)
 	{
-		*g_members = 1;
+		*g_members = i;
+		g_members++;
 	}
 
 	P = allocate_group_set();
