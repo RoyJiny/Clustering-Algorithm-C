@@ -17,5 +17,6 @@ Issues to check:
 
 DONE - 1) check what is start temp in read input -> it used for storing the data from fread(...)
 
+2) change make rules
 
 # remember to remove -g flag from makefile #
