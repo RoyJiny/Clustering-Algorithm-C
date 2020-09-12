@@ -17,6 +17,16 @@ typedef struct _dynamic_list
     int size;
 } dynamic_list;
 
+void print_dynamic_list(dynamic_list *list)
+{
+    dynamic_node *runner = list->head;
+    while(runner){
+        printf("%d->",runner->vertex);
+        runner  = runner->next;
+    }
+    printf("\n\n");
+}
+
 char create_dynamic_list(dynamic_list *list, int size)
 {
     dynamic_node *head = NULL, *tail = NULL;
@@ -46,8 +56,12 @@ char create_dynamic_list(dynamic_list *list, int size)
         tail->vertex = i;
         tail->next = NULL;
     }
+    if(tail != NULL){
+        tail->next = NULL;
+    }
     list->head = head;
     list->size = size;
+    print_dynamic_list(list);
     return 1;
 }
 

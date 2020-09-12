@@ -12,9 +12,9 @@ void print_group(group *g, int size);
 
 void print_stack(group_set *s, int size);
 
-double compute_1norm(spmat *A, int *degrees, double M);
+Error compute_1norm(spmat *A, group *g,int *degrees, double M, double *res);
 
-char handle_errors(Error error, char *name);
+void print_errors(Error error, char *name, char* func);
 
 double dot_product(double *row1, double *row2, int size);
 
@@ -25,11 +25,11 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
 /**/
 Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
 
-double compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector);
+Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);
 
 Error power_iteration(spmat *mat, double *vector);
 
-double calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm);
+Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
 
 /*determine the partition into 2 groups, and calc the s vector*/
 void eigen2s(double *eigen, group *g, double *s, int size);

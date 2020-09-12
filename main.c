@@ -55,19 +55,6 @@ void test_input_read(spmat *mat, FILE *compare)
 	}
 }
 
-int compare(const void *a, const void *b)
-{
-	int int_a = *((int *)a);
-	int int_b = *((int *)b);
-
-	if (int_a == int_b)
-		return 0;
-	else if (int_a < int_b)
-		return -1;
-	else
-		return 1;
-}
-
 Error create_graph(FILE *file, int numOfVertex, char empty, char full)
 {
 	int i, *vector, *runner, j;
@@ -255,24 +242,28 @@ int main(int argc, char *argv[])
 	int *degrees;
 	Error error;
 	clock_t start;
+	
 
-	printf("argc: %d\n", argc);
-	srand(time(0));
-
-	test_create_graph(argv[1], atoi(argv[3]), 0, 0);
-	start = clock();
-	/*--------------------try to open the input file---------------------*/
-	input_file = fopen(argv[1], "r");
-	if (!input_file)
-	{
-		printf("input file is invalid\n");
+	if(!argc){
 		return 5;
 	}
-
+	srand(time(0));
+	if(argv[1] == "--test"){
+		test_create_graph(argv[2], atoi(argv[4]), 0, 0);
+	}
+	
+	start = clock();
+	/*--------------------try to open the input file---------------------*/
+	input_file = fopen(argv[2], "r");
+	if (!input_file)
+	{
+		printf("[main]: input file is invalid\n");
+		return 5;
+	}
 	/*-----------------try to read the number of vertexes-----------------*/
 	if (fread(&nof_vertex, sizeof(int), 1, input_file) != 1)
 	{
-		printf("read from input file failed\n");
+		printf("[main]: read from input file failed\n");
 		return 5;
 	}
 
@@ -280,7 +271,7 @@ int main(int argc, char *argv[])
 	degrees = (int *)malloc(nof_vertex * sizeof(int));
 	if (!degrees)
 	{
-		printf("malloc failed on pointer degree\n");
+		printf("[main]: malloc failed on pointer degree\n");
 		return 5;
 	}
 
@@ -288,13 +279,13 @@ int main(int argc, char *argv[])
 	A = spmat_allocate_list(nof_vertex);
 	if (!A)
 	{
-		printf("sparse matrix allocation failed on A\n");
+		printf("[main]: sparse matrix allocation failed on A\n");
 		return 5;
 	}
 
 	/*------------------compute the adj matrix (as spars matrix)-------------*/
 	error = read_input(input_file, A, degrees, nof_vertex);
-	if (handle_errors(error, "read_input\n"))
+	if (error != NONE)
 	{
 		return 5;
 	}
@@ -302,13 +293,13 @@ int main(int argc, char *argv[])
 	g = (group *)malloc(sizeof(group));
 	if (!g)
 	{
-		printf("allocation failed on g");
+		printf("[main]: allocation failed on g");
 		return 5;
 	}
 	g->members = (char *)malloc(nof_vertex * sizeof(char));
 	if (!(g->members))
 	{
-		printf("allocation failed on g->members");
+		printf("[main]: allocation failed on g->members");
 		return 5;
 	}
 
@@ -318,36 +309,40 @@ int main(int argc, char *argv[])
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);
-
 	error = algo_3(A, degrees, P, O, nof_vertex);
-	if (handle_errors(error, "algo_3"))
-	{
+	if(error != NONE){
 		return 5;
 	}
+	/*if (handle_errors(error, "algo_3"))
+	{
+		return 5;
+	}*/
 	/*printf("stack_is :\n");
 	print_stack(O, nof_vertex);*/
 	/*----------------------------write the division in the output_file--------------*/
-	output_file = fopen(argv[2], "w");
+	output_file = fopen(argv[3], "w");
 	if (!output_file)
 	{
-		printf("output file is invalid\n");
+		printf("[main]: output file is invalid\n");
 		return 5;
 	}
 	error = write2_output_file(output_file, O, nof_vertex);
-	if (handle_errors(error, "write2_output_file"))
-	{
+	if(error != NONE){
 		return 5;
 	}
+	/*if (handle_errors(error, "write2_output_file"))
+	{
+		return 5;
+	}*/
 	fclose(output_file);
 	/*-----------printing the output file-----------------*/
-
-	output_file = fopen(argv[2], "r");
+	output_file = fopen(argv[3], "r");
 	if (!output_file)
 	{
-		printf("output file is invalid2\n");
+		printf("[main]: output file is invalid2\n");
 		return 5;
 	}
-	printf("actual: \n");
+	printf("[main]: actual: \n");
 	print_output(output_file, nof_vertex);
 
 	/*result = fopen(argv[3], "r");

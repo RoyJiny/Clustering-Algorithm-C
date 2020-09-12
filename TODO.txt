@@ -8,11 +8,14 @@ DONE - 3) change unmoved to just add nodes and not re allocate the list
 
 4) add threshhold to avoid infinite loops
 
+DONE - 5) check if unnorm.. eigen vector is really needed
+
+DONE  -  7) reuse g in calculate 1norm
 
 
 Issues to check:
 
-1) check what is start temp in read input
+DONE - 1) check what is start temp in read input -> it used for storing the data from fread(...)
 
 
 

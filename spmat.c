@@ -55,7 +55,6 @@ node *create_list(const char *row, int n)
 	{
 		if (*p != 0)
 		{
-
 			if (first)
 			{
 				head = (node *)malloc(sizeof(node));
