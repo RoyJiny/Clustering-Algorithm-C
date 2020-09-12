@@ -99,7 +99,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 *(s + current_vertex_index) = -*(s + current_vertex_index);
                 error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &new_score);
                 printf("from modularity we get: %f\n", new_score);
-                error = compute_for_improved_score(A, *(g->members + current_vertex_index), i, g, s, M, degrees, &new_score);
+                error = compute_for_improved_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &new_score);
                 printf("from 'improvement' we get: %f\n\n", new_score);
                 if (error != NONE)
                 {
