@@ -372,6 +372,7 @@ Error construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 		s++;
 		g_members++;
 	}
+	return NONE;
 }
 
 Error write2_output_file(FILE *output, group_set *O)
