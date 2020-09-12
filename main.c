@@ -352,8 +352,8 @@ int main(int argc, char *argv[])
 		printf("[main]: output file is invalid2\n");
 		return 5;
 	}
-	printf("[main]: actual: \n");
-	print_output(output_file, nof_vertex);
+	/*printf("[main]: actual: \n");
+	print_output(output_file, nof_vertex);*/
 
 	/*result = fopen(argv[3], "r");
 	if (!result)

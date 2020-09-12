@@ -159,7 +159,6 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             stop = 1;
         }
     }
-    printf("%d iterations in maxi, with size: %d\n", iteration_counter, g->size);
     free(mult_vector);
     free(improve);
     free(indices);
