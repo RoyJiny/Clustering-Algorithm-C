@@ -334,7 +334,7 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	}
 
 	row_sum = A->add_to_row(A, A_index, B_g_row, g);
-	if (row_sum == 0)
+	if (row_sum == -123456789)
 	{
 		printf("row sum is zero\n");
 	}
