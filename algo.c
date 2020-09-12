@@ -64,7 +64,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             print_errors(ALLOCATION_FAILED, "create_dynamic_list", "modularity_maximization");
             return ALLOCATION_FAILED;
         }
-        printf("starting big for\n");
+
         for (i = 0; i < g->size; i++)
         {
 
@@ -74,7 +74,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 return error;
             }
             node_runner = unmoved->head;
-            /*print_dynamic_list(unmoved);*/
+
             /*first run*/
             current_vertex_index = node_runner->vertex;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
@@ -88,7 +88,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             max_score_index = current_vertex_index;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
             node_runner = node_runner->next;
-            printf("starting first while\n");
+
             while (node_runner != NULL)
             {
                 counter++;
@@ -107,7 +107,6 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 }
                 *(s + current_vertex_index) = -*(s + current_vertex_index);
                 node_runner = node_runner->next;
-                /*printf("vertex index = %d\n", current_vertex_index);*/
             }
 
             counter = 0;
@@ -135,10 +134,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             indices_runner++;
             improve_runner++;
         }
-        printf("finish big for\n");
 
         indices_runner = indices + (g->size - 1);
-        printf("starting second for\n");
+
         for (i = g->size - 1; i > max_improve_index; i--)
         {
             j = *indices_runner;
@@ -160,7 +158,6 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         {
             stop = 1;
         }
-        printf("delta Q is: %f\n", delta_Q);
     }
     printf("%d iterations in maxi, with size: %d\n", iteration_counter, g->size);
     free(mult_vector);

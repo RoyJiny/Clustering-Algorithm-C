@@ -20,9 +20,10 @@ typedef struct _dynamic_list
 void print_dynamic_list(dynamic_list *list)
 {
     dynamic_node *runner = list->head;
-    while(runner){
-        printf("%d->",runner->vertex);
-        runner  = runner->next;
+    while (runner)
+    {
+        printf("%d->", runner->vertex);
+        runner = runner->next;
     }
     printf("\n\n");
 }
@@ -38,7 +39,7 @@ char create_dynamic_list(dynamic_list *list, int size)
     head = (dynamic_node *)malloc(sizeof(dynamic_node));
     if (!head)
     {
-        printf("alocation failed in gb row");
+        printf("allocation failed in gb row");
         return 0;
     }
     head->vertex = 0;
@@ -50,18 +51,18 @@ char create_dynamic_list(dynamic_list *list, int size)
         tail = tail->next;
         if (!tail)
         {
-            printf("alocation failed in gb row");
+            printf("allocation failed in gb row");
             return 0;
         }
         tail->vertex = i;
         tail->next = NULL;
     }
-    if(tail != NULL){
+    if (tail != NULL)
+    {
         tail->next = NULL;
     }
     list->head = head;
     list->size = size;
-    print_dynamic_list(list);
     return 1;
 }
 
