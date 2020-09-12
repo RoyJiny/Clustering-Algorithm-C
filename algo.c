@@ -298,6 +298,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*printf("s after the max:\n");
     print_vector(s,g->size);*/
     /*computing the modularity value*/
+    printf("A is:\n");
+    A->print_matrix(A);
+    printf("\ndegrees is:\n");
+    print_vector_int(degrees, A->n);
     error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
     if (error != NONE)
     {

@@ -266,13 +266,13 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 
 /*calculate a specific row of the modularity matrix, for group g (B_hat)*/
 /*assuming g->members is a nof_vertex size vector with 1 indicates in g and 0 indicates not in g*/
-Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count)
+Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees, double M, double *B_g_row, int g_row)
 {
 	int i;
 	double row_sum, *temp = B_g_row;
 	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
-	double row_degree = (double)degrees[row];
+	double row_degree = (double)degrees[A_row];
 
 	if (!M)
 	{
@@ -289,8 +289,9 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 		g_members++;
 	}
 
-	row_sum = A->add_to_row(A, row, B_g_row, g);
-	B_g_row[g_count] -= row_sum; /*for B_hat*/
+	row_sum = A->add_to_row(A, A_row, B_g_row, g);
+	B_g_row[g_row] -= row_sum; /*for B_hat*/
+	print_vector(B_g_row, g->size);
 	return NONE;
 }
 
