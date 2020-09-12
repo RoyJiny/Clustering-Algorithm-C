@@ -290,11 +290,11 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     /*printf("s before the max:\n");
     print_vector(s,g->size);*/
-    /*error = modularity_maximization(A, degrees, s, M, g, &g1_count);
+    error = modularity_maximization(A, degrees, s, M, g, &g1_count);
     if (error != NONE)
     {
         return error;
-    }*/
+    }
     /*printf("s after the max:\n");
     print_vector(s,g->size);*/
     /*computing the modularity value*/
