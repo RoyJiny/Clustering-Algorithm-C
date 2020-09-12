@@ -9,6 +9,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
 {
     dynamic_list *unmoved;
     dynamic_node *node_runner;
+    dynamic_node *node_runner_prev, *node_runner_prev_max;
     double max_score, new_score, max_improve, delta_Q;
     double *mult_vector, *B_g_row;
     int i, j, max_score_index, max_improve_index;
@@ -88,6 +89,8 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
 
             max_score_index = current_vertex_index;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
+            node_runner_prev = node_runner;
+            node_runner_prev_max = node_runner;
             node_runner = node_runner->next;
 
             while (node_runner != NULL)
@@ -106,8 +109,10 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 {
                     max_score = new_score;
                     max_score_index = current_vertex_index;
+                    node_runner_prev_max = node_runner_prev;
                 }
                 *(s + current_vertex_index) = -*(s + current_vertex_index);
+                node_runner_prev = node_runner;
                 node_runner = node_runner->next;
             }
 
@@ -132,7 +137,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                     max_improve_index = i;
                 }
             }
-            delete_node_by_index(unmoved, max_score_index);
+            /*delete_node_by_index(unmoved, max_score_index);*/
+            printf("want to delete node %d", max_score_index);
+            delete_node_by_prev(unmoved, node_runner_prev_max);
             indices_runner++;
             improve_runner++;
         }
