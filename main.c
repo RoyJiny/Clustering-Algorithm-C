@@ -314,6 +314,8 @@ int main(int argc, char *argv[])
 		g_members++;
 	}
 
+	A->print_matrix(A);
+	print_vector_int(degrees, A->n);
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);
