@@ -34,9 +34,9 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 /*determine the partition into 2 groups, and calc the s vector*/
 int eigen2s(double *eigen, group *g, double *s);
 
-void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
+Error construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 
-Error write2_output_file(FILE *output, group_set *O, int nof_vertex);
+Error write2_output_file(FILE *output, group_set *O);
 
 Error print_output(FILE *output, int nof_vertex);
 

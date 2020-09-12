@@ -335,7 +335,7 @@ int main(int argc, char *argv[])
 		printf("[main]: output file is invalid\n");
 		return 5;
 	}
-	error = write2_output_file(output_file, O, nof_vertex);
+	error = write2_output_file(output_file, O);
 	if (error != NONE)
 	{
 		return 5;

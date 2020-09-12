@@ -336,7 +336,7 @@ int eigen2s(double *eigen, group *g, double *s)
 	return g1_counter;
 }
 
-void construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
+Error construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 {
 	int i;
 	int *g1_members, *g2_members, *g_members = g->members;
@@ -374,10 +374,10 @@ void construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 	}
 }
 
-Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
+Error write2_output_file(FILE *output, group_set *O)
 {
 	group *g;
-	int i, nof_vertex_in_group, nof_groups = O->size;
+	int nof_vertex_in_group, nof_groups = O->size;
 	/*int *curr, *runner;*/
 	int *g_members;
 	/*----------------allocations----------------*/

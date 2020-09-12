@@ -327,7 +327,11 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return INDIVISIBLE;
     }
 
-    construct_g1g2(g, s, g1, g2, g1_count);
+    error = construct_g1g2(g, s, g1, g2, g1_count);
+    if (error != NONE)
+    {
+        return error;
+    }
 
     /*remember: if there is a division of g then "eigen2s already computed the division"*/
 
