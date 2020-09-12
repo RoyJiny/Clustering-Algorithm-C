@@ -10,7 +10,7 @@ void print_vector(double *vector, int size);
 
 void print_group(group *g);
 
-void print_stack(group_set *s, int size);
+void print_stack(group_set *s);
 
 Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
 

@@ -55,7 +55,7 @@ void print_group(group *g)
 	printf("%d)\n", *g_mem);
 }
 
-void print_stack(group_set *s, int size)
+void print_stack(group_set *s)
 {
 	int counter = 0;
 	group_node *curr = s->first;
