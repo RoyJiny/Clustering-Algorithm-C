@@ -331,15 +331,9 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 		g_members++;
 		g_prev_vertex = g_vertex;
 	}
-	/*printf("before sum, B_g_row is:\n");
-	print_vector(B_g_row, g->size);
-	printf("\n");*/
 
 	row_sum = A->add_to_row(A, A_index, B_g_row, g);
-	if (row_sum == 0)
-	{
-		printf("row sum is zero\n");
-	}
+	B_g_row[g_index] -= row_sum; /*for B_hat*/
 
 	d_pointer = s + g_index;
 	*d_pointer = -*d_pointer;
