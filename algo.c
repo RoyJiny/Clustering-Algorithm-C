@@ -319,10 +319,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
 
     error = construct_g1g2(g, s, g1, g2, g1_count);
-    printf("g1 is:\n");
-    print_group(g1);
-    printf("g2 is:\n");
-    print_group(g2);
     if (error != NONE)
     {
         return error;
