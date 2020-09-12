@@ -313,7 +313,6 @@ int main(int argc, char *argv[])
 		*g_members = i;
 		g_members++;
 	}
-	print_group(g);
 
 	P = allocate_group_set();
 	O = allocate_group_set();
