@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	srand(time(0));
-	if (argv[1] == "--test")
+	if (!strcmp(argv[1], "--test"))
 	{
 		test_create_graph(argv[2], atoi(argv[4]), 0, 0);
 	}
