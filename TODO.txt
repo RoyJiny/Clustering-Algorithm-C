@@ -12,11 +12,19 @@ DONE - 5) check if unnorm.. eigen vector is really needed
 
 DONE - 7) reuse g in calculate 1norm
 
+8) change node deleting to be by ref to prev
+
+
 
 Issues to check:
 
 DONE - 1) check what is start temp in read input -> it used for storing the data from fread(...)
 
 2) change make rules
+
+3) add exit codes
+
+4) clean code
+
 
 # remember to remove -g flag from makefile #

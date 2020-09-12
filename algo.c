@@ -137,9 +137,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                     max_improve_index = i;
                 }
             }
-            /*delete_node_by_index(unmoved, max_score_index);*/
-            printf("want to delete node %d", max_score_index);
-            delete_node_by_prev(node_runner_prev_max);
+            delete_node_by_index(unmoved, max_score_index);
+            /*printf("want to delete node %d", max_score_index);
+            delete_node_by_prev(node_runner_prev_max);*/
             indices_runner++;
             improve_runner++;
         }
