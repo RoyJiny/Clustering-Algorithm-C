@@ -5,7 +5,7 @@
 
 extern int run_num;
 
-Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g)
+Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, double *g1_counter)
 {
     dynamic_list *unmoved;
     dynamic_node *node_runner;
@@ -13,6 +13,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
     double *mult_vector, *B_g_row;
     int i, j, max_score_index, max_improve_index;
     double *improve, *improve_runner;
+    double *d_pointer;
     int *indices, *indices_runner;
     char stop = 0;
     int current_vertex_index;
@@ -66,9 +67,10 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         printf("starting big for\n");
         for (i = 0; i < g->size; i++)
         {
-            
+
             error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &Q0);
-            if(error != NONE){
+            if (error != NONE)
+            {
                 return error;
             }
             node_runner = unmoved->head;
@@ -76,9 +78,10 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             /*first run*/
             current_vertex_index = node_runner->vertex;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
-            
+
             error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &max_score);
-            if(error != NONE){
+            if (error != NONE)
+            {
                 return error;
             }
             max_score = max_score - Q0;
@@ -92,7 +95,8 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 current_vertex_index = node_runner->vertex;
                 *(s + current_vertex_index) = -*(s + current_vertex_index);
                 error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &new_score);
-                if(error != NONE){
+                if (error != NONE)
+                {
                     return error;
                 }
                 new_score = new_score - Q0;
@@ -105,10 +109,13 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 node_runner = node_runner->next;
                 /*printf("vertex index = %d\n", current_vertex_index);*/
             }
-            
+
             counter = 0;
-            *(s + max_score_index) = -*(s + max_score_index);
+            d_pointer = s + max_score_index;
+            *(d_pointer) = -*(d_pointer);
+            (*(d_pointer) == 1) ? (*g1_counter)++ : (*g1_counter)--;
             *indices_runner = max_score_index;
+
             if (i == 0)
             {
                 *improve_runner = max_score;
@@ -135,7 +142,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         for (i = g->size - 1; i > max_improve_index; i--)
         {
             j = *indices_runner;
-            *(s + j) = -*(s + j);
+            d_pointer = s + j;
+            *(d_pointer) = -*(d_pointer);
+            (*(d_pointer) == 1) ? (*g1_counter)++ : (*g1_counter)--;
             indices_runner--;
         }
         if (max_improve_index == g->size - 1)
@@ -151,9 +160,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         {
             stop = 1;
         }
-        printf("delta Q is: %f\n",delta_Q);
+        printf("delta Q is: %f\n", delta_Q);
     }
-    printf("%d iterations in maxi, with size: %d\n",iteration_counter,g->size);
+    printf("%d iterations in maxi, with size: %d\n", iteration_counter, g->size);
     free(mult_vector);
     free(improve);
     free(indices);
@@ -164,8 +173,9 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
-    int i, g_count;
-    char stop = 0, *g_members;
+    int i, g_count, g1_count;
+    char stop = 0;
+    int *g_members;
     double *B_row; /*TODO: check if it used*/
     double *B_g_row, *runner1, *runner2, *mult_vector;
     double modularity_value, eigen_value, *s, magnitude;
@@ -251,12 +261,13 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             /*runner3++;*/
         }
     }
-    printf("%d iterations in power, with size: %d\n",iteration_counter,g->size);
+    printf("%d iterations in power, with size: %d\n", iteration_counter, g->size);
     /*printf("the eigen vector is:\n");
     print_vector(eigen_vector, g->size);*/
     /*---------------------computing leading eigen value-------------*/
     error = calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
-    if(error != NONE){
+    if (error != NONE)
+    {
         return error;
     }
     /*error = calculate_eigen_value(A, unnormalized_eigen_vector, g, degrees, M, B_g_row, B_1norm, &c);
@@ -282,22 +293,27 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return INDIVISIBLE;
     }
 
-    eigen2s(eigen_vector, g, s, A->n);
+    g1_count = eigen2s(eigen_vector, g, s, A->n);
 
     /*printf("s before the max:\n");
     print_vector(s,g->size);*/
-    error = modularity_maximization(A, degrees, s, M, g);
-    if(error != NONE){
+    error = modularity_maximization(A, degrees, s, M, g, &g1_count);
+    if (error != NONE)
+    {
         return error;
     }
     /*printf("s after the max:\n");
     print_vector(s,g->size);*/
 
+    printf("g1 count is %d, s is:\n", g1_count);
+    print_vector(s, g->size);
+
     construct_g1g2(g, s, g1, g2, A->n);
 
     /*computing the modularity value*/
     error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
-    if(error != NONE){
+    if (error != NONE)
+    {
         return error;
     }
     /*printf("modularity value is: %f\n", modularity_value);*/
@@ -351,9 +367,10 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     }
 
     /*-------------------compute the 1norm for initial B------------------*/
-    g = P->top(P);/*TODO: maybe check if P isn't empty*/
-    error = compute_1norm(A, g,degrees, M, &B_1norm);
-    if(error != NONE){
+    g = P->top(P); /*TODO: maybe check if P isn't empty*/
+    error = compute_1norm(A, g, degrees, M, &B_1norm);
+    if (error != NONE)
+    {
         return error;
     }
     /*-----------------------------run-------------------------------------*/
@@ -370,7 +387,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             print_errors(ALLOCATION_FAILED, "g1", "algo_3");
             return ALLOCATION_FAILED;
         }
-        g1->members = (char *)malloc(nof_vertex * sizeof(char));
+        g1->members = (int *)malloc(nof_vertex * sizeof(int));
         if (!(g1->members))
         {
             print_errors(ALLOCATION_FAILED, "g1->members", "algo_3");
@@ -383,7 +400,7 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             print_errors(ALLOCATION_FAILED, "g1", "algo_3");
             return ALLOCATION_FAILED;
         }
-        g2->members = (char *)malloc(nof_vertex * sizeof(char));
+        g2->members = (int *)malloc(nof_vertex * sizeof(int));
         if (!(g2->members))
         {
             print_errors(ALLOCATION_FAILED, "g2->members", "algo_3");

@@ -242,16 +242,17 @@ int main(int argc, char *argv[])
 	int *degrees;
 	Error error;
 	clock_t start;
-	
 
-	if(!argc){
+	if (!argc)
+	{
 		return 5;
 	}
 	srand(time(0));
-	if(argv[1] == "--test"){
+	if (argv[1] == "--test")
+	{
 		test_create_graph(argv[2], atoi(argv[4]), 0, 0);
 	}
-	
+
 	start = clock();
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[2], "r");
@@ -296,7 +297,7 @@ int main(int argc, char *argv[])
 		printf("[main]: allocation failed on g");
 		return 5;
 	}
-	g->members = (char *)malloc(nof_vertex * sizeof(char));
+	g->members = (int *)malloc(nof_vertex * sizeof(int));
 	if (!(g->members))
 	{
 		printf("[main]: allocation failed on g->members");
@@ -310,7 +311,8 @@ int main(int argc, char *argv[])
 	O = allocate_group_set();
 	P->push(P, g);
 	error = algo_3(A, degrees, P, O, nof_vertex);
-	if(error != NONE){
+	if (error != NONE)
+	{
 		return 5;
 	}
 	/*if (handle_errors(error, "algo_3"))
@@ -327,7 +329,8 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	error = write2_output_file(output_file, O, nof_vertex);
-	if(error != NONE){
+	if (error != NONE)
+	{
 		return 5;
 	}
 	/*if (handle_errors(error, "write2_output_file"))

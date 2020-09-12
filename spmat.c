@@ -174,7 +174,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
 	int curr_index = 0;
-	char *g_members;
+	int *g_members;
 	node **rows;
 	node *curr_row;
 	g_members = g->members;

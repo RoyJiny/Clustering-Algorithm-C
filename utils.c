@@ -45,7 +45,7 @@ void print_vector_int(int *vector, int size)
 void print_group(group *g, int size)
 {
 	int i;
-	char *g_mem = g->members;
+	int *g_mem = g->members;
 	printf("(");
 	for (i = 0; i < size - 1; i++)
 	{
@@ -69,7 +69,7 @@ void print_stack(group_set *s, int size)
 	}
 }
 
-Error compute_1norm(spmat *A,group *g, int *degrees, double M, double *res)
+Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 {
 	int i, j;
 	Error error;
@@ -79,14 +79,14 @@ Error compute_1norm(spmat *A,group *g, int *degrees, double M, double *res)
 	col_sums = (double *)malloc((A->n) * sizeof(double));
 	if (!col_sums)
 	{
-		print_errors(ALLOCATION_FAILED, "col_sums","compute_1norm");
+		print_errors(ALLOCATION_FAILED, "col_sums", "compute_1norm");
 		return ALLOCATION_FAILED;
 	}
 
 	B_row = (double *)malloc((A->n) * sizeof(double));
 	if (!B_row)
 	{
-		print_errors(ALLOCATION_FAILED, "B_row","compute_1norm");
+		print_errors(ALLOCATION_FAILED, "B_row", "compute_1norm");
 		return ALLOCATION_FAILED;
 	}
 
@@ -144,13 +144,13 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 	Error error;
 	int i, g_count = 0;
 	double numerator;
-	char *g_members = g->members;
+	int *g_members = g->members;
 	double *mult_vector, *runner;
 
 	mult_vector = (double *)malloc((g->size) * sizeof(double));
 	if (!mult_vector)
 	{
-		print_errors(ALLOCATION_FAILED, "mult_vector","calculate_eigen_value");
+		print_errors(ALLOCATION_FAILED, "mult_vector", "calculate_eigen_value");
 		return ALLOCATION_FAILED;
 	}
 	runner = mult_vector;
@@ -184,16 +184,16 @@ void print_errors(Error error, char *name, char *func)
 	switch (error)
 	{
 	case ALLOCATION_FAILED:
-		printf("[%s]: allocation failed on: %s\n", func,name);
+		printf("[%s]: allocation failed on: %s\n", func, name);
 		return;
 	case READ_FAILED:
-		printf("[%s]: read failed on %s\n",func, name);
+		printf("[%s]: read failed on %s\n", func, name);
 		return;
 	case DIVISION_BY_ZERO:
-		printf("[%s]: division by zero, %s is zero\n",func, name);
+		printf("[%s]: division by zero, %s is zero\n", func, name);
 		return;
 	case WRITE_FAILED:
-		printf("[%s]: write failed on: %s\n",func, name);
+		printf("[%s]: write failed on: %s\n", func, name);
 		return;
 	default:
 		return;
@@ -269,7 +269,7 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 {
 	int i;
 	double row_sum, *temp = B_g_row;
-	char *g_members = g->members;
+	int *g_members = g->members;
 	double row_degree = (double)degrees[row];
 
 	if (!M)
@@ -296,7 +296,7 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res)
 {
 	double *runner;
-	char *g_members;
+	int *g_members;
 	Error error;
 	int i, g_count;
 	g_members = g->members;
@@ -318,14 +318,15 @@ Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, doub
 		}
 		g_members++;
 	}
-	*res =  0.5 * dot_product(mult_vector, s, g->size);
+	*res = 0.5 * dot_product(mult_vector, s, g->size);
 	return NONE;
 }
 
-void eigen2s(double *eigen, group *g, double *s, int size)
+/*returns how much verticies are in the first group*/
+int eigen2s(double *eigen, group *g, double *s, int size)
 {
-	int i;
-	char *g_members = g->members;
+	int i, g1_counter = 0;
+	int *g_members = g->members;
 	for (i = 0; i < size; i++)
 	{
 		if (*g_members)
@@ -333,6 +334,7 @@ void eigen2s(double *eigen, group *g, double *s, int size)
 			if (IS_POSITIVE(*eigen))
 			{
 				*s = 1;
+				g1_counter++;
 			}
 			else
 			{
@@ -343,12 +345,13 @@ void eigen2s(double *eigen, group *g, double *s, int size)
 		}
 		g_members++;
 	}
+	return g1_counter;
 }
 
 void construct_g1g2(group *g, double *s, group *g1, group *g2, int size)
 {
 	int i;
-	char *g1_members = g1->members, *g2_members = g2->members, *g_members = g->members;
+	int *g1_members = g1->members, *g2_members = g2->members, *g_members = g->members;
 	g1->size = 0;
 	g2->size = 0;
 	for (i = 0; i < size; i++)
@@ -385,7 +388,7 @@ Error write2_output_file(FILE *output, group_set *O, int nof_vertex)
 	group *g;
 	int i, nof_vertex_in_group, nof_groups = O->size;
 	int *curr, *runner;
-	char *g_members;
+	int *g_members;
 	/*----------------allocations----------------*/
 	curr = (int *)malloc(nof_vertex * sizeof(int));
 	if (!curr)

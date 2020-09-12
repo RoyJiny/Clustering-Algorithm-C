@@ -12,9 +12,9 @@ void print_group(group *g, int size);
 
 void print_stack(group_set *s, int size);
 
-Error compute_1norm(spmat *A, group *g,int *degrees, double M, double *res);
+Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
 
-void print_errors(Error error, char *name, char* func);
+void print_errors(Error error, char *name, char *func);
 
 double dot_product(double *row1, double *row2, int size);
 
@@ -32,7 +32,7 @@ Error power_iteration(spmat *mat, double *vector);
 Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
 
 /*determine the partition into 2 groups, and calc the s vector*/
-void eigen2s(double *eigen, group *g, double *s, int size);
+int eigen2s(double *eigen, group *g, double *s, int size);
 
 void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 

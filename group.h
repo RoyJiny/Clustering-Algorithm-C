@@ -3,7 +3,7 @@
 
 typedef struct _group
 {
-	char *members; /*i in g iff members[i] == 1*, size is always nof_vertex*/
+	int *members; /*i in g iff members[i] == 1*, size is always nof_vertex*/
 	int size;
 } group;
 
