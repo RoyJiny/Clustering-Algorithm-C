@@ -5,7 +5,7 @@
 
 extern int run_num;
 
-Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, double *g1_counter)
+Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, int *g1_counter)
 {
     dynamic_list *unmoved;
     dynamic_node *node_runner;
