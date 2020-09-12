@@ -250,7 +250,6 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             /*runner3++;*/
         }
     }
-    printf("%d iterations in power, with size: %d\n", iteration_counter, g->size);
     /*printf("the eigen vector is:\n");
     print_vector(eigen_vector, g->size);*/
     /*---------------------computing leading eigen value-------------*/
