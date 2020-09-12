@@ -87,7 +87,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
             {
                 return error;
             }
-            max_score = max_score - Q0;
+            /*max_score = max_score - Q0;*/
             max_score_index = current_vertex_index;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
             node_runner = node_runner->next;
@@ -105,7 +105,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 {
                     return error;
                 }
-                new_score = new_score - Q0;
+                /*new_score = new_score - Q0;*/
                 if (new_score > max_score)
                 {
                     max_score = new_score;
