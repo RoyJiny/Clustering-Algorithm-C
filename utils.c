@@ -105,7 +105,10 @@ Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	g->size = A->n;
 	memset(g->members, 1, A->n);*/
 
-	memset(col_sums, 0, (A->n) * sizeof(double));
+	for (runner = col_sums; runner < col_sums + (A->n); runner++)
+	{
+		*runner = 0;
+	}
 	for (i = 0; i < A->n; i++)
 	{
 		error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i);
