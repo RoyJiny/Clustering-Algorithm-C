@@ -42,12 +42,12 @@ void print_vector_int(int *vector, int size)
 	printf("%d)\n", *vector);
 }
 
-void print_group(group *g, int size)
+void print_group(group *g)
 {
 	int i;
 	int *g_mem = g->members;
 	printf("(");
-	for (i = 0; i < size - 1; i++)
+	for (i = 0; i < g->size - 1; i++)
 	{
 		printf("%d ,", *g_mem);
 		g_mem++;

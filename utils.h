@@ -8,7 +8,7 @@ void print_vector_int(int *vector, int size);
 
 void print_vector(double *vector, int size);
 
-void print_group(group *g, int size);
+void print_group(group *g);
 
 void print_stack(group_set *s, int size);
 

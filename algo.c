@@ -173,7 +173,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
 
 Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
-    int i, g_count, g1_count;
+    int i, g1_count;
     char stop = 0;
     int *g_members;
     double *B_row; /*TODO: check if it used*/
@@ -224,24 +224,17 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         iteration_counter++;
         runner1 = mult_vector;
         g_members = g->members;
-        g_count = 0;
 
-        for (i = 0; i < A->n; i++)
+        for (i = 0; i < g->size; i++)
         {
-            /*do only if the vertex is in g*/
-            if (*g_members)
+            error = compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
+            if (error != NONE)
             {
-                /*g_count is the relative row number for the sub matrix of g*/
-                error = compute_modularity_matrix_row(A, i, g, degrees, M, B_g_row, g_count);
-                if (error != NONE)
-                {
-                    return error;
-                }
-                B_g_row[g_count] += B_1norm;
-                *runner1 = dot_product(B_g_row, eigen_vector, g->size);
-                runner1++;
-                g_count++;
+                return error;
             }
+            B_g_row[i] += B_1norm;
+            *runner1 = dot_product(B_g_row, eigen_vector, g->size);
+            runner1++;
             g_members++;
         }
 
@@ -328,6 +321,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     }
 
     error = construct_g1g2(g, s, g1, g2, g1_count);
+    printf("g1 is:\n");
+    print_group(g1);
+    printf("g2 is:\n");
+    print_group(g2);
     if (error != NONE)
     {
         return error;
