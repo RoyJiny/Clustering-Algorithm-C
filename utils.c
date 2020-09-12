@@ -304,7 +304,7 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score)
 {
 	int i;
-	double row_sum, *temp, *d_pointer;
+	double row_sum, *temp;
 	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
 	double row_degree = (double)degrees[A_index];
