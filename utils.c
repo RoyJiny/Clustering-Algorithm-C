@@ -62,7 +62,7 @@ void print_stack(group_set *s, int size)
 	while (curr != NULL)
 	{
 		printf("group %d is\n:", counter);
-		print_group(curr->value, size);
+		print_group(curr->value);
 		printf("\n");
 		curr = curr->next;
 		counter++;
