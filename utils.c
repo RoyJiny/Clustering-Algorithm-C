@@ -338,14 +338,12 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	{
 		printf("row sum is zero\n");
 	}
-	print_vector(B_g_row, g->size);
-	/**d_pointer = -*d_pointer;*/
+
 	*score = dot_product(B_g_row, s, g->size) * 4 * (*(s + g_index));
 	*score += 4 * ((deg) * (deg)) / M;
 	/**score += 4 * (A->get_value(A, A_index, A_index) - *(B_g_row + g_index));*/
 	*score = 0.5 * (*score);
 
-	/**d_pointer = -*d_pointer;*/
 	return NONE;
 }
 
