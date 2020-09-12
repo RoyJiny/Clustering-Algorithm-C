@@ -9,7 +9,7 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
 {
     dynamic_list *unmoved;
     dynamic_node *node_runner;
-    double max_score, Q0, new_score, max_improve, delta_Q;
+    double max_score, new_score, max_improve, delta_Q;
     double *mult_vector, *B_g_row;
     int i, j, max_score_index, max_improve_index;
     double *improve, *improve_runner;
@@ -68,26 +68,24 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
         for (i = 0; i < g->size; i++)
         {
 
-            error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &Q0);
+            /*error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &Q0);
             if (error != NONE)
             {
                 return error;
-            }
+            }*/
             node_runner = unmoved->head;
 
             /*first run*/
             current_vertex_index = node_runner->vertex;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
 
-            error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &max_score);
-            printf("from modularity we get: %f\n", max_score);
+            /*error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &max_score);*/
             error = compute_for_improved_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &max_score);
-            printf("from 'improvement' we get: %f\n\n", max_score + Q0);
             if (error != NONE)
             {
                 return error;
             }
-            /*max_score = max_score - Q0;*/
+
             max_score_index = current_vertex_index;
             *(s + current_vertex_index) = -*(s + current_vertex_index);
             node_runner = node_runner->next;
@@ -97,15 +95,13 @@ Error modularity_maximization(spmat *A, int *degrees, double *s, double M, group
                 counter++;
                 current_vertex_index = node_runner->vertex;
                 *(s + current_vertex_index) = -*(s + current_vertex_index);
-                error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &new_score);
-                printf("from modularity we get: %f\n", new_score);
+                /*error = compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &new_score);*/
                 error = compute_for_improved_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &new_score);
-                printf("from 'improvement' we get: %f\n\n", new_score + Q0);
                 if (error != NONE)
                 {
                     return error;
                 }
-                /*new_score = new_score - Q0;*/
+
                 if (new_score > max_score)
                 {
                     max_score = new_score;
