@@ -252,8 +252,8 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
             /*runner3++;*/
         }
     }
-    /*printf("the eigen vector is:\n");
-    print_vector(eigen_vector, g->size);*/
+    printf("done power interation run\n");
+
     /*---------------------computing leading eigen value-------------*/
     error = calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
     if (error != NONE)
@@ -292,8 +292,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     {
         return error;
     }
-    /*printf("s after the max:\n");
-    print_vector(s,g->size);*/
+    printf("done mod-maxi:\n");
     /*computing the modularity value*/
     /*printf("A is:\n");
     A->print_matrix(A);
