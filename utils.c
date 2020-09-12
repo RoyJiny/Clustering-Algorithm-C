@@ -335,7 +335,11 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	print_vector(B_g_row, g->size);
 	printf("\n");*/
 
-	A->add_to_row(A, A_index, B_g_row, g);
+	row_sum = A->add_to_row(A, A_index, B_g_row, g);
+	if (row_sum == 0)
+	{
+		printf("row sum is zero\n");
+	}
 
 	d_pointer = s + g_index;
 	*d_pointer = -*d_pointer;
