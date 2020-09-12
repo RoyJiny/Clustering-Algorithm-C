@@ -173,7 +173,6 @@ void mult_list(const spmat *A, const double *v, double *result)
 double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
-	int curr_index = 0;
 	int *g_members, counter = 0;
 	node **rows;
 	node *curr_row;
