@@ -329,7 +329,7 @@ int eigen2s(double *eigen, group *g, double *s, int size)
 	int *g_members = g->members;
 	for (i = 0; i < size; i++)
 	{
-		printf("g members value is %d", *g_members);
+		printf("g members value is %d\n", *g_members);
 		if (*g_members)
 		{
 			if (IS_POSITIVE(*eigen))

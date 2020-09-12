@@ -307,6 +307,8 @@ int main(int argc, char *argv[])
 	/*-------------------------------initial calculations----------------------------*/
 	g->size = nof_vertex;
 	memset(g->members, 1, nof_vertex); /*trivial division*/
+	printf("g members is at first:\n");
+	print_vector_int(g->members, nof_vertex);
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);
