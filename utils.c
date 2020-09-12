@@ -291,7 +291,9 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 
 	row_sum = A->add_to_row(A, A_row, B_g_row, g);
 	B_g_row[g_row] -= row_sum; /*for B_hat*/
+	printf("B_g_row is:\n");
 	print_vector(B_g_row, g->size);
+	printf("\n");
 	return NONE;
 }
 
