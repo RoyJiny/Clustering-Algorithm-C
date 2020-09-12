@@ -248,14 +248,14 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	srand(time(0));
-	if (!strcmp(argv[1], "--test"))
+	/*if (!strcmp(argv[1], "--test"))
 	{
 		test_create_graph(argv[2], atoi(argv[4]), 0, 0);
-	}
+	}*/
 
 	start = clock();
 	/*--------------------try to open the input file---------------------*/
-	input_file = fopen(argv[2], "r");
+	input_file = fopen(argv[1], "r");
 	if (!input_file)
 	{
 		printf("[main]: input file is invalid\n");
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
 	/*printf("stack_is :\n");
 	print_stack(O, nof_vertex);*/
 	/*----------------------------write the division in the output_file--------------*/
-	output_file = fopen(argv[3], "w");
+	output_file = fopen(argv[2], "w");
 	if (!output_file)
 	{
 		printf("[main]: output file is invalid\n");
@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
 	}*/
 	fclose(output_file);
 	/*-----------printing the output file-----------------*/
-	output_file = fopen(argv[3], "r");
+	output_file = fopen(argv[2], "r");
 	if (!output_file)
 	{
 		printf("[main]: output file is invalid2\n");
