@@ -109,6 +109,7 @@ Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	{
 		*runner = 0;
 	}
+
 	for (i = 0; i < A->n; i++)
 	{
 		error = compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i);

@@ -275,12 +275,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
-        /* printf("g is indivisible\n");
-        printf("eigen value is not non-positive, value: %f\n", eigen_value);*/
-        /*TODO : update g1 & g2*/
+        printf("g is indivisible\n");
+        printf("eigen value is non-positive, value: %f\n", eigen_value);
         free(mult_vector);
         free(B_row);
-        /*free(unnormalized_eigen_vector);*/
         free(B_g_row);
         free(s);
         free(g1);
@@ -309,10 +307,10 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     if (!IS_POSITIVE(modularity_value))
     {
-        /*printf("g is indivisible\n");*/
+        printf("g is indivisible\n");
+        printf("modularity value is non-positive, value: %f\n", modularity_value);
         free(mult_vector);
         free(B_row);
-        /*free(unnormalized_eigen_vector);*/
         free(B_g_row);
         free(s);
         free(g1);
