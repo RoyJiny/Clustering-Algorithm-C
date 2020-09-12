@@ -308,6 +308,7 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
 	double row_degree = (double)degrees[A_index];
+	int deg = *(degrees + A_index);
 	double *B_g_row = (double *)malloc((g->size) * sizeof(double));
 	if (!B_g_row)
 	{
@@ -340,7 +341,7 @@ Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, d
 	print_vector(B_g_row, g->size);
 	/**d_pointer = -*d_pointer;*/
 	*score = dot_product(B_g_row, s, g->size) * 4 * (*(s + g_index));
-	*score += 4 * ((*(degrees + A_index)) * (*(degrees + A_index))) / M;
+	*score += 4 * ((deg) * (deg)) / M;
 	/**score += 4 * (A->get_value(A, A_index, A_index) - *(B_g_row + g_index));*/
 	*score = 0.5 * (*score);
 
