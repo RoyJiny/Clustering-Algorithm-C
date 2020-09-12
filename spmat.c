@@ -170,6 +170,23 @@ void mult_list(const spmat *A, const double *v, double *result)
 	printf("end mult_list\n");
 }
 
+char get_value_list(const spmat *A, int row, int col)
+{
+	node **rows;
+	node *curr_row;
+	rows = ((list *)(A->handle))->rows;
+	curr_row = *(rows + row);
+	while (curr_row != NULL && curr_row->index < col)
+	{
+		curr_row = curr_row->next;
+	}
+	if (curr_row != NULL && curr_row->index == col)
+	{
+		return curr_row->val;
+	}
+	return 0;
+}
+
 double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
@@ -288,6 +305,7 @@ spmat *spmat_allocate_list(int n)
 	spm->equal2 = equal2_list;
 	spm->print_matrix = print_matrix_list;
 	spm->add_to_row = add_to_row_list;
+	spm->get_value = get_value_list;
 	return spm;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/

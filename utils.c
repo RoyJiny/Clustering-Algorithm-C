@@ -301,6 +301,50 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 	return NONE;
 }
 
+Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, int *s, double M, int *degrees, double *score)
+{
+	int i;
+	double row_sum, *temp, *d_pointer;
+	int g_vertex, g_prev_vertex = 0;
+	int *g_members = g->members;
+	double row_degree = (double)degrees[A_index];
+	double *B_g_row = (double *)malloc((g->size) * sizeof(double));
+	if (!B_g_row)
+	{
+		print_errors(ALLOCATION_FAILED, "B_g_row", "compute_for_improved_score");
+		return ALLOCATION_FAILED;
+	}
+	temp = B_g_row;
+
+	if (!M)
+	{
+		print_errors(DIVISION_BY_ZERO, "M", "compute_modularity_matrix_row");
+		return DIVISION_BY_ZERO;
+	}
+
+	for (i = 0; i < g->size; i++)
+	{
+		g_vertex = *g_members;
+		degrees = degrees + (g_vertex - g_prev_vertex);
+		*temp = -(row_degree * (double)(*degrees)) / M;
+		temp++;
+		g_members++;
+		g_prev_vertex = g_vertex;
+	}
+	/*printf("before sum, B_g_row is:\n");
+	print_vector(B_g_row, g->size);
+	printf("\n");*/
+
+	row_sum = A->add_to_row(A, A_index, B_g_row, g);
+
+	d_pointer = s + g_index;
+	*d_pointer = -*d_pointer;
+	*score = dot_product(B_g_row, s, g->size) * 4 * (*d_pointer);
+	*score += 4 * (A->get_value(A, A_index, A_index) - *(B_g_row + g_index));
+
+	*d_pointer = -*d_pointer;
+}
+
 Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res)
 {
 	double *runner;

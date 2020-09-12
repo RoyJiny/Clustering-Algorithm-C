@@ -45,6 +45,8 @@ typedef struct _spmat
 	/*add A[row] to row*/
 	double (*add_to_row)(const struct _spmat *A, int row_index, double *row, group *g);
 
+	char (*get_value)(const spmat *A, int row, int col);
+
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
 	void *handle;

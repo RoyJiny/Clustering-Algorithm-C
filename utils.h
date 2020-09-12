@@ -27,6 +27,8 @@ Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, d
 
 Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);
 
+Error compute_for_improved_score(spmat *A, int A_index, int g_index, group *g, int *s, double M, int *degrees, double *score);
+
 Error power_iteration(spmat *mat, double *vector);
 
 Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
