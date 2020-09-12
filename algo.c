@@ -308,8 +308,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
 
     if (!IS_POSITIVE(modularity_value))
     {
-        printf("g is indivisible\n");
-        printf("modularity value is non-positive, value: %f\n", modularity_value);
+        printf("g is indivisible, modularity value is not positive\n");
         free(mult_vector);
         free(B_row);
         free(B_g_row);
