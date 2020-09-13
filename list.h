@@ -97,7 +97,7 @@ void delete_node_by_prev(dynamic_list *list, dynamic_node *prev, char removing_f
 {
     dynamic_node *node_to_delete;
     printf("the first node in the list is: %d\n", list->head->vertex);
-    if (prev == NULL || prev->next == NULL)
+    if (prev == NULL)
     {
         printf("Error, prev can't be null or last in list!\n\n");
         return;
