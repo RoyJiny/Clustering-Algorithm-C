@@ -93,10 +93,20 @@ void delete_node_by_index(dynamic_list *list, int index)
     printf("didn't find the node of index %d\n", index);
 }
 
-void delete_node_by_prev(dynamic_node *prev)
+void delete_node_by_prev(dynamic_list *list, dynamic_node *prev)
 {
-    dynamic_node *node_to_delete = prev->next;
-    printf("trying to delete node %d", node_to_delete->vertex);
+    dynamic_node *node_to_delete;
+    if (prev == NULL || prev->next == NULL)
+    {
+        printf("Error, prev can't be null or last in list!\n");
+    }
+    if (prev->vertex == list->head->vertex) /*want to delete the first node*/
+    {
+        list->head = prev->next;
+        free(prev);
+        return;
+    }
+    node_to_delete = prev->next;
     prev->next = node_to_delete->next;
     free(node_to_delete);
 }
