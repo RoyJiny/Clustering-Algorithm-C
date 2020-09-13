@@ -108,8 +108,8 @@ void delete_node_by_prev(dynamic_list *list, dynamic_node *prev)
         free(prev);
         return;
     }
-    printf("trying to delete node %d\n\n", node_to_delete->vertex);
     node_to_delete = prev->next;
+    printf("trying to delete node %d\n\n", node_to_delete->vertex);
     prev->next = node_to_delete->next;
     free(node_to_delete);
 }
