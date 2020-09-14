@@ -12,7 +12,7 @@ DONE - 5) check if unnorm.. eigen vector is really needed
 
 DONE - 7) reuse g in calculate 1norm
 
-8) change node deleting to be by ref to prev
+DONE - 8) change node deleting to be by ref to prev
 
 
 
