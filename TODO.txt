@@ -26,5 +26,7 @@ DONE - 1) check what is start temp in read input -> it used for storing the data
 
 4) clean code
 
+5) limit the length of functions
+
 
 # remember to remove -g flag from makefile #
