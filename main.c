@@ -231,9 +231,6 @@ Error test_create_graph(char *name, int numOfVertex, char empty, char full)
 
 int main(int argc, char *argv[])
 {
-	/*TODO: move it to algo_2*/
-	/*int debug = 1;*/		/*for short debug prints*/
-	/*int deep_debug = 1;*/ /*for the long debug prints*/
 	FILE *input_file, *output_file;
 	group_set *P, *O;
 	group *g;
@@ -248,11 +245,6 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	srand(time(0));
-	/*if (!strcmp(argv[1], "--test"))
-	{
-		test_create_graph(argv[2], atoi(argv[4]), 0, 0);
-	}*/
-
 	start = clock();
 	/*--------------------try to open the input file---------------------*/
 	input_file = fopen(argv[1], "r");
@@ -269,13 +261,7 @@ int main(int argc, char *argv[])
 	}
 
 	/*---------allocate vector to save the degree of each vector (k_i)-----*/
-	degrees = (int *)malloc(nof_vertex * sizeof(int));
-	if (!degrees)
-	{
-		printf("[main]: malloc failed on pointer degree\n");
-		return 5;
-	}
-
+	alloc(degrees,int,nof_vertex,"main","degrees",5);
 	/*---------------try allocate sparse matrix using list imp--------------*/
 	A = spmat_allocate_list(nof_vertex);
 	if (!A)
@@ -291,19 +277,8 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 	/*---------------------------alocate group set P & O----------------------*/
-	g = (group *)malloc(sizeof(group));
-	if (!g)
-	{
-		printf("[main]: allocation failed on g");
-		return 5;
-	}
-	g->members = (int *)malloc(nof_vertex * sizeof(int));
-	if (!(g->members))
-	{
-		printf("[main]: allocation failed on g->members");
-		return 5;
-	}
-
+	alloc(g,group,1,"main","g",5);
+	alloc(g->members,int,nof_vertex,"main","g->members",5);
 	/*-------------------------------initial calculations----------------------------*/
 	/*trivial division*/
 	g->size = nof_vertex;
@@ -322,12 +297,7 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
-	/*if (handle_errors(error, "algo_3"))
-	{
-		return 5;
-	}*/
-	/*printf("stack_is :\n");
-	print_stack(O, nof_vertex);*/
+	/*exit_if_error(algo_3(A, degrees, P, O, nof_vertex))*/
 	/*----------------------------write the division in the output_file--------------*/
 	output_file = fopen(argv[2], "w");
 	if (!output_file)
@@ -340,10 +310,6 @@ int main(int argc, char *argv[])
 	{
 		return 5;
 	}
-	/*if (handle_errors(error, "write2_output_file"))
-	{
-		return 5;
-	}*/
 	fclose(output_file);
 	/*-----------printing the output file-----------------*/
 	output_file = fopen(argv[2], "r");
@@ -355,23 +321,10 @@ int main(int argc, char *argv[])
 	printf("[main]: actual: \n");
 	print_output(output_file, nof_vertex);
 
-	/*result = fopen(argv[3], "r");
-	if (!result)
-	{
-		printf("output file is invalid2\n");
-		return 5;
-	}
-	printf("expected: \n");
-	print_output(result, nof_vertex);
-	fclose(result);*/
-
 	A->free(A);
 	free(degrees);
 	fclose(input_file);
 	fclose(output_file);
-	/*free(g->members);*/ /*freed in algo_3 or in O->free_set*/
-	/*free(g);*/
-	/*maybe its not neccessary because the stack getting empty in write2_output file*/
 	P->free_set(P);
 	O->free_set(O);
 

@@ -1,6 +1,8 @@
 #ifndef _GROUP_H
 #define _GROUP_H
 
+#include "param.h"
+
 typedef struct _group
 {
 	int *members; /*i in g iff members[i] == 1*, size is always nof_vertex*/

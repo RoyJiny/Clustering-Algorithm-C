@@ -1,18 +1,8 @@
 #ifndef _SPMAT_H
 #define _SPMAT_H
 
-#define IS_POSITIVE(x) ((x) > 0.00001)
 #include "group.h"
 
-typedef enum
-{
-	NONE,
-	ALLOCATION_FAILED,
-	READ_FAILED,
-	WRITE_FAILED,
-	DIVISION_BY_ZERO,
-	INDIVISIBLE
-} Error;
 
 typedef struct _spmat
 {
