@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <time.h>
 #include <string.h>
-#include <stdarg.h>
-#include "algo.h"
 
+#include "algo.h"
+#include <varargs.h>
 
 /*void free_all(int count,...){
 	int i=0;
@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
 
 	A->free(A);
 	/*free(degrees);*/
-	FREE_ALL(degrees);
+	freeeeeee(degrees,NULL);
 	fclose(input_file);
 	fclose(output_file);
 	P->free_set(P);
@@ -343,4 +343,19 @@ int main(int argc, char *argv[])
 	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
 
 	return 0;
+}
+
+void freeeeeee(va_alist)
+	va_dcl
+{
+	va_list list;
+    va_start(list);
+	void *p;
+	p = va_arg(list, void*);
+	while(p != NULL)
+	{
+		free(p);
+		p = va_arg(list, void*);
+	}
+	va_end(list);
 }
