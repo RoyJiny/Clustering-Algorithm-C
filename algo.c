@@ -182,8 +182,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
             handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
     }
-    printf("the size of g -%ld\n", g->size);
-    printf("done power interation run -%ld\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
+    printf("the size of g -%d\n", g->size);
+    printf("done power interation run -%d\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
 
     /*---------------------computing leading eigen value-------------*/
     calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
