@@ -15,7 +15,19 @@
         free(pta[i]);
     }
 }*/
-
+void freeeeeee(va_list va_alist)
+{
+	va_list list;
+    va_start(list);
+	void *p;
+	p = va_arg(list, void*);
+	while(p != NULL)
+	{
+		free(p);
+		p = va_arg(list, void*);
+	}
+	va_end(list);
+}
 
 int run_num = 0;
 
@@ -343,19 +355,4 @@ int main(int argc, char *argv[])
 	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
 
 	return 0;
-}
-
-void freeeeeee(va_alist)
-	va_dcl
-{
-	va_list list;
-    va_start(list);
-	void *p;
-	p = va_arg(list, void*);
-	while(p != NULL)
-	{
-		free(p);
-		p = va_arg(list, void*);
-	}
-	va_end(list);
 }
