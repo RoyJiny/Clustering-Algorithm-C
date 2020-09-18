@@ -31,6 +31,6 @@ DONE - 3) add exit codes
 idea: 
 maybe change compute_modularity_matrix_row to compute the dot product..
 B_g * vector = (A - D) * vector... *use A->mult!
-need to check the element in position [i][i]...
+need to check the element in position [i][i]..
 
 # remember to remove -g flag from makefile #
