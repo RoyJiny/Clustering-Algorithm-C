@@ -3,7 +3,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
-#define print 0
 
 extern int run_num;
 
@@ -47,38 +46,23 @@ node *create_list(const char *row, int n)
 	const char *p = row;
 	char first = 1;
 	int counter = 0;
-	if (print)
-	{
-		printf("%d create_list\n", n);
-	}
+
 	for (; p < row + n; p++)
 	{
 		if (*p != 0)
 		{
 			if (first)
 			{
-				head = (node *)malloc(sizeof(node));
-				if (!head)
-				{
-					return NULL;
-				}
+				alloc(head,node,1,"create_list","head");
 				head->val = *p;
 				head->index = counter;
 				tail = head;
 				first = 0;
-				if (print)
-				{
-					printf("first succeeded");
-				}
 			}
 			else
 			{
-				tail->next = (node *)malloc(sizeof(node));
+				alloc(tail->next,node,1,"create_list","tail->next");
 				tail = tail->next;
-				if (!tail)
-				{
-					return NULL;
-				}
 				tail->val = *p;
 				tail->index = counter;
 			}
@@ -89,34 +73,20 @@ node *create_list(const char *row, int n)
 	{
 		tail->next = NULL;
 	}
-	if (print)
-	{
-		printf("\n");
-		print_list(head);
-		printf("\n");
-	}
 	return head;
 }
 
 void addRow_list(spmat *A, const char *row, int i)
 {
 	node **rows = ((list *)(A->handle))->rows;
-	if (print)
-	{
-		printf("addRow_list\n");
-	}
-
 	*(rows + i) = create_list(row, A->n);
 }
+
 /*TODO: maybe replace with iterative version*/
 void delete_list(node *l)
 {
 	if (l != NULL)
 	{
-		if (print)
-		{
-			printf("delete node %d\n", l->val);
-		}
 		delete_list(l->next);
 		free(l);
 	}
@@ -125,27 +95,15 @@ void delete_list(node *l)
 void free_list(spmat *A)
 {
 	node **l = ((list *)(A->handle))->rows;
-	if (print)
-	{
-		printf("free_list\n");
-	}
 	for (; l < (((list *)(A->handle))->rows) + A->n; l++)
 	{
-		if (print)
-		{
-			print_list(*l);
-		}
 		delete_list(*l);
-	}
-	if (print)
-	{
-		printf("pass delete\n");
 	}
 	free(((list *)(A->handle))->rows);
 	free(A->handle);
 	free(A);
 }
-
+/*TODO: not used*/
 void mult_list(const spmat *A, const double *v, double *result)
 {
 	double sum;
@@ -153,7 +111,6 @@ void mult_list(const spmat *A, const double *v, double *result)
 	node *currElem = *currRow;					  /* current element*/
 	double *currRes = result;					  /* current result element*/
 	int i;
-	printf("start mult_list\n");
 	for (i = 0; i < A->n; i++)
 	{
 		sum = 0;
@@ -167,9 +124,8 @@ void mult_list(const spmat *A, const double *v, double *result)
 		currRow++;
 		currElem = *currRow;
 	}
-	printf("end mult_list\n");
 }
-
+/*TODO: not used*/
 char get_value_list(const spmat *A, int row, int col)
 {
 	node **rows;
@@ -222,7 +178,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 	}
 	return sum;
 }
-
+/*TODO: not used*/
 char equal2_list(const spmat *A, const spmat *B)
 {
 	node *temp_A, *temp_B;
@@ -256,7 +212,7 @@ char equal2_list(const spmat *A, const spmat *B)
 	}
 	return 1;
 }
-
+/*TODO: not used*/
 void print_matrix_list(const spmat *mat)
 {
 	int i;
@@ -278,7 +234,13 @@ spmat *spmat_allocate_list(int n)
 {
 	list *l;
 	spmat *spm;
-	l = (list *)malloc(sizeof(list));
+
+	alloc(l,list,1,"spmat_allocate_list","l");
+	alloc(l->rows,node*,n,"spmat_allocate_list","l->rows");
+	alloc(spm,spmat,1,"spmat_allocate_list","spm");
+
+
+	/*l = (list *)malloc(sizeof(list));
 	if (!l)
 	{
 		return NULL;
@@ -295,7 +257,8 @@ spmat *spmat_allocate_list(int n)
 		free(l->rows);
 		free(l);
 		return NULL;
-	}
+	}*/
+	
 	spm->n = n;
 	spm->handle = l;
 

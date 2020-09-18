@@ -5,7 +5,7 @@
 #include "list.h"
 
 extern int run_num;
-Error modularity_maximization_2(spmat *A, int *degrees, double *s, double M, group *g, int *g1_counter)
+void modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, int *g1_counter)
 {
     double max_score, new_score, max_improve, delta_Q;
     double *mult_vector, *B_g_row;
@@ -20,11 +20,11 @@ Error modularity_maximization_2(spmat *A, int *degrees, double *s, double M, gro
     int unmoved_size;
 
     /*----------------------Allocations--------------------*/
-    alloc(unmoved,int,g->size,"modularity_maximization_2","unmoved",ALLOCATION_FAILED);
-    alloc(B_g_row,double,g->size,"modularity_maximization_2","B_g_row",ALLOCATION_FAILED);
-    alloc(mult_vector,double,g->size,"modularity_maximization_2","mult_vector",ALLOCATION_FAILED);
-    alloc(improve,double,g->size,"modularity_maximization_2","improve",ALLOCATION_FAILED);
-    alloc(indices,int,g->size,"modularity_maximization_2","indices",ALLOCATION_FAILED);
+    alloc(unmoved,int,g->size,"modularity_maximization","unmoved");
+    alloc(B_g_row,double,g->size,"modularity_maximization","B_g_row");
+    alloc(mult_vector,double,g->size,"modularity_maximization","mult_vector");
+    alloc(improve,double,g->size,"modularity_maximization","improve");
+    alloc(indices,int,g->size,"modularity_maximization","indices");
     /*------------------------------------------------------*/
     for(unmoved_runner = unmoved; unmoved_runner<unmoved+g->size; unmoved_runner++){
         *unmoved_runner = i;
@@ -48,7 +48,7 @@ Error modularity_maximization_2(spmat *A, int *degrees, double *s, double M, gro
             d_pointer = s + current_vertex_index;
             *d_pointer = -(*d_pointer);
 
-            handle_errors(compute_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &max_score, B_g_row));
+            compute_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &max_score, B_g_row);
 
             max_score_index = current_vertex_index;
             *d_pointer = -(*d_pointer);
@@ -61,7 +61,7 @@ Error modularity_maximization_2(spmat *A, int *degrees, double *s, double M, gro
                 d_pointer = s + current_vertex_index;
                 *d_pointer = -(*d_pointer);
 
-                handle_errors(compute_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &new_score, B_g_row));
+                compute_score(A, *(g->members + current_vertex_index), current_vertex_index, g, s, M, degrees, &new_score, B_g_row);
                 if (new_score > max_score)
                 {
                     max_score = new_score;
@@ -133,11 +133,9 @@ Error modularity_maximization_2(spmat *A, int *degrees, double *s, double M, gro
     free(indices);
     free(unmoved);
     free(B_g_row);
-    /*FREE_ALL(mult_vector,improve,indices,unmoved,B_g_row);*/
-    return NONE;
 }
 
-Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
+DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, group *g2, double B_1norm, double M)
 {
     int i, g1_count;
     char stop = 0;
@@ -147,9 +145,9 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     int iteration_counter = MAX_NOF_ITERATIONS(g->size);
     time_t start ;
     /*------------------------ALLOCATIONS------------------------*/
-    alloc(B_g_row,double,g->size,"algo_2","B_g_row",ALLOCATION_FAILED);
-    alloc(mult_vector,double,g->size,"algo_2","mult_vector",ALLOCATION_FAILED);
-    alloc(s,double,g->size,"algo_2","s",ALLOCATION_FAILED);
+    alloc(B_g_row,double,g->size,"algo_2","B_g_row");
+    alloc(mult_vector,double,g->size,"algo_2","mult_vector");
+    alloc(s,double,g->size,"algo_2","s");
     /*---------------------power iteration-------------------------*/
     start = clock();
     while (!stop)
@@ -161,8 +159,7 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         magnitude = 0;
         for (i = 0; i < g->size; i++)
         {
-            handle_errors(compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i));
-            /*B_g_row[i] += B_1norm;*/
+            compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
             *runner2 += B_1norm;
             *runner1 = dot_product(B_g_row, eigen_vector, g->size);
             magnitude += (*runner1) * (*runner1);
@@ -177,26 +174,22 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         {
             if (IS_POSITIVE(fabs(*runner2 - (*runner1 / magnitude))))
             {
-                /*printf("fuck %f\n",fabs(*runner2 - (*runner1 / magnitude)));*/
                 stop = 0;
             }
             *runner2 = *runner1 / magnitude;
             runner2++;
         }
         if(!iteration_counter){
-            print_errors(ENDLESS_LOOP,"power iteration","algo_2");
-            return ENDLESS_LOOP;
+            handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
     }
     printf("done power interation run -%ld\n", (clock() - start) / CLOCKS_PER_SEC);
 
     /*---------------------computing leading eigen value-------------*/
-    handle_errors(calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value));
+    calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
     /*--------------------decide the right partition-----------------*/
     if (!IS_POSITIVE(eigen_value))
     {
-        /*printf("g is indivisible\n");
-        printf("eigen value is non-positive, value: %f\n", eigen_value);*/
         free(mult_vector);
         free(B_g_row);
         free(s);
@@ -208,14 +201,13 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
     g1_count = eigen2s(eigen_vector, g, s);
 
     start = clock();
-    handle_errors(modularity_maximization_2(A, degrees, s, M, g, &g1_count));
-    printf("done max_2- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
+    modularity_maximization(A, degrees, s, M, g, &g1_count);
+    printf("done max- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
 
-    handle_errors(compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value));
+    compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
 
     if (!IS_POSITIVE(modularity_value))
     {
-        /*printf("g is indivisible, modularity value is not positive\n");*/
         free(mult_vector);
         free(B_g_row);
         free(s);
@@ -224,23 +216,23 @@ Error algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, group *g1, 
         return INDIVISIBLE;
     }
 
-    handle_errors(construct_g1g2(g, s, g1, g2, g1_count));
+    construct_g1g2(g, s, g1, g2, g1_count);
 
     free(mult_vector);
     free(B_g_row);
     free(s);
-    return NONE;
+    return DIVISIBLE;
 }
 
 /*P and O are the initial division*/
-Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
+void algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
 {
     group *g, *g1, *g2;
     double B_1norm, *init_vector, M, *runner_d;
     int *runner_i;
-    Error error;
+    DivisionResult is_divisible;
 
-    alloc(init_vector,double,nof_vertex,"algo_3","init_vector",ALLOCATION_FAILED);
+    alloc(init_vector,double,nof_vertex,"algo_3","init_vector");
     /*------------------------randomize initial vector--------------------*/
     for (runner_d = init_vector; runner_d < init_vector + nof_vertex; runner_d++)
     {
@@ -253,19 +245,18 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     }
 
     /*-------------------compute the 1norm for initial B------------------*/
-    g = P->top(P); /*TODO: maybe check if P isn't empty*/
-    handle_errors(compute_1norm(A, g, degrees, M, &B_1norm));
+    g = P->top(P);
+    compute_1norm(A, g, degrees, M, &B_1norm);
     /*-----------------------------run-------------------------------------*/
     while (!(P->is_empty(P)))
     {
-        alloc(g1,group,1,"algo_3","g1",ALLOCATION_FAILED);
-        alloc(g2,group,1,"algo_3","g2",ALLOCATION_FAILED);
+        alloc(g1,group,1,"algo_3","g1");
+        alloc(g2,group,1,"algo_3","g2");
 
         g = P->pop(P);
        
-        error = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
-        handle_errors(error);
-        if (g1->size == 0 || g2->size == 0 || error == INDIVISIBLE)
+        is_divisible = algo_2(A, degrees, init_vector, g, g1, g2, B_1norm, M);
+        if (g1->size == 0 || g2->size == 0 || is_divisible == INDIVISIBLE)
         {
             O->push(O, g);
         }
@@ -280,5 +271,4 @@ Error algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     }
 
     free(init_vector);
-    return NONE;
 }

@@ -14,7 +14,7 @@ void print_group(group *g);
 void print_stack(group_set *s);
 
 /*computes the 1norm of the entire 'A' matrix, the results stored in res.*/
-Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
+void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
 
 /*prints a msg corresponding to error.*/
 void print_errors(Error error, char *name, char *func);
@@ -25,24 +25,24 @@ double dot_product(double *row1, double *row2, int size);
 
 /*convert the information in 'input' file to an adjacency matrix stored in'A'.
  *save the degree of each vertex in 'degree' (by increasing order).*/
-Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
+void read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
 
 /*computes row 'row' of the modularity matrix corresponding to group g.
  *the result is stored in 'B_g_row'.*/
-Error compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
+void compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
 
 /*computes the modularity value according to the partition represented in 's'.
  *the result is stored in 'res'*/
-Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);
+void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);
 
 /*computes the difference between the initial modularity and the modularity. 
  *we would get if we move the vertex 'A_index' to the other group.
  *the result is stored in 'score'.*/
-Error compute_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row);
+void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row);
 
 /*computes the eigen value ,corresponding to 'eigen_vector', of matrix 'mat'.
  *the result is stored in 'res'.*/
-Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
+void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
 
 /*computes the partition 's' according to 'eigen'.
  *the result is stored in 's'.
@@ -50,11 +50,11 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 int eigen2s(double *eigen, group *g, double *s);
 
 /*update the 2 groups('g1','g2') according to the partition of 'g' represented in 's'.*/
-Error construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
+void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 
 /*write to 'output' file the final partition into groups.*/
-Error write2_output_file(FILE *output, group_set *O);
+void write2_output_file(FILE *output, group_set *O);
 
-Error print_output(FILE *output, int nof_vertex);
+void print_output(FILE *output, int nof_vertex);
 
 #endif

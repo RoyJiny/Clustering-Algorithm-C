@@ -5,11 +5,7 @@
 void push(group_set *s, group *g)
 {
     group_node *new_node;
-    new_node = (group_node *)malloc(sizeof(group_node));
-    if (!new_node)
-    {
-        printf("malloc failed on new_node");
-    }
+    alloc(new_node,group_node,1,"group.c: push","new_node");
     new_node->value = g;
     new_node->next = s->first;
     s->first = new_node;
@@ -56,11 +52,7 @@ void free_set(group_set *s)
 group_set *allocate_group_set()
 {
     group_set *s;
-    s = (group_set *)malloc(sizeof(group_set));
-    if (!s)
-    {
-        printf("allocation faild on s");
-    }
+    alloc(s,group_set,1,"group.c: allocate_group_set","s");
     s->size = 0;
     s->first = NULL;
     s->top = top;

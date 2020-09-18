@@ -69,14 +69,13 @@ void print_stack(group_set *s)
 	}
 }
 
-Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
+void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 {
 	int i, j;
-	/*Error error;*/
 	double norm = 0, *col_sums, *runner, *B_row;
 
-	alloc(col_sums,double,A->n,"compute_1norm","col_sums",ALLOCATION_FAILED);
-	alloc(B_row,double,A->n,"compute_1norm","B_row",ALLOCATION_FAILED);
+	alloc(col_sums,double,A->n,"compute_1norm","col_sums");
+	alloc(B_row,double,A->n,"compute_1norm","B_row");
 
 	for (runner = col_sums; runner < col_sums + (A->n); runner++)
 	{
@@ -85,7 +84,7 @@ Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 
 	for (i = 0; i < A->n; i++)
 	{
-		handle_errors(compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i));
+		compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i);
 
 		j = 0;
 		for (runner = col_sums; runner < col_sums + A->n; runner++)
@@ -108,7 +107,7 @@ Error compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	return NONE;
 }
 
-Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
+void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
 {
 	/*Error error;*/
 	int i;
@@ -116,13 +115,13 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 	int *g_members = g->members;
 	double *mult_vector, *runner, *B_g_runner;
 
-	alloc(mult_vector,double,g->size,"calculate_eigen_value","mult_vector",ALLOCATION_FAILED);
+	alloc(mult_vector,double,g->size,"calculate_eigen_value","mult_vector");
 
 	runner = mult_vector;
 	B_g_runner = B_g_row;
 	for (i = 0; i < g->size; i++)
 	{
-		handle_errors(compute_modularity_matrix_row(mat, *g_members, g, degrees, M, B_g_row, i));
+		compute_modularity_matrix_row(mat, *g_members, g, degrees, M, B_g_row, i);
 		/*B_g_row[i] += B_1norm;*/
 		*B_g_runner += B_1norm;
 		*runner = dot_product(B_g_row, eigen_vector, g->size);
@@ -135,7 +134,6 @@ Error calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *deg
 	*res = numerator;
 
 	free(mult_vector);
-	return NONE;
 }
 
 void print_errors(Error error, char *name, char *func)
@@ -162,7 +160,7 @@ void print_errors(Error error, char *name, char *func)
 	}
 }
 
-Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
+void read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 {
 	char *curr_row;
 	char *start_row; /*save the start of the row to add_row function in spmat*/
@@ -172,8 +170,8 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	int i, j, counter;
 
 	vertex_degree = degree; /*fill degree*/
-	alloc(start_row,char,nof_vertex,"read_input","start_row",ALLOCATION_FAILED);
-	alloc(start_row_for_read,int,nof_vertex,"read_input","start_row_for_read",ALLOCATION_FAILED);
+	alloc(start_row,char,nof_vertex,"read_input","start_row");
+	alloc(start_row_for_read,int,nof_vertex,"read_input","start_row_for_read");
 
 	for (i = 0; i < nof_vertex; i++)
 	{
@@ -182,14 +180,12 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 		/*try read k_i*/
 		if (fread(vertex_degree, sizeof(int), 1, input) != 1)
 		{
-			print_errors(READ_FAILED, "input_file", "read_input");
-			return READ_FAILED;
+			handle_errors(READ_FAILED,"read_input", "input_file");
 		}
 		/*try read the k_i neighbors*/
 		if ((signed int)fread(temp, sizeof(int), *vertex_degree, input) != *vertex_degree)
 		{
-			print_errors(READ_FAILED, "input_file", "read_input");
-			return READ_FAILED;
+			handle_errors(READ_FAILED,"read_input", "input_file");
 		}
 		counter = 0;
 		for (j = 0; j < nof_vertex; j++)
@@ -211,10 +207,9 @@ Error read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	}
 	free(start_row);
 	free(start_row_for_read);
-	return NONE;
 }
 
-Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees, double M, double *B_g_row, int g_row)
+void compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees, double M, double *B_g_row, int g_row)
 {
 	int i;
 	double row_sum, *runner, *temp = B_g_row;
@@ -224,8 +219,7 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 
 	if (!M)
 	{
-		print_errors(DIVISION_BY_ZERO, "M", "compute_modularity_matrix_row");
-		return DIVISION_BY_ZERO;
+		handle_errors(DIVISION_BY_ZERO, "compute_modularity_matrix_row", "M");
 	}
 	runner = B_g_row;
 	for (i = 0; i < g->size; i++)
@@ -240,12 +234,10 @@ Error compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees,
 	}
 
 	row_sum = A->add_to_row(A, A_row, B_g_row, g);
-	/*B_g_row[g_row] -= row_sum;*/ /*for B_hat*/
 	*runner -= row_sum;
-	return NONE;
 }
 
-Error compute_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row)
+void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row)
 {
 	int i;
 	double row_sum, *temp;
@@ -257,8 +249,7 @@ Error compute_score(spmat *A, int A_index, int g_index, group *g, double *s, dou
 
 	if (!M)
 	{
-		print_errors(DIVISION_BY_ZERO, "M", "compute_modularity_matrix_row");
-		return DIVISION_BY_ZERO;
+		handle_errors(DIVISION_BY_ZERO, "compute_modularity_matrix_row", "M");
 	}
 
 	for (i = 0; i < g->size; i++)
@@ -272,36 +263,33 @@ Error compute_score(spmat *A, int A_index, int g_index, group *g, double *s, dou
 	}
 
 	row_sum = A->add_to_row(A, A_index, B_g_row, g);
-	if (row_sum == -123456789)
+	if (row_sum != row_sum)
 	{
-		printf("row sum is zero\n");
+		printf("just so the compiler won't scream 'unused return value'\n");
 	}
 
 	*score = dot_product(B_g_row, s, g->size) * 4 * (*(s + g_index));
 	*score += 4 * ((deg) * (deg)) / M;
 	*score = 0.5 * (*score);
-	return NONE;
 }
 
-Error compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res)
+void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res)
 {
 	double *runner;
 	int *g_members;
-	/*Error error;*/
 	int i;
 	g_members = g->members;
 	runner = mult_vector;
 
 	for (i = 0; i < g->size; i++)
 	{
-		handle_errors(compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i));
+		compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
 		*runner = dot_product(B_g_row, s, g->size);
 		runner++;
 		g_members++;
 	}
 
 	*res = 0.5 * dot_product(mult_vector, s, g->size);
-	return NONE;
 }
 
 int eigen2s(double *eigen, group *g, double *s)
@@ -324,13 +312,13 @@ int eigen2s(double *eigen, group *g, double *s)
 	return g1_counter;
 }
 
-Error construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
+void construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 {
 	int i;
 	int *g1_members, *g2_members, *g_members = g->members;
 
-	alloc(g1->members,int,g1_count,"construct_g1g2","g1->members",ALLOCATION_FAILED);
-	alloc(g2->members,int,g->size-g1_count,"construct_g1g2","g2->members",ALLOCATION_FAILED);
+	alloc(g1->members,int,g1_count,"construct_g1g2","g1->members");
+	alloc(g2->members,int,g->size-g1_count,"construct_g1g2","g2->members");
 	g1_members = g1->members;
 	g2_members = g2->members;
 
@@ -351,10 +339,9 @@ Error construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 		s++;
 		g_members++;
 	}
-	return NONE;
 }
 
-Error write2_output_file(FILE *output, group_set *O)
+void write2_output_file(FILE *output, group_set *O)
 {
 	group *g;
 	int nof_vertex_in_group, nof_groups = O->size;
@@ -363,8 +350,7 @@ Error write2_output_file(FILE *output, group_set *O)
 	/*first number = number of groups*/
 	if (fwrite(&nof_groups, sizeof(int), 1, output) != 1)
 	{
-		print_errors(WRITE_FAILED, "output_file", "write2_output_file");
-		return WRITE_FAILED;
+		handle_errors(WRITE_FAILED, "write2_output_file", "output_file");
 	}
 	while (!(O->is_empty(O)))
 	{
@@ -374,14 +360,12 @@ Error write2_output_file(FILE *output, group_set *O)
 		/*number of vertex in the current group*/
 		if (fwrite(&nof_vertex_in_group, sizeof(int), 1, output) != 1)
 		{
-			print_errors(WRITE_FAILED, "output_file", "write2_output_file");
-			return WRITE_FAILED;
+			handle_errors(WRITE_FAILED, "write2_output_file", "output_file");
 		}
 		/*the actual vertex in the curr group*/
 		if ((signed int)fwrite(g_members, sizeof(int), nof_vertex_in_group, output) != nof_vertex_in_group)
 		{
-			print_errors(WRITE_FAILED, "output_file", "write2_output_file");
-			return WRITE_FAILED;
+			handle_errors(WRITE_FAILED, "write2_output_file", "output_file");
 		}
 		free(g->members);
 		free(g);
@@ -389,27 +373,26 @@ Error write2_output_file(FILE *output, group_set *O)
 	return NONE;
 }
 
-Error print_output(FILE *output, int nof_vertex)
+void print_output(FILE *output, int nof_vertex)
 {
 	int i, nof_groups, nof_vertex_in_group, *curr;
-
 	/*----------------allocations----------------*/
-	alloc(curr,int,nof_vertex,"print_output","curr",ALLOCATION_FAILED);
+	alloc(curr,int,nof_vertex,"print_output","curr");
 
 	if (fread(&nof_groups, sizeof(int), 1, output) != 1)
 	{
-		return READ_FAILED;
+		exit(5);
 	}
 	printf("result:\ndivision into %d groups\n", nof_groups);
 	for (i = 0; i < nof_groups; i++)
 	{
 		if (fread(&nof_vertex_in_group, sizeof(int), 1, output) != 1)
 		{
-			return READ_FAILED;
+			exit(5);
 		}
 		if ((signed int)fread(curr, sizeof(int), nof_vertex_in_group, output) != nof_vertex_in_group)
 		{
-			return READ_FAILED;
+			exit(5);
 		}
 		printf("group number %d is:\n", i);
 		print_vector_int(curr, nof_vertex_in_group);
@@ -417,5 +400,4 @@ Error print_output(FILE *output, int nof_vertex)
 	}
 
 	free(curr);
-	return NONE;
 }
