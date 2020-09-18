@@ -15,9 +15,6 @@ void print_stack(group_set *s);
 /*computes the 1norm of the entire 'A' matrix, the results stored in res.*/
 void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
 
-/*prints a msg corresponding to error.*/
-void print_errors(Error error, char *name, char *func);
-
 /*return the dot product of row1 with row2.
  *assuming both of the vectors are at least of size 'size.'*/
 double dot_product(double *row1, double *row2, int size);
