@@ -1,7 +1,7 @@
 
 #ifndef PARAM
 #define PARAM
-/*#include <stdarg.h>*/
+#include <stdarg.h>
 
 #define IS_POSITIVE(x) ((x) > 0.00001)
 
@@ -25,12 +25,12 @@ do{\
 
 #define exit_if_error(error) if(error != NONE)\
 {\
-exit(5);\
+    exit(error);\
 }
 
 #define MAX_NOF_ITERATIONS(size) ((size)*(size)*(size)*(size) + (size)*100)
 
-#define FREE_ALL(...)\
+/*#define FREE_ALL(...)\
 do {\
     int i=0;\
     void *pta[] = {__VA_ARGS__};\
@@ -38,7 +38,29 @@ do {\
     {\
         free(pta[i]);\
     }\
-} while(0)
+} while(0)*/
+
+#define FREE( ... ) Free( &free_stop , __VA_ARGS__ , &free_stop )
+//takes any number of pointer arguments,(at least one )( can also take NULL which is handled by free )
+
+int free_stop;
+
+void Free( void* point , ... )  
+{
+    if( !point )
+        return;
+
+    va_list list;
+    va_start( list , point );
+
+    void* p = va_arg( list ,void*);
+    while( p != point ) 
+    {
+        free( p ) ;
+        p = va_arg( list , void* );
+    }
+    va_end( list ) ;
+}
 
 typedef enum
 {

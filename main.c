@@ -16,6 +16,7 @@
     }
 }*/
 
+
 int run_num = 0;
 
 void test_input_read(spmat *mat, FILE *compare)
