@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-extern int run_num;
-
 typedef struct node
 {
 	char val;

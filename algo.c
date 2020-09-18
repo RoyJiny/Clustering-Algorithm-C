@@ -4,7 +4,6 @@
 #include "algo.h"
 #include "list.h"
 
-extern int run_num;
 void modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, int *g1_counter)
 {
     double max_score, new_score, max_improve, delta_Q;
@@ -267,7 +266,6 @@ void algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
             free(g->members);
             free(g);
         }
-        run_num++;
     }
 
     free(init_vector);
