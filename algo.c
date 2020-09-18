@@ -158,9 +158,7 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         magnitude = 0;
         for (i = 0; i < g->size; i++)
         {
-            printf("before\n");
             compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
-            printf("after\n");
             *runner2 += B_1norm;
             *runner1 = dot_product(B_g_row, eigen_vector, g->size);
             magnitude += (*runner1) * (*runner1);
@@ -184,7 +182,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
             handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
     }
-    printf("done power interation run -%ld\n", (clock() - start) / CLOCKS_PER_SEC);
+    printf("the size of g -%ld\n", g->size);
+    printf("done power interation run -%ld\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
 
     /*---------------------computing leading eigen value-------------*/
     calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
