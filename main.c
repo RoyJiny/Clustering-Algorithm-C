@@ -3,8 +3,18 @@
 #include <assert.h>
 #include <time.h>
 #include <string.h>
-
+#include <stdarg.h>
 #include "algo.h"
+
+
+/*void free_all(int count,...){
+	int i=0;
+    void *pta[] = {__VA_ARGS__};
+    for(i=0; i < sizeof(pta)/sizeof(void*); i++)
+    {
+        free(pta[i]);
+    }
+}*/
 
 int run_num = 0;
 
@@ -322,7 +332,8 @@ int main(int argc, char *argv[])
 	print_output(output_file, nof_vertex);
 
 	A->free(A);
-	free(degrees);
+	/*free(degrees);*/
+	FREE_ALL(degrees);
 	fclose(input_file);
 	fclose(output_file);
 	P->free_set(P);

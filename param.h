@@ -30,7 +30,7 @@ exit(5);\
 
 #define MAX_NOF_ITERATIONS(size) ((size)*(size)*(size)*(size) + (size)*100)
 
-/*#define FREE_ALL(...)\
+#define FREE_ALL(...)\
 do {\
     int i=0;\
     void *pta[] = {__VA_ARGS__};\
@@ -38,7 +38,7 @@ do {\
     {\
         free(pta[i]);\
     }\
-} while(0)*/
+} while(0)
 
 typedef enum
 {
@@ -50,7 +50,5 @@ typedef enum
 	INDIVISIBLE,
     ENDLESS_LOOP
 } Error;
-
-
 
 #endif
