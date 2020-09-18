@@ -158,7 +158,9 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         magnitude = 0;
         for (i = 0; i < g->size; i++)
         {
+            printf("before\n");
             compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
+            printf("after\n");
             *runner2 += B_1norm;
             *runner1 = dot_product(B_g_row, eigen_vector, g->size);
             magnitude += (*runner1) * (*runner1);
