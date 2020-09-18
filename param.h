@@ -3,6 +3,22 @@
 
 #define IS_POSITIVE(x) ((x) > 0.00001)
 
+typedef enum
+{
+    DIVISIBLE,
+    INDIVISIBLE
+} DivisionResult;
+
+typedef enum
+{
+	NONE,
+	ALLOCATION_FAILED,
+	READ_FAILED,
+	WRITE_FAILED,
+	DIVISION_BY_ZERO,
+    ENDLESS_LOOP
+} Error;
+
 void print_errors(Error error, char *name, char *func)
 {
 	switch (error)
@@ -46,21 +62,5 @@ do{\
 }while(0)
 
 #define MAX_NOF_ITERATIONS(size) ((size)*(size)*(size)*(size) + (size)*100)
-
-typedef enum
-{
-    DIVISIBLE,
-    INDIVISIBLE
-} DivisionResult;
-
-typedef enum
-{
-	NONE,
-	ALLOCATION_FAILED,
-	READ_FAILED,
-	WRITE_FAILED,
-	DIVISION_BY_ZERO,
-    ENDLESS_LOOP
-} Error;
 
 #endif
