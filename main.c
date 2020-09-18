@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "algo.h"
-#include <stdarg.h>
+#include <varargs.h>
 
 /*void free_all(int count,...){
 	int i=0;
@@ -19,7 +19,7 @@ void freeeeeee(va_list va_alist)
 {
 	va_list list;
 	void *p;
-    va_start(list,p);
+    va_start(list);
 
 	p = va_arg(list, void*);
 	while(p != NULL)
@@ -27,7 +27,7 @@ void freeeeeee(va_list va_alist)
 		free(p);
 		p = va_arg(list, void*);
 	}
-	va_end(list,p);
+	va_end(list);
 }
 
 int run_num = 0;
