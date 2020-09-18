@@ -3,7 +3,6 @@
 
 #include "group.h"
 
-
 typedef struct _spmat
 {
 	/* Matrix size (n*n) */
