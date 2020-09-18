@@ -104,7 +104,6 @@ void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 
 	free(col_sums);
 	free(B_row);
-	return NONE;
 }
 
 void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
@@ -370,7 +369,6 @@ void write2_output_file(FILE *output, group_set *O)
 		free(g->members);
 		free(g);
 	}
-	return NONE;
 }
 
 void print_output(FILE *output, int nof_vertex)
