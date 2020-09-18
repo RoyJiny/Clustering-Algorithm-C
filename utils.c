@@ -347,6 +347,30 @@ void write2_output_file(FILE *output, group_set *O)
 	}
 }
 
+void print_errors(Error error, char *name, char *func)
+{
+	switch (error)
+	{
+	case ALLOCATION_FAILED:
+		printf("[%s]: allocation failed on: %s\n", func, name);
+		return;
+	case READ_FAILED:
+		printf("[%s]: read failed on %s\n", func, name);
+		return;
+	case DIVISION_BY_ZERO:
+		printf("[%s]: division by zero, %s is zero\n", func, name);
+		return;
+	case WRITE_FAILED:
+		printf("[%s]: write failed on: %s\n", func, name);
+		return;
+	case ENDLESS_LOOP:
+		printf("[%s]: suspision of an endless loop in: %s\n",func,name);
+		return;
+	default:
+		return;
+	}
+}
+
 void print_output(FILE *output, int nof_vertex)
 {
 	int i, nof_groups, nof_vertex_in_group, *curr;
