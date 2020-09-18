@@ -15,7 +15,7 @@ do{\
 
 #define handle_errors(error,func_name,var_name)\
 do{\
-    if(error != NONE && error != INDIVISIBLE)\
+    if(error != NONE)\
     {\
         print_errors(error,var_name,func_name);\
         exit(4);\

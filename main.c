@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	}
 
 	/*---------allocate vector to save the degree of each vector (k_i)-----*/
-	alloc(degrees,int,nof_vertex,"main","degrees",5);
+	alloc(degrees,int,nof_vertex,"main","degrees");
 	/*---------------try allocate sparse matrix using list imp--------------*/
 	A = spmat_allocate_list(nof_vertex);
 
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	read_input(input_file, A, degrees, nof_vertex);
 
 	/*---------------------------alocate group set P & O----------------------*/
-	alloc(g,group,1,"main","g",5);
-	alloc(g->members,int,nof_vertex,"main","g->members",5);
+	alloc(g,group,1,"main","g");
+	alloc(g->members,int,nof_vertex,"main","g->members");
 
 	/*-------------------------------initial calculations----------------------------*/
 	/*trivial division*/
