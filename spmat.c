@@ -110,24 +110,32 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 	int *g_members_rows, *g_members_cols;
 	node **currRow = ((list *)(A->handle))->rows; /* current row*/
 	node *currElem = *(currRow + *(g->members));  /* current element*/
-	double *currRes = result;					  /* current result element*/
+	double *currRes = result;
+	double *v_runner;					  /* current result element*/
 	g_members_rows = g->members;
 	while (g_members_rows < g->members+g->size)
 	{
 		sum = 0;
 		g_members_cols = g->members;
 		*elements_per_g = 0;
+		v_runner = v;
 		while (currElem != NULL)
 		{
 			if (*g_members_cols == (currElem->index)) {
-				sum += (*(v + (currElem->index))); /*the value is always 1 so no need to multiply*/
+				sum += *v_runner; /*the value is always 1 so no need to multiply*/
 				(*elements_per_g) ++;
 				currElem = currElem->next;
-				if (g_members_cols < (g->members + g->size - 1)) g_members_cols ++;
+				if (g_members_cols < (g->members + g->size - 1)) {
+					g_members_cols ++;
+					v_runner++;
+				}
 			}
 			else if (currElem->index > *g_members_cols) 
 			{
-				if (g_members_cols < (g->members + g->size - 1)) g_members_cols++;
+				if (g_members_cols < (g->members + g->size - 1)) {
+					g_members_cols ++;
+					v_runner++;
+				}
 			} else {
 				currElem = currElem->next;
 			}
