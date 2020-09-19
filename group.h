@@ -40,4 +40,6 @@ typedef struct _group_set
 /*allocate a group set with no groups*/
 group_set *allocate_group_set();
 
+void print_group(group *g);
+
 #endif

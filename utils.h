@@ -8,8 +8,6 @@ void print_vector_int(int *vector, int size);
 
 void print_vector(double *vector, int size);
 
-void print_group(group *g);
-
 void print_stack(group_set *s);
 
 /*computes the 1norm of the entire 'A' matrix, the results stored in res.*/
