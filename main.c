@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
 	FILE *input_file, *output_file;
 	group_set *P, *O;
 	group *g;
+	group *test;
+	double *test_vec, *test_vec2, *test_vec3;
 	spmat *A;
 	int nof_vertex, i = 0;
 	int *degrees, *g_members;
@@ -38,6 +40,31 @@ int main(int argc, char *argv[])
 	alloc(degrees,int,nof_vertex,"main","degrees");
 	A = spmat_allocate_list(nof_vertex);
 	read_input(input_file, A, degrees, nof_vertex);
+
+	printf("A is:\n");
+	A->print_matrix(A);
+	printf("degrees:\n");
+	print_vector_int(degrees, A->n);
+	alloc(test,group,1,"main","test");
+	alloc(test->members,int,4,"main","test->members");
+	alloc(test_vec, double, 4, "main", "test_vec");
+	alloc(test_vec2, double, 4, "main", "test_vec2");
+	alloc(test_vec3, double, 4, "main", "test_vec3");
+	g_members = test->members;
+	*g_members = 0;
+	*(g_members+1) = 2;
+	*(g_members+2) = 8;
+	*(g_members+3) = 19;
+	*test_vec = 2;
+	*(test_vec+1) = 2;
+	*(test_vec+2) = 2;
+	*(test_vec+3) = 2;
+	A->mult(A, test_vec, test_vec2, test_vec3, test);
+	printf("mult result is:\n");
+	print_vector(test_vec2, 4);
+	printf("nof elements is:\n");
+	print_vector(test_vec3, 4);
+
 
 	alloc(g,group,1,"main","g");
 	alloc(g->members,int,nof_vertex,"main","g->members");
