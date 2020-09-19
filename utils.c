@@ -30,6 +30,7 @@ void print_vector(double *vector, int size)
 	printf("%f)\n", *vector);
 }
 
+/*TODO-remove*/
 void print_vector_int(int *vector, int size)
 {
 	int i;
