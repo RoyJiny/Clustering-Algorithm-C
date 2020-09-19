@@ -130,17 +130,19 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 				sum += *v_runner; /*the value is always 1 so no need to multiply*/
 				(*elements_per_g) ++;
 				currElem = currElem->next;
-				if (g_members_cols < (g->members + g->size - 1)) {
-					g_members_cols ++;
-					v_runner++;
+				if (g_members_cols >= (g->members + g->size)) {
+					break;
 				}
+				g_members_cols ++;
+				v_runner++;
 			}
 			else if (currElem->index > *g_members_cols) 
 			{
-				if (g_members_cols < (g->members + g->size - 1)) {
-					g_members_cols ++;
-					v_runner++;
+				if (g_members_cols >= (g->members + g->size)) {
+					break;
 				}
+				g_members_cols ++;
+				v_runner++;
 			} else {
 				currElem = currElem->next;
 			}
