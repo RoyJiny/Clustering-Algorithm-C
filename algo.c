@@ -141,7 +141,6 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     double *B_g_row, *runner1, *runner2, *mult_vector;
     double modularity_value, eigen_value, *s, magnitude;
     int iteration_counter = MAX_NOF_ITERATIONS(g->size);
-    time_t start ;
 
     alloc(B_g_row,double,g->size,"algo_2","B_g_row");
     alloc(mult_vector,double,g->size,"algo_2","mult_vector");
