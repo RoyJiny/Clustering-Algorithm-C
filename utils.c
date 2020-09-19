@@ -208,10 +208,10 @@ void compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees, 
 	*runner -= row_sum;
 }
 
-double compute_D_row(spmat *A, int A_row, group *g, int *degrees, double M, double *B_g_row, int g_row)
+double compute_D_row(int A_row, group *g, int *degrees, double M, double *B_g_row)
 {
 	int i;
-	double row_sum, *temp = B_g_row, sum = 0;
+	double *temp = B_g_row, sum = 0;
 	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
 	double row_degree = (double)degrees[A_row];

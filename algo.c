@@ -164,7 +164,7 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         A->mult(A, eigen_vector, B_g_row, A_sizes, g);
         for (i = 0; i < g->size; i++)
         {
-            row_sum = compute_D_row(A, *g_members, g, degrees, M, row_result, i);
+            row_sum = compute_D_row(*g_members, g, degrees, M, row_result);
             *runner3 += row_sum;
             *runner1 = dot_product(row_result, eigen_vector, g->size);
             runner1++;
