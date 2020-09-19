@@ -125,7 +125,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 				currElem = currElem->next;
 				if (g_members_cols < (g->members + g->size)) g_members_cols ++;
 			}
-			if (currElem->index > *g_members_cols) 
+			else if (currElem->index > *g_members_cols) 
 			{
 				if (g_members_cols < (g->members + g->size)) g_members_cols++;
 			} else {
