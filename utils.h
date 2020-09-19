@@ -3,6 +3,7 @@
 
 #include "spmat.h"
 #include <math.h>
+#include <stdio.h>
 
 void print_vector_int(int *vector, int size);
 
