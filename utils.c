@@ -30,6 +30,18 @@ void print_vector(double *vector, int size)
 	printf("%f)\n", *vector);
 }
 
+void print_vector_int(int *vector, int size)
+{
+	int i;
+	printf("(");
+	for (i = 0; i < size - 1; i++)
+	{
+		printf("%d ,", *vector);
+		vector++;
+	}
+	printf("%d)\n", *vector);
+}
+
 void print_group(group *g)
 {
 	int i;
