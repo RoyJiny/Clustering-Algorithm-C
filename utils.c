@@ -108,7 +108,6 @@ void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 
 void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
 {
-	/*Error error;*/
 	int i;
 	double numerator;
 	int *g_members = g->members;
@@ -121,7 +120,6 @@ void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degr
 	for (i = 0; i < g->size; i++)
 	{
 		compute_modularity_matrix_row(mat, *g_members, g, degrees, M, B_g_row, i);
-		/*B_g_row[i] += B_1norm;*/
 		*B_g_runner += B_1norm;
 		*runner = dot_product(B_g_row, eigen_vector, g->size);
 		runner++;
@@ -144,7 +142,7 @@ void read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	int *vertex_degree;
 	int i, j, counter;
 
-	vertex_degree = degree; /*fill degree*/
+	vertex_degree = degree;
 	alloc(start_row,char,nof_vertex,"read_input","start_row");
 	alloc(start_row_for_read,int,nof_vertex,"read_input","start_row_for_read");
 
@@ -152,13 +150,11 @@ void read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
 	{
 		curr_row = start_row;
 		temp = start_row_for_read;
-		/*try read k_i*/
-		if (fread(vertex_degree, sizeof(int), 1, input) != 1)
+		if (fread(vertex_degree, sizeof(int), 1, input) != 1) /*try read k_i*/
 		{
 			handle_errors(READ_FAILED,"read_input", "input_file");
-		}
-		/*try read the k_i neighbors*/
-		if ((signed int)fread(temp, sizeof(int), *vertex_degree, input) != *vertex_degree)
+		}		
+		if ((signed int)fread(temp, sizeof(int), *vertex_degree, input) != *vertex_degree) /*try read the k_i neighbors*/
 		{
 			handle_errors(READ_FAILED,"read_input", "input_file");
 		}
@@ -224,7 +220,7 @@ void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, doub
 
 	if (!M)
 	{
-		handle_errors(DIVISION_BY_ZERO, "compute_modularity_matrix_row", "M");
+		handle_errors(DIVISION_BY_ZERO, "compute_score", "M");
 	}
 
 	for (i = 0; i < g->size; i++)
@@ -238,10 +234,7 @@ void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, doub
 	}
 
 	row_sum = A->add_to_row(A, A_index, B_g_row, g);
-	if (row_sum != row_sum)
-	{
-		printf("just so the compiler won't scream 'unused return value'\n");
-	}
+	if (row_sum != row_sum) { printf("using 'unused return value'\n"); }
 
 	*score = dot_product(B_g_row, s, g->size) * 4 * (*(s + g_index));
 	*score += 4 * ((deg) * (deg)) / M;
@@ -316,7 +309,7 @@ void construct_g1g2(group *g, double *s, group *g1, group *g2, int g1_count)
 	}
 }
 
-void write2_output_file(FILE *output, group_set *O)
+void write_output_file(FILE *output, group_set *O)
 {
 	group *g;
 	int nof_vertex_in_group, nof_groups = O->size;
@@ -352,7 +345,7 @@ void print_errors(Error error, char *name, char *func)
 	switch (error)
 	{
 	case ALLOCATION_FAILED:
-		printf("[%s]: allocation failed on: %s\n", func, name);
+		printf("[%s]: allocation failed for: %s\n", func, name);
 		return;
 	case READ_FAILED:
 		printf("[%s]: read failed on %s\n", func, name);
@@ -364,7 +357,7 @@ void print_errors(Error error, char *name, char *func)
 		printf("[%s]: write failed on: %s\n", func, name);
 		return;
 	case ENDLESS_LOOP:
-		printf("[%s]: suspision of an endless loop in: %s\n",func,name);
+		printf("[%s]: reached infinite loop threshold at: %s\n",func,name);
 		return;
 	default:
 		return;
@@ -374,7 +367,7 @@ void print_errors(Error error, char *name, char *func)
 void print_output(FILE *output, int nof_vertex)
 {
 	int i, nof_groups, nof_vertex_in_group, *curr;
-	/*----------------allocations----------------*/
+
 	alloc(curr,int,nof_vertex,"print_output","curr");
 
 	if (fread(&nof_groups, sizeof(int), 1, output) != 1)

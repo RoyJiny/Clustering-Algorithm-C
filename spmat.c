@@ -81,20 +81,21 @@ void addRow_list(spmat *A, const char *row, int i)
 	*(rows + i) = create_list(row, A->n);
 }
 
-/*TODO: maybe replace with iterative version*/
 void delete_list(node *l)
 {
-	if (l != NULL)
-	{
-		delete_list(l->next);
+	node *next;
+	while (l != NULL) {
+		next = l->next;
 		free(l);
+		l = next;
 	}
 }
 
 void free_list(spmat *A)
 {
 	node **l = ((list *)(A->handle))->rows;
-	for (; l < (((list *)(A->handle))->rows) + A->n; l++)
+	node **end = (((list *)(A->handle))->rows) + A->n;
+	for (; l < end; l++)
 	{
 		delete_list(*l);
 	}
@@ -238,26 +239,6 @@ spmat *spmat_allocate_list(int n)
 	alloc(l->rows,node*,n,"spmat_allocate_list","l->rows");
 	alloc(spm,spmat,1,"spmat_allocate_list","spm");
 
-
-	/*l = (list *)malloc(sizeof(list));
-	if (!l)
-	{
-		return NULL;
-	}
-	l->rows = (node **)malloc(n * sizeof(node *));
-	if (!(l->rows))
-	{
-		free(l);
-		return NULL;
-	}
-	spm = (spmat *)malloc(sizeof(spmat));
-	if (!spm)
-	{
-		free(l->rows);
-		free(l);
-		return NULL;
-	}*/
-	
 	spm->n = n;
 	spm->handle = l;
 
@@ -270,4 +251,3 @@ spmat *spmat_allocate_list(int n)
 	spm->get_value = get_value_list;
 	return spm;
 }
-/*--------------------------------------------------------------------------------------------------------------------*/

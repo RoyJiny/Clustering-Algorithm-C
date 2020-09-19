@@ -6,7 +6,7 @@
 void push(group_set *s, group *g)
 {
     group_node *new_node;
-    alloc(new_node,group_node,1,"group.c: push","new_node");
+    alloc(new_node,group_node,1,"push group","new_node");
     new_node->value = g;
     new_node->next = s->first;
     s->first = new_node;
@@ -53,7 +53,7 @@ void free_set(group_set *s)
 group_set *allocate_group_set()
 {
     group_set *s;
-    alloc(s,group_set,1,"group.c: allocate_group_set","s");
+    alloc(s,group_set,1,"allocate_group_set","s");
     s->size = 0;
     s->first = NULL;
     s->top = top;

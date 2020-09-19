@@ -49,7 +49,7 @@ int eigen2s(double *eigen, group *g, double *s);
 void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 
 /*write to 'output' file the final partition into groups.*/
-void write2_output_file(FILE *output, group_set *O);
+void write_output_file(FILE *output, group_set *O);
 
 void print_output(FILE *output, int nof_vertex);
 

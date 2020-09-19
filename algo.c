@@ -18,17 +18,17 @@ void modularity_maximization(spmat *A, int *degrees, double *s, double M, group 
     int *unmoved ,*unmoved_runner, *unmoved_last, *vertex2delete;
     int unmoved_size;
 
-    /*----------------------Allocations--------------------*/
     alloc(unmoved,int,g->size,"modularity_maximization","unmoved");
     alloc(B_g_row,double,g->size,"modularity_maximization","B_g_row");
     alloc(mult_vector,double,g->size,"modularity_maximization","mult_vector");
     alloc(improve,double,g->size,"modularity_maximization","improve");
     alloc(indices,int,g->size,"modularity_maximization","indices");
-    /*------------------------------------------------------*/
+
     for(unmoved_runner = unmoved; unmoved_runner<unmoved+g->size; unmoved_runner++){
         *unmoved_runner = i;
         i++;
     }
+
     while (!stop)
     {
         iteration_counter++;
@@ -92,11 +92,11 @@ void modularity_maximization(spmat *A, int *degrees, double *s, double M, group 
                     max_improve_index = i;
                 }
             }
-            if(unmoved_size > 0){
+            if (unmoved_size > 0){
                 *vertex2delete = *unmoved_last;
                 unmoved_size--;
                 *unmoved_last = unmoved_size; /*update for next while iteration*/
-                if(unmoved_size) unmoved_last--;
+                if (unmoved_size) unmoved_last--;
             }
             indices_runner++;
             improve_runner++; 
@@ -125,8 +125,9 @@ void modularity_maximization(spmat *A, int *degrees, double *s, double M, group 
         {
             stop = 1;
         }
-        printf("delta q = %f\n",delta_Q);
+        printf("delta q = %f\n",delta_Q); /*TODO:remove*/
     }
+
     free(mult_vector);
     free(improve);
     free(indices);
@@ -143,10 +144,11 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     double modularity_value, eigen_value, *s, magnitude;
     int iteration_counter = MAX_NOF_ITERATIONS(g->size);
     time_t start ;
-    /*------------------------ALLOCATIONS------------------------*/
+
     alloc(B_g_row,double,g->size,"algo_2","B_g_row");
     alloc(mult_vector,double,g->size,"algo_2","mult_vector");
     alloc(s,double,g->size,"algo_2","s");
+
     /*---------------------power iteration-------------------------*/
     start = clock();
     while (!stop)
@@ -182,12 +184,11 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
             handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
     }
-    printf("the size of g -%d\n", g->size);
+    printf("the size of g -%d\n", g->size); /*TODO-remove*/
     printf("done power interation run -%d\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
 
-    /*---------------------computing leading eigen value-------------*/
     calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
-    /*--------------------decide the right partition-----------------*/
+
     if (!IS_POSITIVE(eigen_value))
     {
         free(mult_vector);
@@ -202,7 +203,7 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
 
     start = clock();
     modularity_maximization(A, degrees, s, M, g, &g1_count);
-    printf("done max- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
+    printf("done max- %ld\n", (clock() - start) / CLOCKS_PER_SEC); /*TODO-remove*/
 
     compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
 
@@ -232,22 +233,22 @@ void algo_3(spmat *A, int *degrees, group_set *P, group_set *O, int nof_vertex)
     int *runner_i;
     DivisionResult is_divisible;
 
+    /*initial vector*/
     alloc(init_vector,double,nof_vertex,"algo_3","init_vector");
-    /*------------------------randomize initial vector--------------------*/
     for (runner_d = init_vector; runner_d < init_vector + nof_vertex; runner_d++)
     {
         *runner_d = rand();
     }
-    /*---------------------------computing M-----------------------------*/
+    
     for (runner_i = degrees; runner_i < degrees + A->n; runner_i++)
     {
         M += *runner_i;
     }
 
-    /*-------------------compute the 1norm for initial B------------------*/
     g = P->top(P);
     compute_1norm(A, g, degrees, M, &B_1norm);
-    /*-----------------------------run-------------------------------------*/
+
+    /*run*/
     while (!(P->is_empty(P)))
     {
         alloc(g1,group,1,"algo_3","g1");
