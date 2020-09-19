@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 	print_vector_int(degrees, A->n);
 	alloc(test,group,1,"main","test");
 	alloc(test->members,int,4,"main","test->members");
+	test->size = 4;
 	alloc(test_vec, double, 4, "main", "test_vec");
 	alloc(test_vec2, double, 4, "main", "test_vec2");
 	alloc(test_vec3, double, 4, "main", "test_vec3");
