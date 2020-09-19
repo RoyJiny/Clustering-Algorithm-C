@@ -121,7 +121,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 		{
 			if (*g_members_cols == (currElem->index)) {
 				sum += (*(v + (currElem->index))); /*the value is always 1 so no need to multiply*/
-				*elements_per_g ++;
+				(*elements_per_g) ++;
 				currElem = currElem->next;
 				if (g_members_cols < (g->members + g->size)) g_members_cols ++;
 			}
