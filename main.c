@@ -23,31 +23,25 @@ int main(int argc, char *argv[])
 	}
 	srand(time(0));
 	start = clock();
-	/*--------------------try to open the input file---------------------*/
+
+	/*read input*/
 	input_file = fopen(argv[1], "r");
 	if (!input_file)
 	{
 		handle_errors(READ_FAILED,"main",argv[1]);
-	}
-	/*-----------------try to read the number of vertexes-----------------*/
+	}	
 	if (fread(&nof_vertex, sizeof(int), 1, input_file) != 1)
 	{
 		handle_errors(READ_FAILED,"main","input_file");
 	}
 
-	/*---------allocate vector to save the degree of each vector (k_i)-----*/
-	alloc(degrees,int,nof_vertex,"main","degrees",5);
-	/*---------------try allocate sparse matrix using list imp--------------*/
+	alloc(degrees,int,nof_vertex,"main","degrees");
 	A = spmat_allocate_list(nof_vertex);
-
-	/*------------------compute the adj matrix (as spars matrix)-------------*/
 	read_input(input_file, A, degrees, nof_vertex);
 
-	/*---------------------------alocate group set P & O----------------------*/
-	alloc(g,group,1,"main","g",5);
-	alloc(g->members,int,nof_vertex,"main","g->members",5);
+	alloc(g,group,1,"main","g");
+	alloc(g->members,int,nof_vertex,"main","g->members");
 
-	/*-------------------------------initial calculations----------------------------*/
 	/*trivial division*/
 	g->size = nof_vertex;
 	g_members = g->members;
@@ -56,21 +50,23 @@ int main(int argc, char *argv[])
 		*g_members = i;
 		g_members++;
 	}
-
 	P = allocate_group_set();
 	O = allocate_group_set();
 	P->push(P, g);
+
+	/*run*/
 	algo_3(A, degrees, P, O, nof_vertex);
 
-	/*----------------------------write the division in the output_file--------------*/
+	/*write the division in the output file*/
 	output_file = fopen(argv[2], "w");
 	if (!output_file)
 	{
 		handle_errors(WRITE_FAILED,"main",argv[2]);
 	}
-	write2_output_file(output_file, O);
+	write_output_file(output_file, O);
 	fclose(output_file);
-	/*-----------printing the output file-----------------*/
+
+	/*-----------printing the output file-----------------TODO-reomve at submission*/
 	output_file = fopen(argv[2], "r");
 	if (!output_file)
 	{
@@ -79,6 +75,7 @@ int main(int argc, char *argv[])
 	}
 	printf("[main]: actual: \n");
 	print_output(output_file, nof_vertex);
+	/*---------------------------------------------------------------------------*/
 
 	A->free(A);
 	free(degrees);
@@ -87,7 +84,7 @@ int main(int argc, char *argv[])
 	P->free_set(P);
 	O->free_set(O);
 
-	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC);
+	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC); /*TODO: remove*/
 
 	return 0;
 }

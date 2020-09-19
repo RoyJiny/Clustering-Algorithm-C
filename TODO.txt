@@ -22,15 +22,15 @@ DONE - 1) check what is start temp in read input -> it used for storing the data
 
 2) change make rules and check includes
 
-3) add exit codes
+DONE - 3) add exit codes
 
-4) clean code: check for unused functions, clean compute_score, change runner names
+4) clean code: check for unused functions, clean compute_score, change runner names, remove timers
 
 5) limit the length of functions
 
 idea: 
 maybe change compute_modularity_matrix_row to compute the dot product..
 B_g * vector = (A - D) * vector... *use A->mult!
-need to check the element in position [i][i]...
+need to check the element in position [i][i]..
 
 # remember to remove -g flag from makefile #

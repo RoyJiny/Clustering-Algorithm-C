@@ -3,21 +3,15 @@
 
 #include "spmat.h"
 #include <math.h>
-#include "param.h"
 
 void print_vector_int(int *vector, int size);
 
 void print_vector(double *vector, int size);
 
-void print_group(group *g);
-
 void print_stack(group_set *s);
 
 /*computes the 1norm of the entire 'A' matrix, the results stored in res.*/
 void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res);
-
-/*prints a msg corresponding to error.*/
-void print_errors(Error error, char *name, char *func);
 
 /*return the dot product of row1 with row2.
  *assuming both of the vectors are at least of size 'size.'*/
@@ -30,6 +24,8 @@ void read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
 /*computes row 'row' of the modularity matrix corresponding to group g.
  *the result is stored in 'B_g_row'.*/
 void compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
+
+double compute_D_row(int A_row, group *g, int *degrees, double M, double *B_g_row);
 
 /*computes the modularity value according to the partition represented in 's'.
  *the result is stored in 'res'*/
@@ -53,7 +49,7 @@ int eigen2s(double *eigen, group *g, double *s);
 void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 
 /*write to 'output' file the final partition into groups.*/
-void write2_output_file(FILE *output, group_set *O);
+void write_output_file(FILE *output, group_set *O);
 
 void print_output(FILE *output, int nof_vertex);
 

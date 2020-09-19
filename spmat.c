@@ -1,10 +1,9 @@
 #include "spmat.h"
+
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
-
-extern int run_num;
 
 typedef struct node
 {
@@ -82,20 +81,21 @@ void addRow_list(spmat *A, const char *row, int i)
 	*(rows + i) = create_list(row, A->n);
 }
 
-/*TODO: maybe replace with iterative version*/
 void delete_list(node *l)
 {
-	if (l != NULL)
-	{
-		delete_list(l->next);
+	node *next;
+	while (l != NULL) {
+		next = l->next;
 		free(l);
+		l = next;
 	}
 }
 
 void free_list(spmat *A)
 {
 	node **l = ((list *)(A->handle))->rows;
-	for (; l < (((list *)(A->handle))->rows) + A->n; l++)
+	node **end = (((list *)(A->handle))->rows) + A->n;
+	for (; l < end; l++)
 	{
 		delete_list(*l);
 	}
@@ -104,27 +104,52 @@ void free_list(spmat *A)
 	free(A);
 }
 /*TODO: not used*/
-void mult_list(const spmat *A, const double *v, double *result)
+void mult_list(const spmat *A, const double *v, double *result, double *elements_per_g, group *g)
 {
 	double sum;
+	int *g_members_rows, *g_members_cols;
 	node **currRow = ((list *)(A->handle))->rows; /* current row*/
-	node *currElem = *currRow;					  /* current element*/
-	double *currRes = result;					  /* current result element*/
-	int i;
-	for (i = 0; i < A->n; i++)
+	node *currElem;  /* current element*/
+	double *currRes = result;
+	const double *v_runner;					  /* current result element*/
+	g_members_rows = g->members;
+	while (g_members_rows < g->members+g->size)
 	{
 		sum = 0;
+		g_members_cols = g->members;
+		*elements_per_g = 0;
+		v_runner = v;
+		currElem = *(currRow + *(g_members_rows));
 		while (currElem != NULL)
 		{
-			sum += (currElem->val) * (*(v + (currElem->index)));
-			currElem = currElem->next;
+			if (*g_members_cols == (currElem->index)) {
+				sum += *v_runner; /*the value is always 1 so no need to multiply*/
+				(*elements_per_g) ++;
+				currElem = currElem->next;
+				if (g_members_cols >= (g->members + g->size)) {
+					break;
+				}
+				g_members_cols ++;
+				v_runner++;
+			}
+			else if (currElem->index > *g_members_cols) 
+			{
+				if (g_members_cols >= (g->members + g->size)) {
+					break;
+				}
+				g_members_cols ++;
+				v_runner++;
+			} else {
+				currElem = currElem->next;
+			}
 		}
 		*(currRes) = sum;
 		currRes++;
-		currRow++;
-		currElem = *currRow;
+		g_members_rows++;
+		elements_per_g ++;
 	}
 }
+
 /*TODO: not used*/
 char get_value_list(const spmat *A, int row, int col)
 {
@@ -239,26 +264,6 @@ spmat *spmat_allocate_list(int n)
 	alloc(l->rows,node*,n,"spmat_allocate_list","l->rows");
 	alloc(spm,spmat,1,"spmat_allocate_list","spm");
 
-
-	/*l = (list *)malloc(sizeof(list));
-	if (!l)
-	{
-		return NULL;
-	}
-	l->rows = (node **)malloc(n * sizeof(node *));
-	if (!(l->rows))
-	{
-		free(l);
-		return NULL;
-	}
-	spm = (spmat *)malloc(sizeof(spmat));
-	if (!spm)
-	{
-		free(l->rows);
-		free(l);
-		return NULL;
-	}*/
-	
 	spm->n = n;
 	spm->handle = l;
 
@@ -271,4 +276,3 @@ spmat *spmat_allocate_list(int n)
 	spm->get_value = get_value_list;
 	return spm;
 }
-/*--------------------------------------------------------------------------------------------------------------------*/

@@ -5,6 +5,8 @@
 #include <math.h>
 #include <stdio.h>
 
+/*TODO- not in use*/
+
 typedef struct _dynamic_node
 {
     int vertex;
