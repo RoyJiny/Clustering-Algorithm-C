@@ -111,7 +111,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 	node **currRow = ((list *)(A->handle))->rows; /* current row*/
 	node *currElem = *(currRow + *(g->members));  /* current element*/
 	double *currRes = result;
-	double *v_runner;					  /* current result element*/
+	const double *v_runner;					  /* current result element*/
 	g_members_rows = g->members;
 	while (g_members_rows < g->members+g->size)
 	{
