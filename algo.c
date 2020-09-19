@@ -142,11 +142,14 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     int *g_members;
     double *B_g_row, *runner1, *runner2, *mult_vector;
     double modularity_value, eigen_value, *s, magnitude;
+    double row_sum = 0, *row_result, *A_sizes, *runner3, *runner4;
     int iteration_counter = MAX_NOF_ITERATIONS(g->size);
     time_t start ;
 
     alloc(B_g_row,double,g->size,"algo_2","B_g_row");
     alloc(mult_vector,double,g->size,"algo_2","mult_vector");
+    alloc(row_result,double,g->size,"algo_2","row_result");
+    alloc(A_sizes,double,g->size,"algo_2","A_sizes");
     alloc(s,double,g->size,"algo_2","s");
 
     /*---------------------power iteration-------------------------*/
@@ -156,17 +159,30 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         iteration_counter--;
         runner1 = mult_vector;
         g_members = g->members;
-        runner2 = B_g_row;
+        runner3 = A_sizes;
         magnitude = 0;
+        A->mult(A, eigen_vector, B_g_row, A_sizes, g);
         for (i = 0; i < g->size; i++)
         {
-            compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
-            *runner2 += B_1norm;
-            *runner1 = dot_product(B_g_row, eigen_vector, g->size);
-            magnitude += (*runner1) * (*runner1);
+            row_sum = compute_D_row(A, *g_members, g, degrees, M, row_result, i);
+            *runner3 += row_sum;
+            *runner1 = dot_product(row_result, eigen_vector, g->size);
             runner1++;
             g_members++;
-            runner2++;
+            runner3++;
+        }
+        runner1 = mult_vector;
+        runner2 = B_g_row;
+        runner3 = eigen_vector;
+        runner4 = A_sizes;
+        for (i = 0; i < g->size; i++)
+        {
+            *runner1 += *runner2 + (B_1norm + *(runner4))*(*runner3);
+            magnitude += (*runner1) * (*runner1);
+            runner1 ++;
+            runner2 ++;
+            runner3 ++;
+            runner4 ++;
         }
         magnitude = sqrt(magnitude);
         stop = 1;

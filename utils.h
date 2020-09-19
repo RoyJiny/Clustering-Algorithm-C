@@ -27,6 +27,8 @@ void read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
  *the result is stored in 'B_g_row'.*/
 void compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
 
+double compute_D_row(spmat *A, int A_row, group *g, int *degrees, double M, double *B_g_row, int g_row);
+
 /*computes the modularity value according to the partition represented in 's'.
  *the result is stored in 'res'*/
 void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);

@@ -16,7 +16,7 @@ typedef struct _spmat
 	void (*free)(struct _spmat *A);
 
 	/* Multiplies matrix A by vector v, into result (result is pre-allocated) */
-	void (*mult)(const struct _spmat *A, const double *v, double *result);
+	void (*mult)(const struct _spmat *A, const double *v, double *result, double *elements_per_g, group *g);
 
 	/* return 1 if A==B and 0 otherwise.*/
 	char (*equal2)(const struct _spmat *A, const struct _spmat *B);
