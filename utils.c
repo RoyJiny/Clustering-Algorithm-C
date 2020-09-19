@@ -1,8 +1,9 @@
+#include "utils.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
-#include "utils.h"
 
 double dot_product(double *row1, double *row2, int size)
 {
@@ -28,18 +29,6 @@ void print_vector(double *vector, int size)
 		vector++;
 	}
 	printf("%f)\n", *vector);
-}
-
-void print_vector_int(int *vector, int size)
-{
-	int i;
-	printf("(");
-	for (i = 0; i < size - 1; i++)
-	{
-		printf("%d ,", *vector);
-		vector++;
-	}
-	printf("%d)\n", *vector);
 }
 
 void print_group(group *g)
@@ -85,7 +74,6 @@ void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	for (i = 0; i < A->n; i++)
 	{
 		compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i);
-
 		j = 0;
 		for (runner = col_sums; runner < col_sums + A->n; runner++)
 		{
@@ -364,6 +352,7 @@ void print_errors(Error error, char *name, char *func)
 	}
 }
 
+/*TODO-remove*/
 void print_output(FILE *output, int nof_vertex)
 {
 	int i, nof_groups, nof_vertex_in_group, *curr;

@@ -51,6 +51,7 @@ void construct_g1g2(group *g, double *s, group *g1, group *g2, int size);
 /*write to 'output' file the final partition into groups.*/
 void write_output_file(FILE *output, group_set *O);
 
+/*TODO-remove*/
 void print_output(FILE *output, int nof_vertex);
 
 #endif

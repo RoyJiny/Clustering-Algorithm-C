@@ -15,12 +15,6 @@ typedef struct _spmat
 	/* Frees all resources used by A */
 	void (*free)(struct _spmat *A);
 
-	/* Multiplies matrix A by vector v, into result (result is pre-allocated) */
-	void (*mult)(const struct _spmat *A, const double *v, double *result);
-
-	/* return 1 if A==B and 0 otherwise.*/
-	char (*equal2)(const struct _spmat *A, const struct _spmat *B);
-
 	/* compute the sum between A[row] and row2add and puts it in result.*/
 	void (*sum_rows)(const struct _spmat *A, int row, double *row2add, double *result);
 
@@ -30,11 +24,8 @@ typedef struct _spmat
 	/*add n to mat[row][index] , return 1 if successful and 0 otherwise*/
 	char (*add_by_index)(const struct _spmat *mat, int row, int index, double n);
 
-	double (*compute_1norm)(const struct _spmat *mat);
 	/*add A[row] to row*/
 	double (*add_to_row)(const struct _spmat *A, int row_index, double *row, group *g);
-
-	char (*get_value)(const struct _spmat *A, int row, int col);
 
 	/* Private field for inner implementation.
 	 * Should not be read or modified externally */
@@ -43,8 +34,5 @@ typedef struct _spmat
 
 /* Allocates a new linked-lists sparse matrix of size n */
 spmat *spmat_allocate_list(int n);
-
-/* Allocates a new arrays sparse matrix of size n with nnz non-zero elements */
-spmat *spmat_allocate_array(int n, int nnz);
 
 #endif
