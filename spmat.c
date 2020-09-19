@@ -120,6 +120,8 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 		*elements_per_g = 0;
 		v_runner = v;
 		currElem = *(currRow + *(g_members_rows));
+		printf("the list from curr node:\n");
+		print_list(currElem);
 		while (currElem != NULL)
 		{
 			if (*g_members_cols == (currElem->index)) {

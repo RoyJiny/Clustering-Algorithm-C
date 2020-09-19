@@ -199,7 +199,6 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         if(!iteration_counter){
             handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
-        printf("1\n");
     }
     printf("the size of g -%d\n", g->size); /*TODO-remove*/
     printf("done power interation run -%d\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
