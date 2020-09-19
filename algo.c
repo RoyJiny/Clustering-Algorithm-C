@@ -212,6 +212,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         free(s);
         free(g1);
         free(g2);
+        free(row_result);
+        free(A_sizes);
         return INDIVISIBLE;
     }
 
@@ -230,6 +232,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         free(s);
         free(g1);
         free(g2);
+        free(A_sizes);
+        free(row_result);
         return INDIVISIBLE;
     }
 
@@ -238,6 +242,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     free(mult_vector);
     free(B_g_row);
     free(s);
+    free(row_result);
+    free(A_sizes);
     return DIVISIBLE;
 }
 
