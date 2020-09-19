@@ -109,7 +109,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 	double sum;
 	int *g_members_rows, *g_members_cols;
 	node **currRow = ((list *)(A->handle))->rows; /* current row*/
-	node *currElem = *(currRow + *(g->members));  /* current element*/
+	node *currElem;  /* current element*/
 	double *currRes = result;
 	const double *v_runner;					  /* current result element*/
 	g_members_rows = g->members;
@@ -119,6 +119,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 		g_members_cols = g->members;
 		*elements_per_g = 0;
 		v_runner = v;
+		currElem = *(currRow + *(g_members_rows));
 		while (currElem != NULL)
 		{
 			if (*g_members_cols == (currElem->index)) {
@@ -143,7 +144,6 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 		*(currRes) = sum;
 		currRes++;
 		g_members_rows++;
-		currElem = *(currRow + *(g_members_rows));
 		elements_per_g ++;
 	}
 }
