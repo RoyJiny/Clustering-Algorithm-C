@@ -15,14 +15,10 @@ int main(int argc, char *argv[])
 	spmat *A;
 	int nof_vertex, i = 0;
 	int *degrees, *g_members;
-	clock_t start;
 
-	if (!argc)
-	{
-		exit(4);
-	}
+	if (!argc) exit(4);
+	
 	srand(time(0));
-	start = clock();
 
 	/*read input*/
 	input_file = fopen(argv[1], "r");
@@ -84,7 +80,7 @@ int main(int argc, char *argv[])
 	P->free_set(P);
 	O->free_set(O);
 
-	printf("FINISHED- %ld\n", (clock() - start) / CLOCKS_PER_SEC); /*TODO: remove*/
+	printf("FINISHED\n"); 
 
 	return 0;
 }

@@ -12,14 +12,6 @@ typedef struct node
 	struct node *next;
 } node;
 
-typedef struct arrays
-{
-	double *values;
-	int *cols;
-	int *rows;
-	int curr;
-} arrays;
-
 typedef struct list
 {
 	node **rows;
@@ -103,7 +95,7 @@ void free_list(spmat *A)
 	free(A->handle);
 	free(A);
 }
-/*TODO: not used*/
+
 void mult_list(const spmat *A, const double *v, double *result, double *elements_per_g, group *g)
 {
 	double sum;
@@ -111,7 +103,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 	node **currRow = ((list *)(A->handle))->rows; /* current row*/
 	node *currElem;  /* current element*/
 	double *currRes = result;
-	const double *v_runner;					  /* current result element*/
+	const double *v_runner;
 	g_members_rows = g->members;
 	while (g_members_rows < g->members+g->size)
 	{
@@ -150,24 +142,6 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 	}
 }
 
-/*TODO: not used*/
-char get_value_list(const spmat *A, int row, int col)
-{
-	node **rows;
-	node *curr_row;
-	rows = ((list *)(A->handle))->rows;
-	curr_row = *(rows + row);
-	while (curr_row != NULL && curr_row->index < col)
-	{
-		curr_row = curr_row->next;
-	}
-	if (curr_row != NULL && curr_row->index == col)
-	{
-		return curr_row->val;
-	}
-	return 0;
-}
-
 double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 {
 	double sum = 0;
@@ -203,41 +177,7 @@ double add_to_row_list(const spmat *A, int row_index, double *row, group *g)
 	}
 	return sum;
 }
-/*TODO: not used*/
-char equal2_list(const spmat *A, const spmat *B)
-{
-	node *temp_A, *temp_B;
-	int i;
-	node **rows_A = ((list *)(A->handle))->rows;
-	node **rows_B = ((list *)(B->handle))->rows;
 
-	if (A->n != B->n)
-	{
-		return 0;
-	}
-	for (i = 0; i < A->n; i++)
-	{
-		temp_A = *rows_A;
-		temp_B = *rows_B;
-		while (temp_A != NULL && temp_B != NULL)
-		{
-			if (temp_A->index != temp_B->index || temp_A->val != temp_B->val)
-			{
-				return 0;
-			}
-			temp_A = temp_A->next;
-			temp_B = temp_B->next;
-		}
-		if (temp_A != NULL || temp_B != NULL)
-		{
-			return 0;
-		}
-		rows_A++;
-		rows_B++;
-	}
-	return 1;
-}
-/*TODO: not used*/
 void print_matrix_list(const spmat *mat)
 {
 	int i;
@@ -270,9 +210,7 @@ spmat *spmat_allocate_list(int n)
 	spm->add_row = addRow_list;
 	spm->free = free_list;
 	spm->mult = mult_list;
-	spm->equal2 = equal2_list;
 	spm->print_matrix = print_matrix_list;
 	spm->add_to_row = add_to_row_list;
-	spm->get_value = get_value_list;
 	return spm;
 }

@@ -40,6 +40,6 @@ do{\
 }while(0)
 
 /*threshold for infinite loops - relative to input size*/
-#define MAX_NOF_ITERATIONS(size) ((size)*(size)*(size)*(size) + (size)*100)
+#define MAX_NOF_ITERATIONS(size) ((size)*(size)*(size) +(size)*(size)+ (size)*100)
 
 #endif

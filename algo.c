@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "algo.h"
-#include "list.h"
 
 void modularity_maximization(spmat *A, int *degrees, double *s, double M, group *g, int *g1_counter)
 {
     double max_score, new_score, max_improve, delta_Q;
     double *mult_vector, *B_g_row;
-    int i, j, max_score_index, max_improve_index;
+    int i =0 , j, max_score_index, max_improve_index;
     double *improve, *improve_runner;
     double *d_pointer;
     int *indices, *indices_runner;
@@ -95,7 +94,7 @@ void modularity_maximization(spmat *A, int *degrees, double *s, double M, group 
             if (unmoved_size > 0){
                 *vertex2delete = *unmoved_last;
                 unmoved_size--;
-                *unmoved_last = unmoved_size; /*update for next while iteration*/
+                *unmoved_last = unmoved_size; /*update unmoved for next while iteration*/
                 if (unmoved_size) unmoved_last--;
             }
             indices_runner++;
@@ -125,7 +124,6 @@ void modularity_maximization(spmat *A, int *degrees, double *s, double M, group 
         {
             stop = 1;
         }
-        printf("delta q = %f\n",delta_Q); /*TODO:remove*/
     }
 
     free(mult_vector);
@@ -142,18 +140,15 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     int *g_members;
     double *B_g_row, *runner1, *runner2, *mult_vector;
     double modularity_value, eigen_value, *s, magnitude;
-    double row_sum = 0, *row_result, *A_sizes, *runner3, *runner4;
-    int iteration_counter = MAX_NOF_ITERATIONS(g->size);
-    time_t start ;
+    double *A_sizes, *runner3, *runner4, mult_result;
+    int iteration_counter = MAX_NOF_ITERATIONS(g->size), row_sum = 0;
 
     alloc(B_g_row,double,g->size,"algo_2","B_g_row");
     alloc(mult_vector,double,g->size,"algo_2","mult_vector");
-    alloc(row_result,double,g->size,"algo_2","row_result");
     alloc(A_sizes,double,g->size,"algo_2","A_sizes");
     alloc(s,double,g->size,"algo_2","s");
 
     /*---------------------power iteration-------------------------*/
-    start = clock();
     while (!stop)
     {
         iteration_counter--;
@@ -161,12 +156,13 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         g_members = g->members;
         runner3 = A_sizes;
         magnitude = 0;
-        A->mult(A, eigen_vector, B_g_row, A_sizes, g);
+        A->mult(A, eigen_vector, B_g_row, A_sizes, g); /*cpmputes the mult of g's adjacency matrix with eigen_vector*/
         for (i = 0; i < g->size; i++)
         {
-            row_sum = compute_D_row(*g_members, g, degrees, M, row_result);
+            /*cpmputes the mult of g's (k_i * k_j)/M row with eigen_vector*/
+            mult_result = compute_mult_D_row(*g_members, g, degrees, M, eigen_vector, &row_sum);
             *runner3 += row_sum;
-            *runner1 = dot_product(row_result, eigen_vector, g->size);
+            *runner1 = mult_result;
             runner1++;
             g_members++;
             runner3++;
@@ -175,7 +171,7 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         runner2 = B_g_row;
         runner3 = eigen_vector;
         runner4 = A_sizes;
-        for (i = 0; i < g->size; i++)
+        for (i = 0; i < g->size; i++) /*computes B_g (shifted) * eigen_vector*/
         {
             *runner1 += *runner2 + (B_1norm + *(runner4))*(*runner3);
             magnitude += (*runner1) * (*runner1);
@@ -200,10 +196,8 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
             handle_errors(ENDLESS_LOOP,"algo_2","power iteration");
         }
     }
-    printf("the size of g -%d\n", g->size); /*TODO-remove*/
-    printf("done power interation run -%d\n", MAX_NOF_ITERATIONS(g->size) - iteration_counter);
 
-    calculate_eigen_value(A, eigen_vector, g, degrees, M, B_g_row, B_1norm, &eigen_value);
+    calculate_eigen_value(A, eigen_vector, g, degrees, M,  B_1norm, &eigen_value);
 
     if (!IS_POSITIVE(eigen_value))
     {
@@ -212,18 +206,15 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         free(s);
         free(g1);
         free(g2);
-        free(row_result);
         free(A_sizes);
         return INDIVISIBLE;
     }
 
     g1_count = eigen2s(eigen_vector, g, s);
 
-    start = clock();
     modularity_maximization(A, degrees, s, M, g, &g1_count);
-    printf("done max- %ld\n", (clock() - start) / CLOCKS_PER_SEC); /*TODO-remove*/
 
-    compute_modularity_value(A, g, degrees, s, M, B_g_row, mult_vector, &modularity_value);
+    compute_modularity_value(A, g, degrees, s, M, mult_vector, &modularity_value);
 
     if (!IS_POSITIVE(modularity_value))
     {
@@ -233,7 +224,6 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
         free(g1);
         free(g2);
         free(A_sizes);
-        free(row_result);
         return INDIVISIBLE;
     }
 
@@ -242,7 +232,6 @@ DivisionResult algo_2(spmat *A, int *degrees, double *eigen_vector, group *g, gr
     free(mult_vector);
     free(B_g_row);
     free(s);
-    free(row_result);
     free(A_sizes);
     return DIVISIBLE;
 }

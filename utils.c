@@ -14,7 +14,6 @@ double dot_product(double *row1, double *row2, int size)
 		row1++;
 		row2++;
 	}
-
 	return sum;
 }
 
@@ -81,7 +80,6 @@ void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	{
 		*runner = 0;
 	}
-
 	for (i = 0; i < A->n; i++)
 	{
 		compute_modularity_matrix_row(A, i, g, degrees, M, B_row, i);
@@ -106,31 +104,47 @@ void compute_1norm(spmat *A, group *g, int *degrees, double M, double *res)
 	free(B_row);
 }
 
-void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res)
+void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double B_1norm, double *res)
 {
 	int i;
-	double numerator;
-	int *g_members = g->members;
-	double *mult_vector, *runner, *B_g_runner;
+	double *runner2 ,mult_result ,*runner3;
+	int *g_members = g->members, row_sum =0;
+	double *mult_vector, *runner, *A_mult_result ,*elements_per_g;
 
 	alloc(mult_vector,double,g->size,"calculate_eigen_value","mult_vector");
+	alloc(A_mult_result,double,g->size,"calculate_eigen_value","A_mult_result");
+	alloc(elements_per_g,double,g->size,"calculate_eigen_value","elements_per_g");
 
 	runner = mult_vector;
-	B_g_runner = B_g_row;
+    /*cpmputes the mult of g's adjacency matrix with eigen_vector*/
+	mat->mult(mat,eigen_vector,A_mult_result,elements_per_g,g);
+	runner2 = elements_per_g;
 	for (i = 0; i < g->size; i++)
 	{
-		compute_modularity_matrix_row(mat, *g_members, g, degrees, M, B_g_row, i);
-		*B_g_runner += B_1norm;
-		*runner = dot_product(B_g_row, eigen_vector, g->size);
+		/*cpmputes the mult of g's (k_i * k_j)/M row with eigen_vector*/
+		mult_result = compute_mult_D_row(*g_members,g,degrees,M,eigen_vector,&row_sum);
+		*runner = mult_result;
+		*runner2 +=row_sum;
 		runner++;
-		B_g_runner++;
+		runner2++;
 		g_members++;
 	}
-
-	numerator = dot_product(eigen_vector, mult_vector, g->size);
-	*res = numerator;
+	mult_result = 0;
+	runner = A_mult_result;
+	runner2 = elements_per_g;
+	runner3 = mult_vector;
+	for(i = 0; i<g->size; i++){
+		mult_result += (*runner3 + *runner + ((*runner2+B_1norm)*(*eigen_vector))) *(*eigen_vector);
+		runner3++;
+		runner++;
+		runner2++;
+		eigen_vector++;
+	}
+	*res = mult_result;
 
 	free(mult_vector);
+	free(A_mult_result);
+	free(elements_per_g);
 }
 
 void read_input(FILE *input, spmat *A, int *degree, int nof_vertex)
@@ -208,29 +222,30 @@ void compute_modularity_matrix_row(spmat *A, int A_row, group *g, int *degrees, 
 	*runner -= row_sum;
 }
 
-double compute_D_row(int A_row, group *g, int *degrees, double M, double *B_g_row)
+double compute_mult_D_row(int A_row, group *g, int *degrees, double M, double *vec, int *rowSum)
 {
 	int i;
-	double *temp = B_g_row, sum = 0;
+	double temp, mult_result = 0;
 	int g_vertex, g_prev_vertex = 0;
 	int *g_members = g->members;
 	double row_degree = (double)degrees[A_row];
 
 	if (!M)
 	{
-		handle_errors(DIVISION_BY_ZERO, "compute_D_row", "M");
+		handle_errors(DIVISION_BY_ZERO, "compute_mult_D_row", "M");
 	}
 	for (i = 0; i < g->size; i++)
 	{
 		g_vertex = *g_members;
 		degrees = degrees + (g_vertex - g_prev_vertex);
-		*temp = -(row_degree * (double)(*degrees)) / M;
-		sum += *temp;
-		temp++;
+		temp = -(row_degree * (double)(*degrees)) / M;
+		*rowSum += temp;
+		mult_result+= temp *(*vec);
+		vec++;
 		g_members++;
 		g_prev_vertex = g_vertex;
 	}
-	return sum;
+	return mult_result;
 }
 
 void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, double M, int *degrees, double *score, double *B_g_row)
@@ -259,30 +274,48 @@ void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, doub
 	}
 
 	row_sum = A->add_to_row(A, A_index, B_g_row, g);
-	if (row_sum != row_sum) { printf("using 'unused return value'\n"); }
+	if (row_sum != row_sum) printf("using 'unused return value'\n");
 
 	*score = dot_product(B_g_row, s, g->size) * 4 * (*(s + g_index));
 	*score += 4 * ((deg) * (deg)) / M;
 	*score = 0.5 * (*score);
 }
 
-void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res)
+void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *mult_vector, double *res)
 {
-	double *runner;
-	int *g_members;
+	double *runner, *A_mult_result, *elements_per_g, *runner2;
+	int *g_members, row_sum =0, mult_result;
 	int i;
 	g_members = g->members;
 	runner = mult_vector;
+	alloc(A_mult_result,double,g->size,"compute_modularity_value","A_mult_result");
+	alloc(elements_per_g,double,g->size,"compute_modularity_value","elements_per_g");
 
+	/*cpmputes the mult of g's adjacency matrix with s*/
+	A->mult(A,s,A_mult_result,elements_per_g,g);
+	runner2 = elements_per_g;
 	for (i = 0; i < g->size; i++)
 	{
-		compute_modularity_matrix_row(A, *g_members, g, degrees, M, B_g_row, i);
-		*runner = dot_product(B_g_row, s, g->size);
+		/*cpmputes the mult of g's (k_i * k_j)/M row with s*/
+		mult_result = compute_mult_D_row(*g_members,g,degrees,M,s,&row_sum);
+		*runner2 +=row_sum;
+		*runner = mult_result;
 		runner++;
 		g_members++;
 	}
-
-	*res = 0.5 * dot_product(mult_vector, s, g->size);
+	mult_result =0;
+	runner = A_mult_result;
+	runner2 = elements_per_g;
+	for(i = 0; i<g->size;i++){
+		mult_result += (*mult_vector + *runner + (*runner2)*(*s))* (*s);
+		mult_vector++;
+		runner++;
+		runner2++;
+		s++;
+	}
+	*res = 0.5 * mult_result;
+	free(A_mult_result);
+	free(elements_per_g);
 }
 
 int eigen2s(double *eigen, group *g, double *s)

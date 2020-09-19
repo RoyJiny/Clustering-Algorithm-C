@@ -25,11 +25,13 @@ void read_input(FILE *input, spmat *A, int *degree, int nof_vertex);
  *the result is stored in 'B_g_row'.*/
 void compute_modularity_matrix_row(spmat *A, int row, group *g, int *degrees, double M, double *B_g_row, int g_count);
 
-double compute_D_row(int A_row, group *g, int *degrees, double M, double *B_g_row);
+/*return the multiplication of g's (k_i * k_j)/M row with 'vec'
+ *computes g's (k_i * k_j)/M row sum, and stored the result in 'rowSum'*/
+double compute_mult_D_row(int A_row, group *g, int *degrees, double M, double *vec, int *rowSum);
 
 /*computes the modularity value according to the partition represented in 's'.
  *the result is stored in 'res'*/
-void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *B_g_row, double *mult_vector, double *res);
+void compute_modularity_value(spmat *A, group *g, int *degrees, double *s, double M, double *mult_vector, double *res);
 
 /*computes the difference between the initial modularity and the modularity. 
  *we would get if we move the vertex 'A_index' to the other group.
@@ -38,7 +40,7 @@ void compute_score(spmat *A, int A_index, int g_index, group *g, double *s, doub
 
 /*computes the eigen value ,corresponding to 'eigen_vector', of matrix 'mat'.
  *the result is stored in 'res'.*/
-void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double *B_g_row, double B_1norm, double *res);
+void calculate_eigen_value(spmat *mat, double *eigen_vector, group *g, int *degrees, double M, double B_1norm, double *res);
 
 /*computes the partition 's' according to 'eigen'.
  *the result is stored in 's'.
