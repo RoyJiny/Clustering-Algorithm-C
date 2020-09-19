@@ -135,8 +135,7 @@ void mult_list(const spmat *A, const double *v, double *result, double *elements
 		*(currRes) = sum;
 		currRes++;
 		g_members_rows++;
-		currRow = (currRow + *(g_members_rows));
-		currElem = *currRow;
+		currElem = *(currRow + *(g_members_rows));
 		elements_per_g ++;
 	}
 }
