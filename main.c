@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 	spmat *A;
 	int nof_vertex, i = 0;
 	int *degrees, *g_members;
-	clock_t start;
 
 	if (!argc) exit(4);
 	
